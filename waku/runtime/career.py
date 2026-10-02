@@ -8,6 +8,7 @@ import uuid
 from waku.db import initialize_career as initialize
 from waku.loop.agent import run_loop
 from waku.ops.tracing import Tracer
+from waku.runtime import career_jobs
 from waku.tools.career import make_submit_tool
 from waku.tools.registry import ToolRegistry
 
@@ -16,13 +17,13 @@ def state(conn):
     initialize(conn)
     row = conn.execute('SELECT * FROM career_profile WHERE id=1').fetchone()
     if not row:
-        return {'profile': None, 'evidence': []}
+        return {'profile': None, 'evidence': [], 'jobs': career_jobs.saved_jobs(conn)}
     return {'profile': {'raw': json.loads(row['raw_input_json']),
                         'normalized': json.loads(row['normalized_json'] or 'null'),
                         'confirmed': bool(row['confirmed'])},
             'evidence': [dict(r) for r in conn.execute(
                 'SELECT evidence_id,source_id,source_type,raw_text,normalized_json '
-                'FROM career_evidence WHERE active=1')]}
+                'FROM career_evidence WHERE active=1')], 'jobs': career_jobs.saved_jobs(conn)}
 
 
 def validate_profile(profile, raw, edited=False):
@@ -89,6 +90,7 @@ def save_raw(conn, raw):
                      "normalized_json=NULL,user_edits_json='{}',confirmed=0,updated_at=CURRENT_TIMESTAMP",
                      (json.dumps(raw, ensure_ascii=False),))
         conn.execute('UPDATE career_evidence SET active=0')
+        conn.execute('UPDATE jobs SET outdated=1')
 
 
 def save_profile(conn, profile, edited=False):
@@ -106,6 +108,8 @@ def save_profile(conn, profile, edited=False):
             if record != previous.get(record['source_id']):
                 edits.setdefault('records', {})[record['source_id']] = record
     with conn:
+        if profile != current['normalized']:
+            conn.execute('UPDATE jobs SET outdated=1')
         conn.execute('UPDATE career_profile SET normalized_json=?,user_edits_json=?,confirmed=0, '
                      'updated_at=CURRENT_TIMESTAMP WHERE id=1',
                      (json.dumps(profile, ensure_ascii=False), json.dumps(edits, ensure_ascii=False)))
@@ -165,6 +169,9 @@ def action(conn, payload, settings=None, client=None):
         normalize(conn, settings, client)
     elif name == 'save_profile':
         save_profile(conn, payload.get('profile'), edited=True)
+    elif name == 'analyze_job':
+        job_id = career_jobs.analyze_job(conn, payload.get('jd'), settings, client, payload.get('job_id'))
+        return dict(state(conn), job_id=job_id)
     elif name == 'confirm':
         current = state(conn)['profile']
         if not current or not current['normalized']:

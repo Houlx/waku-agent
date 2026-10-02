@@ -68,8 +68,9 @@ at the end of every step.
 ## Career Agent
 
 Open **Career Agent** in the local dashboard to describe your experience, review
-an AI-organized profile, and confirm your career facts. This first delivery supports
-profile onboarding; job analysis and resumes are not available yet.
+an AI-organized profile, and confirm your career facts. Paste a job description
+to see requirement coverage and inspect the supporting evidence. Resume generation
+is not available yet.
 [The Career guide](docs/career.md) explains storage, evidence and review.
 
 ## Connect Waku Memory

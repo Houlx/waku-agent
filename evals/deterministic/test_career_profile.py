@@ -99,7 +99,7 @@ def test_missing_profile_and_unknown_actions(world):
     with pytest.raises(ValueError, match='review'):
         action(world[0], {'action': 'confirm'})
     with pytest.raises(ValueError, match='Unknown Career'):
-        action(world[0], {'action': 'analyze_job'})
+        action(world[0], {'action': 'generate_resume'})
 
 
 def test_provider_failure_preserves_saved_input(world):
@@ -121,7 +121,7 @@ def test_onboarding_replaces_current_profile_and_deactivates_evidence(world):
 
 
 def test_first_visit(tmp_path):
-    assert state(connect(tmp_path)) == {'profile': None, 'evidence': []}
+    assert state(connect(tmp_path)) == {'profile': None, 'evidence': [], 'jobs': []}
 
 
 def test_dashboard_handlers_use_the_existing_model_and_keep_chat_empty(world, monkeypatch):

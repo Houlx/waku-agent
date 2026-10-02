@@ -19,7 +19,7 @@ the no-invention requirement takes precedence over illustrative examples.
 
 Sections 39 and 43 preserve the original delivery and planning instructions.
 They do not grant new execution approval. Consult HANDOFF.md before continuing;
-Day 1 is complete, and Day 2 has not been approved for implementation.
+Days 1 and 2 are implemented, and Day 3 has not been approved for implementation.
 
 ---
 

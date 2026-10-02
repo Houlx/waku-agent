@@ -29,7 +29,7 @@ runs the bootstrap and must load last**.
 | `views.js`   | subtab/db helpers, SQL console, Memory/Tools sub-views, the `VIEWS` router object |
 | `compare.js` | the Model arena (`Arena` tab; internals keep the `compare` name) — race one message through several models at once |
 | `dock.js`    | chat sessions/history (`loadThreadInto`), model chip, stats toggle |
-| `career.js` | local Career onboarding, normalization, profile review and confirmation; preserves form drafts during polling |
+| `career.js` | local Career onboarding, profile confirmation, job analysis and evidence reports; preserves form drafts during polling |
 | `main.js`    | `render`/`refresh` loop, resizers, voice, and the bootstrap (**loads last**) |
 
 Data flows one way: `refresh()` (main.js) fetches `/api/data` into the global

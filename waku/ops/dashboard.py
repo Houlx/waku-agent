@@ -79,7 +79,7 @@ def career_action(payload):
     from waku.runtime.career import action
 
     with agent_lock:
-        if payload.get("action") == "normalize":
+        if payload.get("action") in {"normalize", "analyze_job"}:
             agent = get_agent()
             return action(agent.conn, payload, agent.settings, agent.client)
         settings = load_settings()

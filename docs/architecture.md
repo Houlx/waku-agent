@@ -110,8 +110,9 @@ Memory importer already uploads one memory per file. Episodes, `MEMORY.md` and
 - `waku/gateway/` — how text gets in and out: `cli.py`, `voice.py` (wake word),
   `telegram.py`, `discord.py` and `whatsapp.py`, started by `runner.py` and
   `supervisor.py`. Gateways only move text.
-- `waku/runtime/career.py` — opt-in Career profile normalization over the same
-  loop, with scoped tools and dedicated SQLite records; it bypasses chat memory.
+- `waku/runtime/career.py` — opt-in Career profile normalization and action dispatch.
+  `career_jobs.py` extracts job requirements, retrieves Career evidence and scores
+  matches over the same loop with scoped tools; both modules bypass chat memory.
 - `waku/runtime/session.py` — working memory for one turn: SOUL.md, memory
   context and chat history.
 - `waku/loop/agent.py` — the loop. `loop/models.py` — pluggable providers over

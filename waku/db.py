@@ -133,6 +133,22 @@ CREATE TRIGGER IF NOT EXISTS career_evidence_au AFTER UPDATE ON career_evidence 
  VALUES('delete',old.id,old.search_text);
  INSERT INTO career_evidence_fts(rowid,search_text) VALUES(new.id,new.search_text);
 END;
+CREATE TABLE IF NOT EXISTS jobs (
+ id TEXT PRIMARY KEY, raw_jd TEXT NOT NULL, title TEXT NOT NULL DEFAULT '',
+ summary TEXT NOT NULL DEFAULT '', responsibilities_json TEXT NOT NULL DEFAULT '[]',
+ status TEXT NOT NULL DEFAULT 'pending', outdated INTEGER NOT NULL DEFAULT 0,
+ coverage REAL, report_json TEXT, activity_json TEXT NOT NULL DEFAULT '[]',
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS job_requirements (
+ id TEXT PRIMARY KEY, job_id TEXT NOT NULL REFERENCES jobs(id), text TEXT NOT NULL,
+ category TEXT NOT NULL, importance TEXT NOT NULL, keywords_json TEXT NOT NULL,
+ source_excerpt TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS job_matches (
+ requirement_id TEXT PRIMARY KEY REFERENCES job_requirements(id), status TEXT NOT NULL,
+ evidence_ids_json TEXT NOT NULL, reason TEXT NOT NULL
+);
 """
 
 
