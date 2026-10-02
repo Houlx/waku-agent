@@ -96,6 +96,7 @@ DROPPED_SETTINGS_FIELDS = ("experimental",)
 PLATFORM_REFUSED_FIELDS = ("key", "base_url", "custom_key")
 
 DECISIONS: dict[str, str] = {
+    "/api/career": BLOCK,
     # per-tenant by construction: own process, own home
     "/": PASS,
     "/static/": PASS,
@@ -133,6 +134,7 @@ DECISIONS: dict[str, str] = {
 }
 
 BLOCK_MESSAGES: dict[str, str] = {
+    "/api/career": "Career is available only on your own machine.",
     "/api/compare": ARENA_BLOCKED,
     "/api/compare/clear": ARENA_BLOCKED,
     "/api/compare/regrade": ARENA_BLOCKED,

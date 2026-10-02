@@ -62,6 +62,35 @@ PORT = 7777
 STATIC = Path(__file__).resolve().parent / "static"
 
 
+def career_state():
+    from waku.runtime.career import state
+
+    settings = load_settings()
+    settings.ensure_home()
+    with agent_lock:
+        conn = connect(settings.home)
+        try:
+            return state(conn)
+        finally:
+            conn.close()
+
+
+def career_action(payload):
+    from waku.runtime.career import action
+
+    with agent_lock:
+        if payload.get("action") == "normalize":
+            agent = get_agent()
+            return action(agent.conn, payload, agent.settings, agent.client)
+        settings = load_settings()
+        settings.ensure_home()
+        conn = connect(settings.home)
+        try:
+            return action(conn, payload)
+        finally:
+            conn.close()
+
+
 def chat(message: str) -> dict:
     """One turn, one JSON result — the non-streaming door to the same room.
 
@@ -915,7 +944,9 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if self.path == "/api/data":
+        if self.path == "/api/career":
+            self._send(json.dumps(career_state()).encode(), "application/json")
+        elif self.path == "/api/data":
             self._send(json.dumps(collect(), default=str).encode(), "application/json")
         elif self.path == "/api/judgment-arena":
             from waku.ops import judgment_arena, judgment_cases  # noqa: PLC0415
@@ -1168,7 +1199,7 @@ class Handler(BaseHTTPRequestHandler):
                     pass
             graph_stream(payload, emit)
             return
-        routes = {"/api/chat": None, "/api/memory": memory_action, "/api/settings": apply_settings,
+        routes = {"/api/career": career_action, "/api/chat": None, "/api/memory": memory_action, "/api/settings": apply_settings,
                   "/api/query": run_query, "/api/session": session_action, "/api/pin": pin_action,
                   "/api/connections": None, "/api/connections/test": None,
                   "/api/providers": None,

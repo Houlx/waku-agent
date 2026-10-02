@@ -105,3 +105,38 @@ def connect(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
     conn.executescript(SCHEMA)
     _migrate(conn)
     return conn
+
+
+CAREER_SCHEMA = """
+CREATE TABLE IF NOT EXISTS career_profile (
+ id INTEGER PRIMARY KEY CHECK(id=1), raw_input_json TEXT NOT NULL,
+ normalized_json TEXT, user_edits_json TEXT NOT NULL DEFAULT '{}',
+ confirmed INTEGER NOT NULL DEFAULT 0, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS career_evidence (
+ id INTEGER PRIMARY KEY, evidence_id TEXT UNIQUE NOT NULL, source_id TEXT NOT NULL,
+ source_type TEXT NOT NULL, raw_text TEXT NOT NULL, normalized_json TEXT NOT NULL,
+ search_text TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1
+);
+CREATE VIRTUAL TABLE IF NOT EXISTS career_evidence_fts USING fts5(
+ search_text, content=career_evidence, content_rowid=id
+);
+CREATE TRIGGER IF NOT EXISTS career_evidence_ai AFTER INSERT ON career_evidence BEGIN
+ INSERT INTO career_evidence_fts(rowid,search_text) VALUES(new.id,new.search_text);
+END;
+CREATE TRIGGER IF NOT EXISTS career_evidence_ad AFTER DELETE ON career_evidence BEGIN
+ INSERT INTO career_evidence_fts(career_evidence_fts,rowid,search_text)
+ VALUES('delete',old.id,old.search_text);
+END;
+CREATE TRIGGER IF NOT EXISTS career_evidence_au AFTER UPDATE ON career_evidence BEGIN
+ INSERT INTO career_evidence_fts(career_evidence_fts,rowid,search_text)
+ VALUES('delete',old.id,old.search_text);
+ INSERT INTO career_evidence_fts(rowid,search_text) VALUES(new.id,new.search_text);
+END;
+"""
+
+
+
+def initialize_career(conn: sqlite3.Connection) -> None:
+    """Initialize opt-in Career tables without changing conversational memory."""
+    conn.executescript(CAREER_SCHEMA)

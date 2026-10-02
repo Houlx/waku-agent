@@ -52,6 +52,7 @@ ALLOWED_EXTRA_ENTRIES = {"/", "/api/compare"}
 # entire suite -- and those are the routes design section 8 blocks because "a
 # race calls several models at once", which is several times the spend.
 EXPECTED = {
+    "/api/career": "block",
     # pass: per-tenant by construction -- own process, own home
     "/": "pass",
     "/static/": "pass",

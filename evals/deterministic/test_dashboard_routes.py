@@ -30,6 +30,7 @@ from waku.ops import dashboard
 # `/api/connections/test` and `/api/providers` are here too — they are `routes`
 # dict keys (value `None`) exactly like the rest of this set, just added later.
 POST_ROUTES = {
+    "/api/career",
     "/api/chat",
     "/api/memory",
     "/api/settings",
@@ -46,6 +47,7 @@ POST_ROUTES = {
 
 # Paths served on GET, either exactly or as a prefix.
 GET_PATHS = {
+    "/api/career",
     "/api/data",
     "/api/models",
     "/api/events",

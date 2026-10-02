@@ -243,6 +243,8 @@ NETWORK_TOKENS = ("fetch", "postJSON")
 #   "primitive"   postJSON itself, which forwards whatever headers its caller
 #                 hands it and decides nothing.
 NETWORK_CALLERS = {
+    ("career.js", "careerLoad"): "user",  # first workspace open or explicit retry; never polled
+    ("career.js", "careerRun"): "user",
     ("compare.js", "loadCompareHistory"): "background",
     ("compare.js", "clearCompareHistory"): "user",
     ("compare.js", "regradeCompare"): "user",

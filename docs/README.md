@@ -39,6 +39,17 @@ into four groups.
 | [evals.md](evals.md) | the two kinds of eval, the Docker tier, the release gate, traces and spend |
 | [roadmap.md](roadmap.md) | what is live, what is still a skeleton, upgrade paths |
 
+- [career.md](career.md) explains local Career onboarding and profile confirmation.
+
+## Career Agent project
+
+- [career-agent/PRODUCT_SPEC.md](career-agent/PRODUCT_SPEC.md) holds the approved
+  complete product requirements.
+- [career-agent/IMPLEMENTATION_PLAN.md](career-agent/IMPLEMENTATION_PLAN.md) holds
+  the approved plan and final clarifications.
+- [career-agent/HANDOFF.md](career-agent/HANDOFF.md) records current code,
+  verification results, and stage authorization.
+
 ## Whiteboards
 
 Every whiteboard is an **editable `.excalidraw` source**: download one, drop it

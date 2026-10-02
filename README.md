@@ -65,6 +65,13 @@ a [~60-line adapter](waku/loop/models.py) handles the rest.
 New to it? **[Getting started](docs/getting-started.md)** walks the whole setup, with a check
 at the end of every step.
 
+## Career Agent
+
+Open **Career Agent** in the local dashboard to describe your experience, review
+an AI-organized profile, and confirm your career facts. This first delivery supports
+profile onboarding; job analysis and resumes are not available yet.
+[The Career guide](docs/career.md) explains storage, evidence and review.
+
 ## Connect Waku Memory
 
 Waku's own memory is local. **[Waku Memory](https://www.waku.one)** is the hosted memory you
