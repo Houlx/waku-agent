@@ -149,6 +149,12 @@ CREATE TABLE IF NOT EXISTS job_matches (
  requirement_id TEXT PRIMARY KEY REFERENCES job_requirements(id), status TEXT NOT NULL,
  evidence_ids_json TEXT NOT NULL, reason TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS resumes (
+ id TEXT PRIMARY KEY, job_id TEXT UNIQUE NOT NULL REFERENCES jobs(id),
+ language TEXT NOT NULL, content_json TEXT NOT NULL, outdated INTEGER NOT NULL DEFAULT 0, activity_json TEXT NOT NULL DEFAULT '[]',
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
 """
 
 

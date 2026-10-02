@@ -108,7 +108,7 @@ def test_four_jobs_persist_explainable_reports(world, fixture):
     assert reopened.execute('SELECT count(*) FROM chat_log').fetchone()[0] == 0
     assert reopened.execute('SELECT count(*) FROM facts').fetchone()[0] == 0
     assert reopened.execute('SELECT count(*) FROM episodes').fetchone()[0] == 0
-    assert not reopened.execute("SELECT name FROM sqlite_master WHERE name='resumes'").fetchall()
+    assert reopened.execute('SELECT count(*) FROM resumes').fetchone()[0] == 0
     reopened.close()
     for call in client.calls:
         exposed = {t['name'] for t in call['tools']}
@@ -292,4 +292,4 @@ def test_dashboard_analyzes_with_existing_client(world, monkeypatch):
     result = dashboard.career_action({'action': 'analyze_job', 'jd': FIXTURES[0]['jd']})
     assert result['jobs'][0]['coverage'] == 50.0
     with pytest.raises(ValueError, match='Unknown Career action'):
-        action(conn, {'action': 'generate_resume'})
+        action(conn, {'action': 'unknown_action'})

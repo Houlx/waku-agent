@@ -2,8 +2,8 @@
 
 The local dashboard's **Career Agent** workspace collects your career facts and
 organizes them into a profile. It analyzes pasted job descriptions and explains
-which requirements your confirmed profile supports. Resume generation is not
-available yet.
+which requirements your confirmed profile supports. You can then explicitly
+generate a tailored resume from confirmed Career evidence.
 
 ## Create your profile
 
@@ -38,6 +38,26 @@ inspectable. Confirm your edited profile, then choose **Re-run Analysis** and
 **Re-run Job Analysis** to replace a report. A failed run retains the pasted JD
 and any earlier successful report; the earlier report remains outdated.
 
+## Generate and review a resume
+
+Review the Match Report, choose English, Chinese or Japanese, and select
+**Generate Tailored Resume**. The language defaults to a simple estimate of the
+JD language; you can override it. Analysis never generates a resume automatically.
+Generation requires a confirmed profile, completed current analysis and usable
+requirements. Profile changes require confirmation and reanalysis.
+
+The resume review displays factual record headings and cited summaries, skills
+and bullets. Expand **View Evidence** to inspect the source behind a claim.
+**Download Markdown** exports the saved draft without calling the model again.
+**Print / Save as PDF** uses browser printing and hides navigation, buttons,
+activity and evidence annotations. Chinese and Japanese use system-font fallbacks.
+
+Each job retains one current draft. A successful generation replaces that draft;
+a failed generation retains it. Profile edits and successful reanalysis mark an
+older draft outdated until you generate a replacement. Career Activity displays
+stage/tool status, evidence IDs, token usage and elapsed stage time. It does not
+display model reasoning.
+
 ## Understand the data
 
 Career stores the current raw input separately from its normalized representation
@@ -67,4 +87,4 @@ only a single person's local dashboard.
 Read the [approved product requirements](career-agent/PRODUCT_SPEC.md),
 [implementation plan](career-agent/IMPLEMENTATION_PLAN.md), and
 [current handoff](career-agent/HANDOFF.md) before changing Career functionality.
-Day 2 is implemented. Day 3 requires explicit user approval.
+Days 1–3 are implemented. Optional Day 4 requires explicit user approval.

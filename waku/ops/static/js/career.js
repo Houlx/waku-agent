@@ -1,7 +1,7 @@
 // Career forms retain local drafts while the dashboard polls other views.
 let careerData = null, careerDraft = null, careerMode = null, careerBusy = false, careerError = '';
 let careerJobDraft = '', careerJobId = null;
-let careerReturnMode = null;
+let careerReturnMode = null, careerLanguage = null;
 const careerBasicFields = ['Name', 'Phone', 'Email', 'Current Location', 'Additional Information'];
 const careerRecordFields = {work:['Company','Position','Start Date','End Date'],education:['School','Degree','Major','Start Date','End Date'],project:['Project Name'],other:[]};
 const careerHelp = {
@@ -43,7 +43,7 @@ function careerField(i,key,value){
 }
 function careerOpenJob(i){
   careerReturnMode = careerMode;
-  careerJobId = careerData.jobs[i].id; careerMode = 'report'; careerPaint();
+  careerLanguage = careerData.jobs[i].language; careerJobId = careerData.jobs[i].id; careerMode = 'report'; careerPaint();
 }
 function careerReanalyze(i){
   const job = careerData.jobs[i];
@@ -73,6 +73,7 @@ async function careerRun(action){
       payload.jd = careerJobDraft;
       if(careerJobId) payload.job_id = careerJobId;
     }
+    if(action === 'generate_resume'){ payload.job_id = careerJobId; payload.language = careerLanguage; }
     const r = await fetch('/api/career',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const result = await r.json();
     if(result.error) throw new Error(result.error);
@@ -84,8 +85,8 @@ async function careerRun(action){
       careerMode = 'review'; careerDraft = JSON.parse(JSON.stringify(result.profile.normalized));
     } else if(action === 'confirm'){ careerMode = null; careerDraft = null; }
     else if(action === 'analyze_job'){
-      careerJobId = result.job_id; careerReturnMode = null; careerMode = 'report';
-    }
+      careerJobId = result.job_id; careerLanguage = result.jobs.find(j=>j.id===careerJobId).language; careerReturnMode = null; careerMode = 'report';
+    } else if(action === 'generate_resume'){ careerMode = 'resume'; }
   } catch(e){
     careerError = e.message;
     if(action === 'analyze_job'){
@@ -141,7 +142,10 @@ function careerReport(job){
   return body + uiButton('Re-run Job Analysis',{onclick:`careerReanalyze(${index})`,attrs:careerBusy?'disabled':''})+
     uiButton('Edit Career Profile',{level:'secondary',onclick:'careerEditProfile()',attrs:careerBusy?'disabled':''})+
     uiButton(careerReturnMode?'Back to Career Profile':'Back to Career Dashboard',{level:'secondary',onclick:'careerBack()'})+
-    uiNotice('note','Resume generation will be available in the next stage.');
+    careerActivity(job.activity) + `<label class="career-field">Resume language<select onchange="careerLanguage=this.value" ${careerBusy?'disabled':''}>`+
+    ['English','Chinese','Japanese'].map(l=>`<option ${l===(careerLanguage || job.language)?'selected':''}>${l}</option>`).join('')+'</select></label>'+
+    uiButton('Generate Tailored Resume',{onclick:"careerRun('generate_resume')",attrs:careerBusy || !careerData.profile.confirmed || job.outdated || job.status!=='complete' || !job.requirements.length?'disabled':''})+
+    (job.resume?uiButton('View Resume',{level:'secondary',onclick:"careerMode='resume';careerPaint()"}):'');
 }
 function careerSavedJobs(){
   return uiCard((careerData.jobs || []).map((job,i)=>`<p>${esc(job.title || 'Saved Job Description')} `+
@@ -160,8 +164,13 @@ VIEWS.career = function(){
     careerDraft = JSON.parse(JSON.stringify(p ? (p.normalized || p.raw) : {basic:{},records:[{type:'work',text:''}]}));
   }
   const status = (careerError ? uiNotice('failed',esc(careerError)) : '') +
-    (careerBusy ? uiNotice('note',careerMode===null?'Your Career Agent is extracting job requirements, searching evidence, and assessing coverage. Please wait.':'Your Career Agent is organizing your profile. Please wait.') : '');
+    (careerBusy ? uiNotice('note',careerMode==='report'?'Your Career Agent is generating a grounded resume. Please wait.':careerMode===null?'Your Career Agent is extracting job requirements, searching evidence, and assessing coverage. Please wait.':'Your Career Agent is organizing your profile. Please wait.') : '');
   const button = (text,action)=>uiButton(text,{onclick:`careerRun('${action}')`,attrs:careerBusy?'disabled':''});
+  if(careerMode==='resume'){
+    const job = careerData.jobs.find(j=>j.id===careerJobId);
+    if(job && job.resume) return status + careerResume(job);
+    careerMode = 'report';
+  }
   if(careerMode==='report'){
     const job = careerData.jobs.find(j=>j.id===careerJobId);
     if(job) return status + careerReport(job);
@@ -202,3 +211,39 @@ VIEWS.career = function(){
   return status + uiCard(`<fieldset class="career-fields" ${careerBusy?'disabled':''}>${body}</fieldset>`,{title:careerMode==='onboarding'?'Tell your Career Agent about yourself':'Review your Career Profile'})+
     ((careerData.jobs || []).length ? careerSavedJobs() : '');
 };
+
+function careerActivity(activity){
+  return uiCard((activity || []).map(a=>`<p>${esc(a.stage)}: ${esc(a.status)} ${esc(a.tool || '')} — ${esc(a.result)}</p>`).join('') || '<p>No activity was recorded.</p>',{title:'Career Activity'});
+}
+function careerDownload(){
+  const job = careerData.jobs.find(j=>j.id===careerJobId);
+  const url = URL.createObjectURL(new Blob([job.resume.markdown],{type:'text/markdown;charset=utf-8'}));
+  const link = document.createElement('a'); link.href=url; link.download='tailored-resume.md'; link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function careerPrint(){
+  const theme = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme','light');
+  document.body.classList.add('career-print');
+  try { window.print(); } finally {
+    document.body.classList.remove('career-print');
+    if(theme) document.documentElement.setAttribute('data-theme',theme);
+    else document.documentElement.removeAttribute('data-theme');
+  }
+}
+function careerResume(job){
+  const c = job.resume.content;
+  const labels = {English:['Professional Summary','Skills'],Chinese:['职业概述','技能'],Japanese:['職務要約','スキル']}[job.resume.language];
+  const evidence = ids=>`<details class="career-debug"><summary>View Evidence</summary>${ids.map(id=>{
+    const r=c.evidence[id]; return `<p>${esc(id)}: ${esc(r.normalized.title)}</p><p class="career-source">${esc(r.raw_text)}</p>`;
+  }).join('')}</details>`;
+  const claims = items=>'<ul>'+items.map(claim=>`<li>${esc(claim.text)}${evidence(claim.evidence_ids)}</li>`).join('')+'</ul>';
+  let body = Object.values(c.basic).filter(Boolean).map(v=>`<p>${esc(v)}</p>`).join('');
+  for(const [i,key] of ['summary','skills'].entries()) if(c[key].length) body+=`<h2>${esc(labels[i])}</h2>`+claims(c[key]);
+  for(const record of c.records) body+=`<section><h2>${esc(record.title)}</h2>`+
+    Object.values(record.fields).filter(Boolean).map(v=>`<p>${esc(v)}</p>`).join('')+claims(record.bullets)+'</section>';
+  return (job.resume.outdated || job.outdated || job.status!=='complete' || !careerData.profile.confirmed?uiNotice('warn','This draft uses an earlier confirmed profile or analysis. Confirm your profile and re-run analysis before generating a new draft.'):'')+
+    `<article class="career-resume" lang="${{English:'en',Chinese:'zh',Japanese:'ja'}[job.resume.language]}">${body}</article>`+
+    uiButton('Download Markdown',{onclick:'careerDownload()'})+uiButton('Print / Save as PDF',{onclick:'careerPrint()'})+
+    uiButton('Back to Match Report',{level:'secondary',onclick:"careerMode='report';careerPaint()"})+careerActivity(job.resume.activity);
+}

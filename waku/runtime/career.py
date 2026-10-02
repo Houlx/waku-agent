@@ -91,6 +91,7 @@ def save_raw(conn, raw):
                      (json.dumps(raw, ensure_ascii=False),))
         conn.execute('UPDATE career_evidence SET active=0')
         conn.execute('UPDATE jobs SET outdated=1')
+        conn.execute('UPDATE resumes SET outdated=1')
 
 
 def save_profile(conn, profile, edited=False):
@@ -110,6 +111,7 @@ def save_profile(conn, profile, edited=False):
     with conn:
         if profile != current['normalized']:
             conn.execute('UPDATE jobs SET outdated=1')
+            conn.execute('UPDATE resumes SET outdated=1')
         conn.execute('UPDATE career_profile SET normalized_json=?,user_edits_json=?,confirmed=0, '
                      'updated_at=CURRENT_TIMESTAMP WHERE id=1',
                      (json.dumps(profile, ensure_ascii=False), json.dumps(edits, ensure_ascii=False)))
@@ -172,6 +174,10 @@ def action(conn, payload, settings=None, client=None):
     elif name == 'analyze_job':
         job_id = career_jobs.analyze_job(conn, payload.get('jd'), settings, client, payload.get('job_id'))
         return dict(state(conn), job_id=job_id)
+    elif name == 'generate_resume':
+        from waku.runtime.career_resumes import generate_resume
+
+        generate_resume(conn, payload.get('job_id'), payload.get('language'), settings, client)
     elif name == 'confirm':
         current = state(conn)['profile']
         if not current or not current['normalized']:

@@ -99,7 +99,7 @@ def test_missing_profile_and_unknown_actions(world):
     with pytest.raises(ValueError, match='review'):
         action(world[0], {'action': 'confirm'})
     with pytest.raises(ValueError, match='Unknown Career'):
-        action(world[0], {'action': 'generate_resume'})
+        action(world[0], {'action': 'unknown_action'})
 
 
 def test_provider_failure_preserves_saved_input(world):
