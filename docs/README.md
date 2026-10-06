@@ -51,6 +51,8 @@ into four groups.
   verification results, and stage authorization.
 - [career-agent/CAREER_ONLY_REFACTOR_PLAN.md](career-agent/CAREER_ONLY_REFACTOR_PLAN.md)
   proposes Career-only runtime, backend and frontend cleanup after the MVP.
+- [career-agent/PHASE3_RETIREMENT_AUDIT.md](career-agent/PHASE3_RETIREMENT_AUDIT.md)
+  records verified consumers, retirement candidates and proposed deletion batches.
 
 ## Whiteboards
 
