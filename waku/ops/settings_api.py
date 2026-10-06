@@ -1,9 +1,9 @@
 """The small Settings surface left after Connections owns integrations.
 
-Provider credentials, models, memory backends, search and gateways are managed
-by :mod:`waku.integrations`. This module retains the Experimental and
-Graph-workflows toggles and the model pin action; catalog remains the sole
-owner of pin persistence.
+Provider credentials and models use the transitional integrations facade.
+This module retains dormant general toggle fields and model pin actions until C2;
+catalog remains the sole owner of pin persistence. General feature execution
+retired in C1. Career uses provider_services directly.
 """
 
 from __future__ import annotations

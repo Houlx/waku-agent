@@ -8,7 +8,10 @@ CI runs this suite without API keys.
 Batch B2 removes general judge suites and general-assistant eval construction.
 `make gate` runs the remaining deterministic suite offline and forces live provider
 probes off. It preserves the existing local report format with the judge marked
-"not run". General component checks remain until Batch C retires their backend.
+"not run". Batch C1 retires general feature evals and datasets. Retained loop,
+registry, provider, tracing, config, DB and HTTP/security checks use Career or
+small synthetic components. A test-only legacy SQL fixture proves that Career
+startup preserves dormant general rows and FTS tables.
 Career live evaluation remains explicitly opt-in; the gate never runs it.
 
 ## Shared tracing and usage

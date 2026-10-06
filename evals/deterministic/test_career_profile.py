@@ -5,9 +5,8 @@ import pytest
 
 from evals.helpers import ScriptedClient, response, text_block, tool_block
 from waku.config import Settings
-from waku.db import connect
+from waku.db import connect_career as connect
 from waku.runtime.career import action, state
-from waku.tools import build_registry
 
 
 @pytest.fixture
@@ -50,10 +49,8 @@ def test_journey_persists_raw_and_coarse_evidence(world):
     action(conn, {'action': 'confirm'})
     reopened = connect(settings.home)
     assert state(reopened)['profile']['confirmed']
-    assert reopened.execute('SELECT count(*) FROM facts').fetchone()[0] == 0
-    assert reopened.execute('SELECT count(*) FROM chat_log').fetchone()[0] == 0
-    assert reopened.execute('SELECT count(*) FROM episodes').fetchone()[0] == 0
-    assert all(t['name'] != 'submit_stage_result' for t in build_registry(conn, settings).schemas())
+    tables = {row[0] for row in reopened.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert not {'facts', 'chat_log', 'episodes'} & tables
     trace = ''.join(p.read_text() for p in (settings.home / 'traces').glob('*.jsonl'))
     assert json.loads(trace.splitlines()[0])['type'] == 'turn_start'
     assert (settings.home / 'usage.jsonl').exists()
@@ -135,11 +132,11 @@ def test_dashboard_handlers_use_the_existing_model_and_keep_chat_empty(world, mo
         response([text_block('Done.')])])
     runtime = career_runtime.CareerRuntime(conn=conn, settings=settings, client=client)
     monkeypatch.setattr(career_runtime, '_runtime', runtime)
-    monkeypatch.setattr(dashboard, 'get_agent', lambda: pytest.fail('Career constructed Waku'))
     assert dashboard.career_state()['profile']['normalized'] is None
     assert dashboard.career_action({'action': 'normalize'})['profile']['normalized'] == proposal()
     assert dashboard.career_action({'action': 'confirm'})['profile']['confirmed']
-    assert conn.execute('SELECT count(*) FROM chat_log').fetchone()[0] == 0
+    tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert not {'facts', 'chat_log', 'episodes'} & tables
 
 
 def test_iteration_limit_does_not_publish_partial_stage(world):

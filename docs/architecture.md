@@ -19,10 +19,15 @@ HTTP server without assembling the general Waku assistant. The
 
 Batch B1 removes hosted, upstream examples, lab topics, architecture boards and
 teaching walkthroughs. No Elastic License 2.0 implementation enters the MIT runtime.
-The old app, Session, Memory, tools, MCP, gateways, graph, dashboard, browser agent,
-integration facade and arenas remain physically present until Batch C. Their evals
-retain component checks. Batch B2 removes bundled skills, procedural build
-validation and general-agent eval construction. The environment template reads
+Batch C1 removes Session, conversational Memory, general tools, MCP, gateways,
+voice, graph workflows and arenas. The tools package contains only Career tools
+and the shared registry. The old app refuses general construction before touching
+data. The old dashboard retains its static shell, Career delegation, provider
+facades and trace/SQL/path debugging; retired feature routes return 404.
+Browser-agent, command, connector, settings and integration facades remain for C2.
+The integration registry contains only provider rows and optional OTel. General
+DB initialization is retired; its transitional connector only opens existing data.
+Batch B2 removes bundled skills, procedural build validation and general-agent eval construction. The environment template reads
 the provider registry directly, and the release gate runs offline checks.
 
 Retirement performs no schema migration, runtime-data deletion or stored configuration

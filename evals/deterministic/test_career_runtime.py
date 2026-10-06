@@ -13,7 +13,7 @@ import pytest
 
 from evals.deterministic.test_career_acceptance import JOBS, RAW, AcceptanceClient
 from waku.config import Settings
-from waku.db import connect, connect_career
+from waku.db import connect_career
 from waku.ops import provider_services
 from waku.runtime.career_runtime import CareerRuntime
 
@@ -102,7 +102,8 @@ def snapshot(conn):
 def test_existing_database_values_and_fts_are_preserved(tmp_path):
     settings = Settings(home=tmp_path, model='offline', otel_endpoint='')
     settings.ensure_home()
-    conn = connect(tmp_path)
+    conn = connect_career(tmp_path)
+    conn.executescript((Path(__file__).resolve().parents[1] / 'fixtures' / 'legacy.sql').read_text())
     runtime = CareerRuntime(settings, client=AcceptanceClient(JOBS[0]), conn=conn)
     result = journey(runtime, JOBS[0])
     # Include explicit edits, inactive provenance and both failed/outdated artifacts.

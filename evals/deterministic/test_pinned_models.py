@@ -86,14 +86,11 @@ def test_switching_provider_adopts_its_pinned_default(home, monkeypatch):
     monkeypatch.setenv("GEMINI_API_KEY", "g")
     monkeypatch.setenv("MOONSHOT_API_KEY", "k")
     (home / "models.json").write_text(json.dumps({"pinned": ["kimi:kimi-k3"]}))
-    from waku import integrations
-    from waku.ops import browser_agent
+    from waku.ops import provider_services
 
-    monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
-    monkeypatch.setattr(browser_agent, "current", lambda: type("A", (), {"tracer": type("T", (), {"event": lambda *args: None})()})())
     monkeypatch.setenv("WAKU_PROVIDER", "gemini")
     monkeypatch.setenv("WAKU_MODEL", "gemini-3.5-flash")
-    result = integrations.apply_provider("kimi")
+    result = provider_services.apply_provider("kimi", probe=lambda values: None)
     assert result.ok
     assert os.getenv("WAKU_PROVIDER") == "kimi"
     assert os.getenv("WAKU_MODEL") == "kimi-k3"  # not gemini's model

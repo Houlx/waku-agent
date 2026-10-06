@@ -33,16 +33,16 @@ the rung above cannot do the job:
 
 1. **Extend something that already exists.** A new provider is one table in
    `waku/providers.toml` plus a logo — see
-   [providers-registry.md](../providers-registry.md). A new memory backend
-   matches an existing interface.
+   [providers-registry.md](../providers-registry.md). Career evidence uses its
+   existing persistence and retrieval contracts.
 2. **Product-specific configuration or documentation.** Career does not load
    bundled general-assistant skills. User-installed runtime skills remain user data.
 3. **A CLI and a README.** Waku can already run any program on your machine,
    and a command-line tool with docs beside it costs nothing until it is used.
 4. **A tool behind an extra**: `waku/tools/`, with heavy dependencies gated by
    an extra and off by default.
-5. **A gateway**: one file in `waku/gateway/`. Gateways only move text: in
-   through `waku.respond()` and out again, with no memory, tools or loop logic.
+5. **A product communication boundary** requires an approved proposal. Career
+   uses its explicit HTTP server; general gateways retired in Batch C1.
 6. **A new core tool, as a last resort.** It has to earn its place in every
    prompt.
 
@@ -109,8 +109,8 @@ needs a discussion on an issue first.
 ## 8. Scope and framing
 
 Career Agent is the supported product. The completed V1 contract and approved
-retirement batches govern current work. Retained general backends await Batch C;
-their presence does not authorize new general-assistant features. Preserve
+retirement batches govern current work. Batch C1 retires general feature backends.
+The remaining general facades and static assets await C2. Preserve
 Career behavior and the shared provider, loop, registry and tracing contracts.
 
 Docs name providers neutrally (Anthropic, OpenAI, Gemini, DeepSeek, Kimi, GLM,

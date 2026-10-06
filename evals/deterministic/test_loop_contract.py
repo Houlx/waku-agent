@@ -41,3 +41,25 @@ def test_iteration_limit_bounds_tool_execution():
     assert result.iterations == 3 and "iteration limit" in result.reply
     assert len(calls) == 3
     assert len(client._script) == 1
+
+
+def test_multiple_tools_preserve_call_ids_and_emit_observer_events():
+    """Keep loop/observer assertions formerly exercised through graph nodes."""
+    tools = ToolRegistry()
+    tools.register(Tool('record', 'Record', {}, lambda value: str(value)))
+    client = ScriptedClient([
+        response([tool_block('record', {'value': 2}, 'first'),
+                  tool_block('missing', {}, 'second')], 'tool_use'),
+        response([text_block('Finished.')]),
+    ])
+    messages, events = [], []
+    result = run_loop(client, 'offline', 'Use tools.', messages, tools,
+                      observer=lambda kind, event: events.append((kind, event)))
+    assert result.reply == 'Finished.'
+    assert messages[1]['content'] == [
+        {'type': 'tool_result', 'tool_use_id': 'first', 'content': '2'},
+        {'type': 'tool_result', 'tool_use_id': 'second',
+         'content': "Error: unknown tool 'missing'"},
+    ]
+    assert [kind for kind, _ in events] == ['llm', 'tool', 'tool', 'llm']
+    assert [event for kind, event in events if kind == 'tool'] == result.tool_calls

@@ -15,11 +15,10 @@ with nothing in any log. The key was never the problem; the setting was.
 from __future__ import annotations
 
 import os
-import pathlib
 
 import pytest
 
-from waku import integrations
+from waku.ops import provider_services as integrations
 
 
 @pytest.fixture
@@ -100,15 +99,6 @@ def test_a_key_already_on_file_does_not_adopt_on_its_own(env):
     assert integrations._adoptable(integrations.PROVIDERS["anthropic"], None) is False
 
 
-def test_the_gate_and_the_server_agree_on_what_configured_means(env):
-    """`_provider_can_serve` uses bool(env[key_env]), which is the same test
-    the Models grid colours a card with (integrations.py line ~272). Two
-    definitions of "configured" is how a setup screen and a settings page come
-    to disagree in front of a user."""
-    text = pathlib.Path(integrations.__file__).read_text(encoding="utf-8")
-    body = text[text.index("def _provider_can_serve"):]
-    body = body[:body.index("\ndef ")]
-    assert "os.environ.get(selected.key_env" in body
 
 
 # --- the wiring, which the helpers above do not prove ----------------------
@@ -118,9 +108,7 @@ def _isolated(monkeypatch, tmp_path):
     """apply_provider writes .env and probes a key. Neither belongs in a test."""
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("WAKU_HOME", str(tmp_path / ".waku"))
-    monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
-    from waku.ops import browser_agent
-    monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
+    monkeypatch.setattr(integrations, "probe_provider", lambda values: None)
 
 
 def test_apply_provider_actually_adopts_despite_activate_false(monkeypatch, tmp_path):

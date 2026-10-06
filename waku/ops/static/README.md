@@ -14,7 +14,7 @@ files to change the UI; edit `dashboard.py` to change the server/API.
 ## The Career product
 
 `waku` and `waku career` serve `career.html` through `career_dashboard.py`.
-`make dashboard` starts Career; `make legacy-dashboard` starts the old shell.
+`make dashboard` starts Career. Batch A removes the old-shell Make shortcut.
 The dedicated server allows only `career.html` and its eight Career assets.
 
 `career/` contains small classic scripts sharing the `CA` namespace:
@@ -38,8 +38,9 @@ Busy editors disable inputs while allowing navigation. Settings retains its own
 form and failure state even after the user leaves it.
 
 The Career shell loads no old helper scripts, design files, fonts, mark or favicon.
-MIT helper behavior is adapted with independent appearance. The rollback files
-below remain unchanged for Phase 3. Verify Career with the checked-in
+MIT helper behavior is adapted with independent appearance. The old files
+below remain for C2 asset retirement. C1 removes their general feature backends;
+the old shell no longer supports chat, Memory, graph, voice or arenas. Verify Career with the checked-in
 [browser regression](../../../docs/career.md#run-the-browser-regression) and
 `test_career_assets.py`, which audits the actual loaded graph and its network/timer
 boundary. Real-provider evaluation is separate.

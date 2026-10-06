@@ -8,7 +8,7 @@ here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
 Phase 2 — Career Product Cutover was separately approved and is implemented.
 Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
 product. Phase 3 Batch B1 and Batch B2 consumer closure are implemented.
-Batch C backend deletion has not started.
+Batch C1 feature backend deletion is implemented. C2 and D have not started.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -41,7 +41,7 @@ Profile, JD, report and evidence remain untrusted data.
 
 | File | Responsibility |
 |---|---|
-| `waku/db.py` | Connection mechanics plus separate general/Career initialization |
+| `waku/db.py` | Connection mechanics and Career initialization; dormant legacy data stays untouched |
 | `waku/runtime/career_runtime.py` | Settings, lazy client, connection, serialization and owned cleanup |
 | `waku/ops/career_dashboard.py` | Explicit Career HTTP launch without general startup |
 | `waku/ops/provider_services.py` | Provider-only configuration, rollback and masked readiness |
@@ -781,3 +781,269 @@ Retired paths appear as code rather than links because they no longer exist.
 - `waku/ops/pricing.py`
 - `waku/ops/release_gate.py`
 - `waku/ops/scoring.py`
+
+## Phase 3 Batch C1 feature retirement on 2026-10-06
+
+Batch C1 retires the general feature backend from Batch B2 checkpoint `bd776cb`.
+CareerRuntime, Career coordinators/tools, the Career HTTP/UI, provider services,
+model adapters, run_loop, ToolRegistry and CAREER_SCHEMA remain byte-for-byte
+unchanged. Only test fixtures and dependency/facade closure change their consumers.
+C2 and D have not started. All changes remain uncommitted for review.
+
+### Removed subsystems and data boundary
+
+C1 removes conversational Session, Memory, consolidation/retrieval/slot gates,
+semantic and episodic stores, procedural memory and general SOUL/personality
+execution. C1 removes calendar/Google/Apple, messages, notes, search, GitHub,
+workspace, memory-admin and experimental/delegation tools, plus their registry
+factory and environment helpers. The tools initializer now loads no product tools.
+
+C1 removes MCP client/CLI/OAuth/Memory bridge and their demo server fixture. C1
+removes gateway workers/supervisor, Telegram, Discord, WhatsApp, voice/wake-word,
+webhook behavior and dashboard transcription. C1 removes graph execution/nodes,
+gather/triage/brief and graph command discovery. C1 removes model/memory/judgment
+arenas, comparison history, coding eval, general judges/scoring and their datasets.
+The general demo reset and arena cleaner scripts retire with their final consumers.
+
+General schema creation/migration retires from db.py. Its transitional connect
+function opens existing data without initialization; connect_career still initializes
+only the unchanged Career SQL. A small test-only `evals/fixtures/legacy.sql` provides
+pre-Career calendar/facts/episodes/chat and FTS structures for preservation checks.
+No runtime data, legacy DB tables, chat logs, Memory/SOUL files, installed skills,
+configuration, integration credentials, traces or usage ledger are deleted or migrated.
+
+Preservation evals compare all legacy rows and FTS shadow tables before/after startup,
+query legacy facts/episodes FTS, compare dormant file bytes, preserve older chat columns,
+and retain the existing full Career provenance/artifact/FTS reopening check.
+Verification uses temporary homes and synthetic credentials; no paid/live evaluation runs.
+
+### Mixed tests and retained contracts
+
+- Career profile/jobs/resumes/acceptance fixtures now use connect_career. Assertions
+  require absent general tables rather than empty tables created by retired code.
+  Stage-local tool allowlists, grounding, provenance, coverage and full journeys remain.
+- Career runtime preservation uses the test-only legacy SQL. Its fresh-interpreter
+  import isolation and complete Career journey still reject general imports.
+- `test_loop_contract.py` adds direct multi-tool/call-ID and observer checks that
+  formerly passed through graph nodes. `test_tool_registry.py` tests schemas,
+  unknown tools, argument/handler errors, recovery and progress observers with
+  synthetic tools. No general implementation is retained to serve these tests.
+- `test_model_errors.py` retains stream refusal/fallback and error-text behavior;
+  graph-specific assertions retire. Adoption, regional endpoint saves, pinned
+  defaults and provider switching now call provider_services directly.
+  `test_session_rotation.py` replaces a vacuous facade test with actual persistence
+  and resolved-model assertions. Its filename remains historical.
+- `test_integrations.py` retains provider masking, registry and OTel probe checks;
+  calendar/Apple/Notion/search-specific assertions retire. Home/dotenv guarantees
+  remain while MCP/demo reset assertions retire from the mixed home file.
+- The old dashboard route file retains the model catalog response check. New
+  `test_c1_retirement.py` verifies retired modules/extras, inert assembly, dormant
+  data preservation, retired-route 404s and retained SQL/static/path confinement.
+- Trace UTF-8, config, provider adapters/registry, HTTP security, distribution,
+  license, design/brand and retained static asset contracts remain. Dormant
+  general-toggle facade checks and old static checks remain for C2 closure.
+
+### Dependencies
+
+C1 removes the exclusive extras `telegram`, `discord`, `whatsapp`, `gcal`, `voice`,
+`voice-neural`, `supabase`, `arena`, `notion` and `mcp`. The remaining extras are
+`eval`, `dev` and `tracing`. Anthropic/OpenAI clients, dotenv and rich remain unchanged.
+Provider catalogs, optional OTel/Phoenix and build/eval tooling remain supported.
+
+The resolver regenerates uv.lock and removes 135 unreachable packages. It adds
+no package and changes no retained package version. No transitive entry is pruned
+manually. Offline resolution initially lacks cached metadata; successful resolution
+uses the package index. Root project/lock extra metadata agrees.
+
+### Verification
+
+The final release gate passes 605 deterministic tests with 13 skips, including
+146 Career checks and the opt-in Chromium journey. Twelve Career Make dry-run
+checks skip because make is unavailable. One live provider probe stays disabled;
+no paid evaluation runs.
+The environment lacks make, so verification runs its exact gate target command,
+`.venv/bin/python -m waku.ops.release_gate`, with a new temporary WAKU_HOME. The gate
+forces live provider probes off and records `judge: not run`.
+
+Ruff, environment-example validation, every current Career/old-dashboard JavaScript
+syntax check, rulebook/document links, distribution/license/design checks and
+`git diff --check` pass. Wheel and source archive builds pass. The source archive
+rebuilds a wheel. Isolated installations of both wheels pass default and explicit
+Career launches, all nine shell/static assets against repository bytes, Career state,
+rejected general/static routes, lazy client initialization and owned shutdown.
+Both wheels retain MIT, brand and all three OFL notices, and omit retired feature
+modules. Installed smoke checks assert that app and old dashboard never import.
+
+Four in-memory mutations disable tool execution, suppress loop observers, widen
+the iteration bound or rewrite a legacy Memory row. Each regression rejects its
+mutation. No mutation edits implementation files or user data.
+
+The interruption recovery compares staged/unstaged/new/deleted paths against B2;
+no changes are staged. Thirty focused checks pass before implementation resumes.
+The last pre-interruption full run has 604 passes, 13 skips and one incorrect test
+expectation for Gemini's secondary model. The expectation is already corrected in
+the recovered tree. The installed smoke harness initially checks a runtime's cleared
+connection attribute; the corrected harness retains the owned connection reference
+and verifies it is closed. These are verification fixes, not Career behavior changes.
+
+### Exact remaining general modules and consumers for C2
+
+| Module | Remaining production consumer | Remaining eval consumers |
+|---|---|---|
+| `waku/app.py` | None; Waku constructor refuses before touching data | `test_c1_retirement.py` |
+| `waku/ops/dashboard.py` | Direct module launch only; old static shell, provider/debug routes and Career delegates remain | Career profile/jobs/resumes facade checks; `test_c1_retirement.py`, `test_dashboard_bind.py`, `test_design_system.py`, `test_trace_encoding.py` |
+| `waku/ops/browser_agent.py` | `waku/integrations.py` uses current/rebuild and the provider singleton seam | `test_c1_retirement.py`, `test_career_runtime.py` |
+| `waku/integrations.py` | Old dashboard uses provider/OTel registry, masked health and apply operations | `test_career_runtime.py`, `test_connections_cli.py`, `test_integrations.py`, `test_platform_provider.py`, `test_provider_base_urls.py`, `test_provider_disabled.py`, `test_static_assets.py` |
+| `waku/connect.py` | None; connector table is empty and calls report retirement | None |
+| `waku/ops/commands.py` | None; discovery is empty and no runner imports occur | `test_c1_retirement.py` |
+| `waku/ops/settings_api.py` | Old dashboard uses masked provider display, pin actions and dormant toggle saves | `test_experimental_toggle.py`, `test_graph_flag.py`, `test_pinned_models.py`, `test_platform_provider.py`, `test_provider_disabled.py` |
+
+The old shell still ships `static/index.html`, `static/style.css`, `static/js/`,
+logos/mark and protected design/font assets. Its retired feature controls are
+unsupported. C2 must retire that shell and close its static, design, brand and
+font-license consumers. Protected copied design files remain unchanged.
+
+The transitional db.connect has no retained callsites. Config retains dormant
+legacy dataclass fields, and ensure_home still creates the unused outbox folder.
+The settings facade retains general toggle writes. These are C2/D closure items;
+C1 does not simplify configuration/provider semantics. Pricing retains catalog
+remember_price, price tables and aggregation utilities. `test_providers.py` still
+checks price/cutoff contracts. C2/D must prove remaining
+consumer closure before deleting shared price/default-pin support. The generic
+trace viewer and retained debugging guarantees remain shared infrastructure.
+
+### Scope closure and audit discrepancies
+
+No blocker prevents C1 completion. Keeping the C2 files importable requires
+removing their eager/feature imports, general construction bodies and feature
+routes. The old dashboard therefore loses feature handlers and gateway startup;
+its shell, HTTP server, provider facades and generic debugging remain. App and
+browser-agent construction refuse explicitly. Connect and command facades become
+inert. Integrations sheds feature registry rows/probes and gateway callbacks, but
+retains provider/OTel behavior. This closes actual dependencies without a new facade
+architecture or Career feature. Final facade/asset removal remains C2.
+
+The audit's feature dependency inventory matches the deletion set after A/B
+consumer closure. Additional test-only couplings are general DB initialization
+and build_registry inside Career fixtures, the vacuous provider-switch assertion,
+and MCP/demo reset assertions mixed with home tests. The old dashboard's eager
+arena import and integrations' eager Notion normalization require transition edits.
+General schema creation retires to a test fixture rather than dropping legacy tables.
+No repository-wide audit is repeated. B1/B2 already closed hosted, teaching,
+bundled-skill and release-judge consumers; their historical audit descriptions
+remain historical. C1 does not begin C2 or D.
+
+### Removed file inventory
+
+The following 109 tracked files retire in C1. Deleted paths use code formatting
+because they no longer exist. The entire memory, gateway and graph directories retire.
+
+- `evals/coding.jsonl`
+- `evals/dataset.jsonl`
+- `evals/deterministic/test_apple_calendar.py`
+- `evals/deterministic/test_apple_tools.py`
+- `evals/deterministic/test_applescript_cold_start.py`
+- `evals/deterministic/test_browser_agent.py`
+- `evals/deterministic/test_cli_memory.py`
+- `evals/deterministic/test_coding_eval.py`
+- `evals/deterministic/test_compare_history.py`
+- `evals/deterministic/test_connect_command.py`
+- `evals/deterministic/test_consolidation.py`
+- `evals/deterministic/test_delegate.py`
+- `evals/deterministic/test_delegate_env.py`
+- `evals/deterministic/test_discord_access.py`
+- `evals/deterministic/test_episodic_store_switch.py`
+- `evals/deterministic/test_fact_mirror.py`
+- `evals/deterministic/test_fact_store_conformance.py`
+- `evals/deterministic/test_gateway_runner.py`
+- `evals/deterministic/test_gateway_supervisor.py`
+- `evals/deterministic/test_gather_workflow.py`
+- `evals/deterministic/test_gcal_oauth.py`
+- `evals/deterministic/test_gh_tool.py`
+- `evals/deterministic/test_google_calendar.py`
+- `evals/deterministic/test_graph_engine.py`
+- `evals/deterministic/test_graph_nodes.py`
+- `evals/deterministic/test_graph_stream.py`
+- `evals/deterministic/test_graph_topology_payload.py`
+- `evals/deterministic/test_judge.py`
+- `evals/deterministic/test_judgment_arena.py`
+- `evals/deterministic/test_list_events.py`
+- `evals/deterministic/test_mcp_cli.py`
+- `evals/deterministic/test_mcp_transport.py`
+- `evals/deterministic/test_memory_arena.py`
+- `evals/deterministic/test_memory_search.py`
+- `evals/deterministic/test_notion_episodes.py`
+- `evals/deterministic/test_retrieval_gate.py`
+- `evals/deterministic/test_scoring.py`
+- `evals/deterministic/test_slash_commands.py`
+- `evals/deterministic/test_slot_gate.py`
+- `evals/deterministic/test_speakable.py`
+- `evals/deterministic/test_triage_workflow.py`
+- `evals/deterministic/test_wake_word.py`
+- `evals/deterministic/test_waku_memory_connect.py`
+- `evals/deterministic/test_working_memory.py`
+- `evals/deterministic/test_workspace.py`
+- `evals/fixtures/mcp_demo_server.py`
+- `evals/memory_arena.json`
+- `scripts/arena_clean.py`
+- `scripts/demo_seed.py`
+- `waku/gateway/__init__.py`
+- `waku/gateway/cli.py`
+- `waku/gateway/discord.py`
+- `waku/gateway/runner.py`
+- `waku/gateway/supervisor.py`
+- `waku/gateway/telegram.py`
+- `waku/gateway/voice.py`
+- `waku/gateway/whatsapp.py`
+- `waku/graph/__init__.py`
+- `waku/graph/engine.py`
+- `waku/graph/nodes.py`
+- `waku/graph/workflows/__init__.py`
+- `waku/graph/workflows/gather.py`
+- `waku/graph/workflows/triage.py`
+- `waku/memory/__init__.py`
+- `waku/memory/consolidation.py`
+- `waku/memory/episodic/__init__.py`
+- `waku/memory/episodic/notion_store.py`
+- `waku/memory/episodic/store.py`
+- `waku/memory/jev.py`
+- `waku/memory/procedural/__init__.py`
+- `waku/memory/procedural/exporter.py`
+- `waku/memory/procedural/installer.py`
+- `waku/memory/procedural/loader.py`
+- `waku/memory/retrieval_gate.py`
+- `waku/memory/semantic/__init__.py`
+- `waku/memory/semantic/base.py`
+- `waku/memory/semantic/langmem_store.py`
+- `waku/memory/semantic/mem0_store.py`
+- `waku/memory/semantic/store.py`
+- `waku/memory/semantic/supabase_store.py`
+- `waku/memory/semantic/zep_store.py`
+- `waku/memory/slot_gate.py`
+- `waku/ops/arena.py`
+- `waku/ops/brief.py`
+- `waku/ops/coding_eval.py`
+- `waku/ops/compare_history.py`
+- `waku/ops/gather.py`
+- `waku/ops/judge.py`
+- `waku/ops/judgment_arena.py`
+- `waku/ops/judgment_cases.py`
+- `waku/ops/memory_arena.py`
+- `waku/ops/scoring.py`
+- `waku/ops/triage.py`
+- `waku/runtime/session.py`
+- `waku/tools/_env.py`
+- `waku/tools/apple.py`
+- `waku/tools/calendar.py`
+- `waku/tools/experimental.py`
+- `waku/tools/github.py`
+- `waku/tools/google_calendar.py`
+- `waku/tools/mcp_cli.py`
+- `waku/tools/mcp_client.py`
+- `waku/tools/mcp_oauth.py`
+- `waku/tools/memory_admin.py`
+- `waku/tools/messages.py`
+- `waku/tools/notes.py`
+- `waku/tools/search.py`
+- `waku/tools/waku_memory.py`
+- `waku/tools/workspace.py`

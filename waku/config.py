@@ -135,7 +135,7 @@ class Settings:
     api_key: str = field(default_factory=lambda: os.getenv("WAKU_API_KEY", ""))
     base_url: str | None = field(default_factory=lambda: os.getenv("WAKU_BASE_URL") or None)
     model: str = field(default_factory=lambda: os.getenv("WAKU_MODEL", ""))
-    # Cheap model used by the retrieval gate and the consolidation summarizer.
+    # Secondary provider model retained for configuration compatibility.
     small_model: str = field(default_factory=lambda: os.getenv("WAKU_SMALL_MODEL", ""))
     # Providers the user turned off in the dashboard (comma-separated ids).
     # Disabled providers are hidden from pickers/switchers; the ACTIVE provider
@@ -164,7 +164,7 @@ class Settings:
     # Telegram session) resends its whole history every turn until it explodes.
     history_turns: int = field(default_factory=lambda: int(os.getenv("WAKU_HISTORY_TURNS", "12")))
 
-    # --- Memory
+    # --- Dormant general-feature compatibility fields (retired behavior; C2/D cleanup)
     # Consolidate (distill chats into durable facts) only after N new exchanges.
     consolidate_every: int = field(default_factory=lambda: int(os.getenv("WAKU_CONSOLIDATE_EVERY", "6")))
     retrieval_top_k: int = field(default_factory=lambda: int(os.getenv("WAKU_RETRIEVAL_TOP_K", "4")))

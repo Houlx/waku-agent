@@ -29,7 +29,7 @@ caps it at 100 lines, so the detail lives in the files it points to.
 
 1. **Never wipe runtime data without asking.** Anything that clears `.waku/`
    (memory, calendar, chat log, traces, the `usage.jsonl` spend ledger),
-   `scripts/demo_seed.py` included, needs the user's explicit yes right before
+   including any reset script, needs the user's explicit yes right before
    each run. A yes never carries over to the next run.
 2. **Never touch secrets in `waku/`,** the code that runs on a person's own
    machine: no hidden network calls, nothing reads or sends `.env` or keys, and

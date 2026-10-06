@@ -15,8 +15,9 @@ Career Agent is the sole supported product. The installed `waku` command and
 Unsupported commands and extra arguments exit with status 1 before runtime startup.
 Phase 3 Batch A removes `dashboard`, `chat`, `connections`, `connect`, `voice`,
 `telegram`, `discord`, `whatsapp`, `brief`, `gather`, `mcp` and all `skill`
-installation/export dispatch. Their backend implementations remain for later
-retirement batches. Batch B1 closes the former hosted dashboard consumer.
+installation/export dispatch. Batch C1 removes their feature backends. The old
+dashboard and provider facades remain for C2; general assistant construction
+refuses immediately. Batch B1 closes the former hosted dashboard consumer.
 
 ## make
 

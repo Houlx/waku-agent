@@ -9,7 +9,7 @@ import pytest
 from evals.career import DIMENSIONS, calibration, evaluate, fixtures, run_scenario
 from evals.helpers import ScriptedClient, response, text_block, tool_block
 from waku.config import Settings
-from waku.db import connect
+from waku.db import connect_career as connect
 from waku.runtime.career import action
 from waku.runtime.career_jobs import EXTRACTION_SCHEMA, run_stage
 
@@ -106,8 +106,8 @@ def test_complete_fixture_journey(tmp_path, job, closed_spans):
     assert 'Queries: RAG; retrieval augmented generation' in searches[0]['result']
     assert 'returned 3 records' in searches[0]['result']
     assert json.loads(conn.execute('SELECT raw_input_json FROM career_profile').fetchone()[0]) == RAW
-    for table in ('facts', 'episodes', 'chat_log'):
-        assert conn.execute(f'SELECT count(*) FROM {table}').fetchone()[0] == 0
+    tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert not {'facts', 'episodes', 'chat_log'} & tables
     traces = [json.loads(line) for p in (tmp_path / 'traces').glob('*.jsonl') for line in p.read_text().splitlines()]
     assert sum(e['type'] == 'turn_start' for e in traces) == sum(e['type'] == 'turn_end' for e in traces) == 4
     assert 'Private assistant scratchpad' not in json.dumps(traces)
@@ -186,7 +186,7 @@ def test_live_evaluation_uses_isolated_career_databases(tmp_path, monkeypatch, i
     import sqlite3
 
     from evals import career
-    from waku import config, db
+    from waku import config
     from waku.loop import models
 
     original_home = tmp_path / 'original-home'
@@ -195,7 +195,6 @@ def test_live_evaluation_uses_isolated_career_databases(tmp_path, monkeypatch, i
     monkeypatch.setattr(config, 'load_settings', lambda: Settings(
         home=original_home, model='offline', otel_endpoint=''))
     monkeypatch.setattr(career.tempfile, 'mkdtemp', lambda **kwargs: str(live_home))
-    monkeypatch.setattr(db, '_migrate', lambda conn: pytest.fail('General database migration ran'))
 
     class ScenarioClient(AcceptanceClient):
         def create(self, **kwargs):

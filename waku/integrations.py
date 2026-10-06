@@ -12,7 +12,6 @@ import json
 import os
 import socket
 import sys
-import urllib.request
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
@@ -21,7 +20,6 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from waku.loop.models import PROVIDERS, Provider
-from waku.memory.episodic.notion_store import normalize_database_id
 
 
 class IntegrationState(StrEnum):
@@ -128,137 +126,7 @@ class ApplyResult:
     can_force: bool = False
 
 
-def _positive_int(values: dict[str, str]) -> dict[str, str]:
-    value = values.get("DISCORD_MAX_TURNS_PER_HOUR", "")
-    if value:
-        try:
-            if int(value) <= 0:
-                raise ValueError
-        except ValueError:
-            raise ValueError("DISCORD_MAX_TURNS_PER_HOUR must be a positive integer") from None
-    return values
-
-
-def _notion_normalize(values: dict[str, str]) -> dict[str, str]:
-    value = values.get("NOTION_EPISODES_DATABASE_ID", "")
-    if value:
-        values["NOTION_EPISODES_DATABASE_ID"] = normalize_database_id(value)
-    return values
-
-
-def _darwin(env: Mapping[str, str]) -> bool:
-    return sys.platform == "darwin" and bool(env.get("WAKU_APPLE_CALENDAR"))
-
-
-def _darwin_tools(env: Mapping[str, str]) -> bool:
-    return sys.platform == "darwin" and bool(env.get("WAKU_APPLE_TOOLS"))
-
-
 INTEGRATIONS: tuple[Integration, ...] = (
-    Integration("telegram", "Channels", "Telegram", "Lets Waku receive and send Telegram messages.",
-                (EnvField("TELEGRAM_BOT_TOKEN", "Bot token", required=True, secret=True),
-                 EnvField("TELEGRAM_ALLOWED_USER", "Allowed user")), "telegram", "telegram",
-                "https://t.me/BotFather", ReloadMode.GATEWAY,
-                lambda env: bool(env.get("TELEGRAM_BOT_TOKEN")), None),
-    Integration("discord", "Channels", "Discord", "Lets Waku answer in a Discord server.",
-                (EnvField("DISCORD_BOT_TOKEN", "Bot token", required=True, secret=True),
-                 EnvField("DISCORD_ALLOWED_USER", "Allowed user"),
-                 EnvField("DISCORD_ALLOWED_CHANNEL", "Allowed channel"),
-                 EnvField("DISCORD_REQUIRE_MENTION", "Require mention", FieldKind.BOOL),
-                 EnvField("DISCORD_MAX_TURNS_PER_HOUR", "Max turns per hour"),
-                 EnvField("DISCORD_HOME", "Workspace directory")), "discord", "discord", "",
-                ReloadMode.GATEWAY, lambda env: bool(env.get("DISCORD_BOT_TOKEN")), None,
-                _positive_int),
-    Integration("whatsapp", "Channels", "WhatsApp", "Lets Waku answer WhatsApp messages via the Meta Cloud API.",
-                (EnvField("WHATSAPP_TOKEN", "Access token", required=True, secret=True),
-                 EnvField("WHATSAPP_PHONE_NUMBER_ID", "Phone number ID", required=True),
-                 EnvField("WHATSAPP_APP_SECRET", "App secret", required=True, secret=True),
-                 EnvField("WHATSAPP_VERIFY_TOKEN", "Webhook verify token", required=True, secret=True),
-                 EnvField("WHATSAPP_ALLOWED_PHONE", "Allowed phone",
-                          help="Without '+' prefix. Empty = answer anyone.")),
-                "whatsapp", "httpx", "https://developers.facebook.com/apps",
-                ReloadMode.GATEWAY, lambda env: bool(env.get("WHATSAPP_TOKEN")), None),
-    Integration("google_calendar", "Calendar & Productivity", "Google Calendar",
-                "Lets Waku create and update Google Calendar events.",
-                (EnvField("WAKU_GOOGLE_CALENDAR", "Enable Google Calendar", FieldKind.BOOL),
-                 EnvField("WAKU_GOOGLE_CALENDAR_ID", "Calendar ID", default="primary")),
-                "gcal", "googleapiclient", "https://developers.google.com/calendar/api/quickstart/python",
-                ReloadMode.AGENT, lambda env: bool(env.get("WAKU_GOOGLE_CALENDAR")), None),
-    Integration("apple_calendar", "Calendar & Productivity", "Apple Calendar",
-                "Lets Waku work with Apple Calendar on this Mac.",
-                (EnvField("WAKU_APPLE_CALENDAR", "Enable Apple Calendar", FieldKind.BOOL),
-                 EnvField("WAKU_APPLE_CALENDARS", "Calendars")), None, None, "", ReloadMode.AGENT,
-                _darwin, None),
-    Integration("apple_tools", "Calendar & Productivity", "Apple Tools",
-                "Lets Waku use Apple Mail and other local Apple tools.",
-                (EnvField("WAKU_APPLE_TOOLS", "Enable Apple tools", FieldKind.BOOL),), None, None,
-                "", ReloadMode.AGENT, _darwin_tools, None),
-    Integration("notion", "Memory & Storage", "Notion", "Stores episodic memory in a Notion database.",
-                (EnvField("WAKU_EPISODIC_STORE", "Episodic store", FieldKind.CHOICE,
-                          default="sqlite", options=("sqlite", "notion")),
-                 EnvField("NOTION_TOKEN", "Integration token", required=True, secret=True),
-                 EnvField("NOTION_EPISODES_DATABASE_ID", "Episodes database ID", required=True)),
-                "notion", "notion_client", "https://www.notion.so/my-integrations", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_EPISODIC_STORE") == "notion", None, _notion_normalize),
-    Integration("mem0", "Memory & Storage", "Mem0", "Stores semantic memory in the Mem0 service.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
-                          default="sqlite", options=("sqlite", "mem0")),
-                 EnvField("MEM0_API_KEY", "API key", required=True, secret=True,
-                          help="From app.mem0.ai. The adapter sends infer=False so add() always "
-                               "stores — a bake-off against it measures retrieval, not Mem0's "
-                               "own extraction step."),
-                 EnvField("MEM0_USER_ID", "User id", help="Defaults to 'waku'. Change it only if "
-                                                          "several people share one Mem0 account.")),
-                "arena", "mem0", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "mem0", None),
-    Integration("zep", "Memory & Storage", "Zep", "Stores semantic memory in a Zep temporal graph.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
-                          default="sqlite", options=("sqlite", "zep")),
-                 EnvField("ZEP_API_KEY", "API key", required=True, secret=True,
-                          help="From getzep.com. Facts become graph edges with validity dates, so a "
-                               "correction supersedes the old value instead of ranking beside it — "
-                               "the one backend built for the update test."),
-                 EnvField("ZEP_USER_ID", "User id", help="Defaults to 'waku'. Zep scopes a graph per user."),
-                 EnvField("ZEP_MAX_WAIT_SECONDS", "Max wait (s)",
-                          help="Ingestion is asynchronous: graph.add returns in ~0.2s with the episode "
-                               "unprocessed, and the text is not searchable until Zep has turned it into "
-                               "nodes and edges. Waku polls until it has, up to this long. Default 120 — "
-                               "raise it if seeding times out, never lower it to make a benchmark finish.")),
-                "arena", "zep_cloud", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "zep", None),
-    Integration("langmem", "Memory & Storage", "LangMem",
-                "Stores semantic memory in a LangGraph store via LangMem.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
-                          default="sqlite", options=("sqlite", "langmem")),
-                 EnvField("WAKU_LANGMEM_POSTGRES", "Postgres URL",
-                          help="Optional. Without it LangGraph's InMemoryStore is used, which its own "
-                               "docs describe as a reference implementation whose data dies with the "
-                               "process — fine for a benchmark run, not a persistence story."),
-                 EnvField("OPENAI_API_KEY", "OpenAI key", required=True, secret=True,
-                          help="LangMem has no key of its own; it bills through embeddings. Semantic "
-                               "search needs this or the store is a plain key-value dict.")),
-                "arena", "langmem", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "langmem", None),
-    Integration("supabase", "Memory & Storage", "Supabase", "Stores semantic memory in Supabase pgvector.",
-                (EnvField("WAKU_SEMANTIC_STORE", "Semantic store", FieldKind.CHOICE,
-                          default="sqlite", options=("sqlite", "supabase")),
-                 EnvField("SUPABASE_URL", "Project URL", required=True),
-                 EnvField("SUPABASE_SERVICE_KEY", "Service key", required=True, secret=True,
-                          help="Embeddings also require OPENAI_API_KEY (optionally OPENAI_EMBED_MODEL).")),
-                "supabase", "supabase", "", ReloadMode.AGENT,
-                lambda env: env.get("WAKU_SEMANTIC_STORE") == "supabase", None),
-    Integration("tavily", "Search & Observability", "Tavily", "Lets Waku search the web.",
-                (EnvField("TAVILY_API_KEY", "API key", secret=True),), None, None,
-                "https://tavily.com", ReloadMode.LIVE, lambda env: bool(env.get("TAVILY_API_KEY")), None),
-    # Spec 005: Jev decides which memories earn a slot. Both fields, or it
-    # stays off: WAKU_SLOT_GATE=jev is the switch, the key is the credential.
-    Integration("typesafe", "Memory & Storage", "TypeSafe Jev",
-                "Lets Jev decide which memories earn a place in each answer.",
-                (EnvField("TYPESAFE_API_KEY", "API key", secret=True),
-                 EnvField("WAKU_SLOT_GATE", "Set to jev to turn it on")), None, None,
-                "https://typesafe.ai", ReloadMode.LIVE,
-                lambda env: env.get("WAKU_SLOT_GATE") == "jev" and bool(env.get("TYPESAFE_API_KEY")),
-                None),
     Integration("otel", "Search & Observability", "OpenTelemetry", "Exports traces to an OTLP collector.",
                 (EnvField("OTEL_EXPORTER_OTLP_ENDPOINT", "OTLP endpoint"),), "tracing", "opentelemetry",
                 "", ReloadMode.AGENT, lambda env: bool(env.get("OTEL_EXPORTER_OTLP_ENDPOINT")), None),
@@ -304,8 +172,6 @@ def _env_example_provider_integrations() -> tuple[Integration, ...]:
 # T2 implementation: the cache path mirrors waku.ops.catalog's .waku storage.
 _IMPORT_OK: dict[str, bool] = {}
 _HEALTH: dict[str, IntegrationStatus] | None = None
-_gateway_status_provider: Callable[[str], IntegrationStatus | None] | None = None
-_gateway_reloader: Callable[[set[str]], dict[str, IntegrationStatus]] | None = None
 
 
 def _health_path() -> Path:
@@ -367,16 +233,6 @@ def invalidate_health(key: str) -> None:
     _save_health()
 
 
-def register_gateway_status_provider(fn: Callable[[str], IntegrationStatus | None]) -> None:
-    global _gateway_status_provider
-    _gateway_status_provider = fn
-
-
-def register_gateway_reloader(fn: Callable[[set[str]], dict[str, IntegrationStatus]]) -> None:
-    global _gateway_reloader
-    _gateway_reloader = fn
-
-
 def _configured(field: EnvField, value: str) -> bool:
     if field.kind is FieldKind.BOOL:
         return value not in ("", "0")
@@ -395,10 +251,6 @@ def _status(integration: Integration, env: Mapping[str, str]) -> IntegrationStat
         return IntegrationStatus(IntegrationState.INSTALLED_BUT_UNCONFIGURED, f"missing {', '.join(missing)}")
     if integration.import_name and not _extra_installed(integration.import_name):
         return IntegrationStatus(IntegrationState.INSTALLED_BUT_UNCONFIGURED, f"missing {integration.extra} extra")
-    if integration.reload is ReloadMode.GATEWAY and _gateway_status_provider:
-        status = _gateway_status_provider(integration.key)
-        if status is not None:
-            return status
     # Everything required is present and the extra is installed. Whether it
     # actually WORKS is a separate question, answered only by a probe — so the
     # honest answer when no probe has run is "configured", not "needs setup".
@@ -484,28 +336,6 @@ def cli_main() -> int:
         if status.state is IntegrationState.ERROR and any(field.configured for field in view.fields):
             failed = True
 
-    from waku.config import (
-        DOTENV_PATH,
-        HOME_DOTENV_PATH,
-        describe_home,
-        home_notice,
-        load_settings,
-        resolve_home,
-    )
-    from waku.tools.waku_memory import status as waku_memory_status
-
-    # Where this run keeps its memory, and which .env files supplied the keys.
-    console.print("\n[bold]Home[/bold]")
-    console.print(f"  {'Memory folder':<20} {describe_home(resolve_home())}", markup=False)
-    env_files = ", ".join(path for path in (DOTENV_PATH, HOME_DOTENV_PATH) if path) or "none found"
-    console.print(f"  {'.env read':<20} {env_files}", markup=False)
-    if notice := home_notice():
-        console.print(f"  {notice}", markup=False)
-
-    # Waku Memory is not an .env field like the rows above: it is a server in
-    # mcp.json with a sign-in token beside it, so its line comes from there.
-    console.print("\n[bold]Shared memory[/bold]")
-    console.print(f"  {'Waku Memory':<20} {waku_memory_status(load_settings().home)}", markup=False)
     return int(failed)
 
 
@@ -525,42 +355,6 @@ def _safe_error(exc: Exception, values: Mapping[str, str], integration: Integrat
         if field.secret and (secret := values.get(field.name)):
             message = message.replace(secret, "***")
     return message or "connection test failed"
-
-
-def _notion_probe(values: Mapping[str, str]) -> None:
-    from waku.memory.episodic.notion_store import NotionEpisodeStore
-
-    NotionEpisodeStore(values.get("NOTION_TOKEN"), values.get("NOTION_EPISODES_DATABASE_ID"))
-
-
-def _google_calendar_probe(values: Mapping[str, str]) -> None:
-    from waku.config import load_settings
-    from waku.tools import calendar
-
-    calendar.probe_google_calendar(
-        load_settings().home,
-        values.get("WAKU_GOOGLE_CALENDAR_ID", "") or "primary",
-    )
-
-
-def _apple_calendar_probe(values: Mapping[str, str]) -> None:
-    from waku.tools import calendar
-
-    calendar.probe_apple_calendar()
-
-
-def _apple_tools_probe(values: Mapping[str, str]) -> None:
-    from waku.tools import apple
-
-    apple.probe_apple_tools()
-
-
-def _tavily_probe(values: Mapping[str, str]) -> None:
-    body = json.dumps({"api_key": values.get("TAVILY_API_KEY", ""), "query": "health check", "max_results": 1}).encode()
-    request = urllib.request.Request("https://api.tavily.com/search", body, {"Content-Type": "application/json"})
-    with urllib.request.urlopen(request, timeout=10) as response:  # noqa: S310 - fixed provider endpoint
-        if response.status >= 300:
-            raise ValueError(f"Tavily returned HTTP {response.status}")
 
 
 def _otel_probe(values: Mapping[str, str]) -> None:
@@ -594,16 +388,6 @@ def _provider_probe(values: Mapping[str, str]) -> None:
 
 
 def _probed(integration: Integration) -> Integration:
-    if integration.key == "apple_calendar":
-        return Integration(**{**integration.__dict__, "probe": _apple_calendar_probe})
-    if integration.key == "apple_tools":
-        return Integration(**{**integration.__dict__, "probe": _apple_tools_probe})
-    if integration.key == "google_calendar":
-        return Integration(**{**integration.__dict__, "probe": _google_calendar_probe})
-    if integration.key == "notion":
-        return Integration(**{**integration.__dict__, "probe": _notion_probe})
-    if integration.key == "tavily":
-        return Integration(**{**integration.__dict__, "probe": _tavily_probe})
     if integration.key == "otel":
         return Integration(**{**integration.__dict__, "probe": _otel_probe})
     return integration
@@ -696,22 +480,13 @@ def apply_integration(key: str, values: Mapping[str, str], clear: tuple[str, ...
 
             if error := browser_agent.rebuild():
                 raise RuntimeError(error)
-        elif integration.reload is ReloadMode.GATEWAY and _gateway_reloader:
-            statuses = _gateway_reloader({key})
-            status = statuses.get(key)
-            if status and status.state is IntegrationState.ERROR:
-                raise RuntimeError(status.message or "gateway failed to start")
-            if status:
-                record_health(key, status)
         if force:
             record_health(key, IntegrationStatus(IntegrationState.ERROR, "Saved without a successful test"))
-        elif tested or integration.reload is ReloadMode.GATEWAY:
+        elif tested:
             record_health(key, IntegrationStatus(IntegrationState.CONNECTED))
     except Exception as exc:
         _restore(path, contents, before)
         record_health(key, IntegrationStatus(IntegrationState.ERROR, _safe_error(exc, merged, integration)))
-        if integration.reload is ReloadMode.GATEWAY and _gateway_reloader:
-            _gateway_reloader({key})
         return ApplyResult(False, error=_safe_error(exc, merged, integration))
     return ApplyResult(True, _current_view(key))
 

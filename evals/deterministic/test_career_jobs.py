@@ -8,10 +8,9 @@ import pytest
 
 from evals.helpers import response, text_block, tool_block
 from waku.config import Settings
-from waku.db import connect
+from waku.db import connect_career as connect
 from waku.runtime.career import action, save_profile, state
 from waku.runtime.career_jobs import calculate_match_score, validate_extraction, validate_match
-from waku.tools import build_registry
 from waku.tools.career import get_evidence, search_career_evidence
 
 FIXTURES = json.loads((Path(__file__).parents[1] / 'fixtures/career_jobs.json').read_text())
@@ -105,9 +104,8 @@ def test_four_jobs_persist_explainable_reports(world, fixture):
     assert job['report']['evidence']['career-software']['raw_text'] == world[2]['records'][0]['text']
     reopened = connect(world[1].home)
     assert state(reopened)['jobs'] == result['jobs']
-    assert reopened.execute('SELECT count(*) FROM chat_log').fetchone()[0] == 0
-    assert reopened.execute('SELECT count(*) FROM facts').fetchone()[0] == 0
-    assert reopened.execute('SELECT count(*) FROM episodes').fetchone()[0] == 0
+    tables = {row[0] for row in world[0].execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert not {'facts', 'chat_log', 'episodes'} & tables
     assert reopened.execute('SELECT count(*) FROM resumes').fetchone()[0] == 0
     reopened.close()
     for call in client.calls:
@@ -115,7 +113,6 @@ def test_four_jobs_persist_explainable_reports(world, fixture):
         assert exposed == ({'submit_stage_result'} if 'Extract atomic' in call['system']
                            else {'submit_stage_result', 'search_career_evidence', 'get_evidence'})
         assert call['max_tokens'] == 4096
-    assert not {'search_career_evidence', 'get_evidence'} & {t['name'] for t in build_registry(world[0], world[1]).schemas()}
     traces = ''.join(p.read_text() for p in (world[1].home / 'traces').glob('*.jsonl'))
     assert 'Career job extraction' in traces and 'Career evidence matching' in traces
     assert 'search_career_evidence' in traces and 'get_evidence' in traces
@@ -291,7 +288,6 @@ def test_dashboard_analyzes_with_existing_client(world, monkeypatch):
     conn, settings, _, _ = world
     runtime = career_runtime.CareerRuntime(conn=conn, settings=settings, client=JobClient())
     monkeypatch.setattr(career_runtime, '_runtime', runtime)
-    monkeypatch.setattr(dashboard, 'get_agent', lambda: pytest.fail('Career constructed Waku'))
     result = dashboard.career_action({'action': 'analyze_job', 'jd': FIXTURES[0]['jd']})
     assert result['jobs'][0]['coverage'] == 50.0
     with pytest.raises(ValueError, match='Unknown Career action'):

@@ -17,8 +17,8 @@ Three tables, checked in this order by `price_for()`:
 each brain's world knowledge ends, so a 2025 model denying that 2026 models
 exist reads as stale data, not stupidity.
 
-Imported by Career tracing, provider catalogs and the retained general arena
-and dashboard.
+Provider catalogs retain exact price records. General arena consumers retired
+in C1; unused aggregation utilities await C2/D dependency closure.
 """
 
 from __future__ import annotations

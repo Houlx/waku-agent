@@ -14,7 +14,7 @@ from waku import integrations
 from waku.config import Settings
 from waku.loop import models
 from waku.loop.models import PROVIDERS
-from waku.ops import catalog
+from waku.ops import catalog, provider_services
 
 EXPECTED_ENDPOINTS = {
     "minimax": [
@@ -143,15 +143,10 @@ def test_apply_provider_persists_scoped_base_url_and_clears_legacy_override(
     monkeypatch.setenv("MINIMAX_API_KEY", "test-key")
     monkeypatch.setenv("WAKU_BASE_URL", "https://legacy.example")
     monkeypatch.delenv("MINIMAX_BASE_URL", raising=False)
-    monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
+    monkeypatch.setattr(provider_services, "probe_provider", lambda values: None)
 
-    from waku.ops import browser_agent
 
-    monkeypatch.setattr(browser_agent, "rebuild", lambda: None)
-    tracer = SimpleNamespace(event=lambda *args: None)
-    monkeypatch.setattr(browser_agent, "current", lambda: SimpleNamespace(tracer=tracer))
-
-    result = integrations.apply_provider(
+    result = provider_services.apply_provider(
         "minimax", base_url="https://api.minimax.io/anthropic"
     )
 
@@ -186,17 +181,12 @@ def test_reusing_saved_provider_endpoint_skips_remote_probe_and_noop_rebuild(
     monkeypatch.delenv("WAKU_BASE_URL", raising=False)
 
     probes = []
-    monkeypatch.setattr(integrations, "_provider_probe", lambda values: probes.append(values))
-
-    from waku.ops import browser_agent
+    monkeypatch.setattr(provider_services, "probe_provider", lambda values: probes.append(values))
 
     rebuilds = []
-    monkeypatch.setattr(browser_agent, "rebuild", lambda: rebuilds.append(True))
-    tracer = SimpleNamespace(event=lambda *args: None)
-    monkeypatch.setattr(browser_agent, "current", lambda: SimpleNamespace(tracer=tracer))
 
-    result = integrations.apply_provider(
-        "kimi", base_url="https://api.moonshot.cn/anthropic"
+    result = provider_services.apply_provider(
+        "kimi", base_url="https://api.moonshot.cn/anthropic", reload=lambda: rebuilds.append(True)
     )
 
     assert result.ok
@@ -211,17 +201,14 @@ def test_saving_noncurrent_provider_does_not_activate_or_rebuild(monkeypatch, tm
     monkeypatch.setenv("MOONSHOT_API_KEY", "saved-key")
     monkeypatch.setenv("MOONSHOT_BASE_URL", "https://api.moonshot.ai/anthropic")
     monkeypatch.delenv("WAKU_BASE_URL", raising=False)
-    monkeypatch.setattr(integrations, "_provider_probe", lambda values: None)
-
-    from waku.ops import browser_agent
+    monkeypatch.setattr(provider_services, "probe_provider", lambda values: None)
 
     rebuilds = []
-    monkeypatch.setattr(browser_agent, "rebuild", lambda: rebuilds.append(True))
 
-    result = integrations.apply_provider(
+    result = provider_services.apply_provider(
         "kimi",
         base_url="https://api.moonshot.cn/anthropic",
-        activate=False,
+        activate=False, reload=lambda: rebuilds.append(True),
     )
 
     assert result.ok

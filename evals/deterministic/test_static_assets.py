@@ -13,13 +13,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from waku.integrations import INTEGRATIONS
-
 STATIC = Path(__file__).resolve().parents[2] / "waku" / "ops" / "static"
 INDEX = (STATIC / "index.html").read_text()
 JS_FILES = sorted((STATIC / "js").glob("*.js"))
 JS_SRC = "\n".join(f.read_text() for f in JS_FILES)
-CONNECTION_LOGOS = {f"{integration.key}.svg" for integration in INTEGRATIONS}
+CONNECTION_LOGOS = {"apple_calendar.svg", "apple_tools.svg", "discord.svg", "google_calendar.svg",
+                    "langmem.svg", "mem0.svg", "notion.svg", "otel.svg", "supabase.svg",
+                    "tavily.svg", "telegram.svg", "typesafe.svg", "whatsapp.svg", "zep.svg"}
 
 # JS keywords / builtins / DOM globals an inline handler may call without a js/
 # definition. Kept small on purpose — anything else must be a real app function.
