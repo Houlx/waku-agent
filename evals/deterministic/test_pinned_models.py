@@ -1,13 +1,4 @@
-"""DETERMINISTIC EVAL — the curated model shortlist ("Your models").
-
-Feature: a user pins models across providers; the chat switcher shows exactly
-that shortlist, and the FIRST pinned model per provider is that provider's
-default (adopted when you switch to it). Live goal Sean asked for: "a default
-model for each api key, the user can choose more models, and the chat switcher
-shows the models already selected in settings."
-
-The shortlist lives in .waku/models.json as {"pinned": ["provider:model", ...]};
-these tests drive the same helpers the dashboard's /api/pin route calls."""
+"""Saved catalog pins preserve model defaults and provider switching."""
 
 from __future__ import annotations
 
@@ -17,7 +8,6 @@ import os
 import pytest
 
 from waku.ops import catalog
-from waku.ops import settings_api as d
 
 PROVIDER_KEYS = ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPSEEK_API_KEY",
                  "MINIMAX_API_KEY", "MOONSHOT_API_KEY", "ZHIPU_API_KEY", "OPENROUTER_API_KEY",
@@ -26,57 +16,21 @@ PROVIDER_KEYS = ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPS
 
 @pytest.fixture
 def home(tmp_path, monkeypatch):
-    """Point every load_settings() at a throwaway home, run from there so
-    apply_settings's find_dotenv writes to a throwaway .env, and clear all
-    provider keys so the default shortlist is empty unless a test sets one."""
+    """Isolate catalog defaults and provider writes in a temporary home."""
     monkeypatch.setenv("WAKU_HOME", str(tmp_path))
     monkeypatch.chdir(tmp_path)
     (tmp_path / ".env").write_text("")
     for var in PROVIDER_KEYS:
         monkeypatch.delenv(var, raising=False)
-    # apply_settings bypasses monkeypatch and writes directly to os.environ,
-    # so WAKU_PROVIDER must also be tracked to prevent leaking into later
-    # tests (test_tool_trigger would inherit a stale provider and crash).
+    # Provider saves write process environment, so track the selected provider.
     monkeypatch.delenv("WAKU_PROVIDER", raising=False)
     return tmp_path
 
 
-def test_pin_persists_and_marks_first_per_provider_default(home):
-    d.pin_action({"action": "pin", "provider": "gemini", "model": "gemini-3.5-flash"})
-    d.pin_action({"action": "pin", "provider": "gemini", "model": "gemini-3.5-pro"})
-    info = d.pin_action({"action": "pin", "provider": "kimi", "model": "kimi-k3"})
-
-    # persisted to disk in insertion order
-    saved = json.loads((home / "models.json").read_text())["pinned"]
-    assert saved == ["gemini:gemini-3.5-flash", "gemini:gemini-3.5-pro", "kimi:kimi-k3"]
-
-    # settings_info() surfaces the shortlist; first-per-provider is the default
-    flags = {(p["provider"], p["model"]): p["default"] for p in info["pinned"]}
-    assert flags[("gemini", "gemini-3.5-flash")] is True
-    assert flags[("gemini", "gemini-3.5-pro")] is False
-    assert flags[("kimi", "kimi-k3")] is True
-
-
 def test_default_model_for_reads_first_pinned(home):
     assert catalog.default_model_for("kimi") == ""          # nothing pinned yet
-    d.pin_action({"action": "pin", "provider": "kimi", "model": "kimi-k3"})
-    d.pin_action({"action": "pin", "provider": "kimi", "model": "kimi-k2.6"})
+    catalog.save_pinned(["kimi:kimi-k3", "kimi:kimi-k2.6"])
     assert catalog.default_model_for("kimi") == "kimi-k3"   # the first one
-
-
-def test_make_default_moves_model_to_front_of_its_group(home):
-    d.pin_action({"action": "pin", "provider": "kimi", "model": "kimi-k3"})
-    d.pin_action({"action": "pin", "provider": "kimi", "model": "kimi-k2.6"})
-    d.pin_action({"action": "default", "provider": "kimi", "model": "kimi-k2.6"})
-    assert catalog.default_model_for("kimi") == "kimi-k2.6"
-
-
-def test_unpin_removes_and_promotes_next_default(home):
-    d.pin_action({"action": "pin", "provider": "gemini", "model": "gemini-3.5-flash"})
-    d.pin_action({"action": "pin", "provider": "gemini", "model": "gemini-3.5-pro"})
-    info = d.pin_action({"action": "unpin", "provider": "gemini", "model": "gemini-3.5-flash"})
-    assert [p["model"] for p in info["pinned"]] == ["gemini-3.5-pro"]
-    assert catalog.default_model_for("gemini") == "gemini-3.5-pro"   # survivor is now default
 
 
 def test_switching_provider_adopts_its_pinned_default(home, monkeypatch):
@@ -96,25 +50,8 @@ def test_switching_provider_adopts_its_pinned_default(home, monkeypatch):
     assert os.getenv("WAKU_MODEL") == "kimi-k3"  # not gemini's model
 
 
-def test_pinned_are_grouped_by_provider_for_display(home):
-    """A model added later (e.g. claude-fable-5) should list WITH its provider's
-    other models, not stranded at the bottom — while each provider's default
-    (first pinned) stays on top."""
-    (home / "models.json").write_text(json.dumps({"pinned": [
-        "anthropic:claude-opus-4-8", "openai:gpt-5.3-chat-latest",
-        "anthropic:claude-fable-5", "openai:gpt-4.1-mini"]}))
-    rows = [(r["provider"], r["model"], r["default"]) for r in d.settings_info()["pinned"]]
-    assert rows == [
-        ("anthropic", "claude-opus-4-8", True),      # default stays first
-        ("anthropic", "claude-fable-5", False),      # grouped with anthropic, not stranded
-        ("openai", "gpt-5.3-chat-latest", True),
-        ("openai", "gpt-4.1-mini", False),
-    ]
-
-
 def test_no_pins_is_empty_not_error(home):
-    info = d.settings_info()
-    assert info["pinned"] == []
+    assert catalog.pinned_specs() == []
     assert catalog.default_model_for("anthropic") == ""
 
 
@@ -136,11 +73,10 @@ def test_defaults_apply_before_curation_and_only_for_keyed_providers(home, monke
     monkeypatch.setenv("MOONSHOT_API_KEY", "k")      # only kimi is keyed
     monkeypatch.setenv("ANTHROPIC_API_KEY", "a")     # and anthropic
 
-    info = d.settings_info()
-    pairs = [(p["provider"], p["model"], p["default"]) for p in info["pinned"]]
+    pairs = catalog.pinned_specs()
     assert pairs == [
-        ("anthropic", "claude-opus-4-8", True), ("anthropic", "claude-sonnet-5", False),
-        ("kimi", "kimi-k3", True), ("kimi", "kimi-k2.7-code-highspeed", False),
+        "anthropic:claude-opus-4-8", "anthropic:claude-sonnet-5",
+        "kimi:kimi-k3", "kimi:kimi-k2.7-code-highspeed",
     ]
     assert catalog.default_model_for("kimi") == "kimi-k3"        # flagship is the default
     assert catalog.default_model_for("gemini") == ""            # unkeyed -> no default
@@ -150,9 +86,9 @@ def test_pinning_snapshots_defaults_then_diverges(home, monkeypatch):
     """The first pin action persists the computed defaults + the change, so
     later edits don't keep resurrecting defaults."""
     monkeypatch.setenv("MOONSHOT_API_KEY", "k")      # only kimi keyed -> 2 defaults
-    d.pin_action({"action": "unpin", "provider": "kimi", "model": "kimi-k2.7-code-highspeed"})
+    catalog.save_pinned([s for s in catalog.pinned_specs() if s != "kimi:kimi-k2.7-code-highspeed"])
     assert (home / "models.json").exists()               # now materialized
-    assert [p["model"] for p in d.settings_info()["pinned"]] == ["kimi-k3"]
+    assert catalog.pinned_specs() == ["kimi:kimi-k3"]
 
 
 def test_known_catalog_providers_can_list(home):

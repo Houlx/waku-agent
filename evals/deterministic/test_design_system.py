@@ -87,12 +87,6 @@ def test_fonts_are_local():
         assert (STATIC / "fonts" / f"OFL-{face}.txt").is_file(), f"no license for {face}"
 
 
-def test_woff2_is_served_as_a_font():
-    from waku.ops.dashboard import STATIC_TYPES
-
-    assert STATIC_TYPES[".woff2"] == "font/woff2"
-
-
 def test_sync_design_copies_and_records(tmp_path, monkeypatch):
     src = tmp_path / "memory"
     (src / "public" / "design").mkdir(parents=True)

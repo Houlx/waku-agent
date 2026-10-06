@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from errno import EADDRINUSE
+
 import pytest
 
-import waku.ops.dashboard as dash
+import waku.ops.career_dashboard as dash
 
 
 def test_the_default_is_loopback(monkeypatch):
@@ -18,8 +20,7 @@ def test_the_variable_changes_it(monkeypatch):
 
 
 def test_a_non_loopback_address_warns(monkeypatch, capsys):
-    """The SQL console has no authentication. Leaving loopback is a choice
-    that has to be visible in the terminal that made it."""
+    """Career has no authentication; external binding warns its operator."""
     monkeypatch.setenv("WAKU_DASHBOARD_HOST", "0.0.0.0")
     dash.bind_host()
     warning = capsys.readouterr().out
@@ -43,9 +44,9 @@ def test_the_warning_prints_once_however_many_ports_are_busy(monkeypatch, capsys
     monkeypatch.setenv("WAKU_DASHBOARD_PORT", "7777")
 
     def every_port_busy(*args, **kwargs):
-        raise OSError("address already in use")
+        raise OSError(EADDRINUSE, "address already in use")
 
-    monkeypatch.setattr(dash, "ThreadingHTTPServer", every_port_busy)
+    monkeypatch.setattr(dash, "CareerServer", every_port_busy)
     with pytest.raises(SystemExit):
         dash.main()
 
@@ -53,7 +54,4 @@ def test_the_warning_prints_once_however_many_ports_are_busy(monkeypatch, capsys
     assert out.count("WAKU_DASHBOARD_HOST=0.0.0.0") == 1, (
         f"the security warning printed {out.count('WAKU_DASHBOARD_HOST=0.0.0.0')} "
         f"times across the port walk; it must print once"
-    )
-    assert out.count("busy, trying") == 10, (
-        "expected the walk itself to still report each busy port"
     )

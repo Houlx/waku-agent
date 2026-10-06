@@ -1,7 +1,9 @@
 # Design system
 
-The dashboard (`waku/ops/static/`) uses the Waku Memory design system. Read
-this file before changing how anything looks.
+The retired dashboard assets in `waku/ops/static/` use the Waku Memory design
+system and await Batch D. Career uses independent styles in `static/career/`
+and loads none of these protected assets. Read this file before changing retained
+brand assets.
 
 ## Where it comes from
 

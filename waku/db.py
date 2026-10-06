@@ -7,18 +7,12 @@ from pathlib import Path
 
 
 def open_connection(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
-    # check_same_thread=False lets the dashboard's threaded HTTP server reuse
-    # one agent connection across worker threads (guarded by a lock). busy_timeout
-    # avoids "database is locked" when the dashboard reads while a chat writes.
+    # Career serializes its threaded HTTP workers around one connection.
+    # busy_timeout bounds waits for another process using the same database.
     conn = sqlite3.connect(home / "state.db", check_same_thread=check_same_thread)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA busy_timeout=3000")
     return conn
-
-
-def connect(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
-    """Transitional general facade: open existing data without initialization."""
-    return open_connection(home, check_same_thread)
 
 
 def connect_career(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
@@ -81,7 +75,6 @@ CREATE TABLE IF NOT EXISTS resumes (
 );
 
 """
-
 
 
 def initialize_career(conn: sqlite3.Connection) -> None:

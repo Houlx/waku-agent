@@ -1,4 +1,4 @@
-"""Career product HTTP entry, retaining the old dashboard for rollback."""
+"""Career product HTTP entry and owned server lifecycle."""
 from __future__ import annotations
 
 import json

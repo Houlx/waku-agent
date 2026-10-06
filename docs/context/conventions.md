@@ -110,7 +110,7 @@ needs a discussion on an issue first.
 
 Career Agent is the supported product. The completed V1 contract and approved
 retirement batches govern current work. Batch C1 retires general feature backends.
-The remaining general facades and static assets await C2. Preserve
+Batch C2 removes general facades. Old static assets await Batch D. Preserve
 Career behavior and the shared provider, loop, registry and tracing contracts.
 
 Docs name providers neutrally (Anthropic, OpenAI, Gemini, DeepSeek, Kimi, GLM,

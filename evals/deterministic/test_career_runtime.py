@@ -59,7 +59,8 @@ import sys
 class RejectGeneral(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
         blocked = ('waku.app', 'waku.memory', 'waku.runtime.session', 'waku.gateway',
-                   'waku.graph', 'waku.integrations', 'waku.ops.browser_agent', 'waku.ops.dashboard')
+                   'waku.graph', 'waku.integrations', 'waku.connect', 'waku.ops.browser_agent',
+                   'waku.ops.dashboard', 'waku.ops.settings_api', 'waku.ops.commands')
         if any(fullname == p or fullname.startswith(p + '.') for p in blocked):
             raise AssertionError('Unrelated import: ' + fullname)
         if fullname.startswith('waku.tools.') and fullname not in ('waku.tools.registry', 'waku.tools.career'):
@@ -415,20 +416,6 @@ def test_cleanup_failure_does_not_rollback_successful_swap(configured):
     runtime.close()
 
 
-def test_legacy_provider_save_updates_career_without_constructing_waku(configured, monkeypatch):
-    from waku import integrations
-    from waku.ops import browser_agent
-    from waku.runtime import career_runtime
-
-    runtime = CareerRuntime()
-    monkeypatch.setattr(career_runtime, '_runtime', runtime)
-    monkeypatch.setattr(browser_agent, '_agent', None)
-    monkeypatch.setattr(browser_agent, 'get_agent', lambda: pytest.fail('Provider save constructed Waku'))
-    result = integrations.apply_provider('anthropic', model='legacy-new')
-    assert result.ok and runtime.provider_status()['model'] == 'legacy-new'
-    runtime.close()
-
-
 def test_career_initialization_does_not_migrate_legacy_chat(tmp_path):
     conn = sqlite3.connect(tmp_path / 'state.db')
     conn.execute('CREATE TABLE chat_log(id INTEGER PRIMARY KEY, role TEXT, content TEXT)')
@@ -439,27 +426,6 @@ def test_career_initialization_does_not_migrate_legacy_chat(tmp_path):
     assert [r[1] for r in reopened.execute('PRAGMA table_info(chat_log)')] == ['id', 'role', 'content']
     assert tuple(reopened.execute('SELECT * FROM chat_log').fetchone()) == (7, 'user', 'Untouched old chat')
     reopened.close()
-
-
-def test_candidate_is_released_when_transitional_reload_fails(configured):
-    runtime = CareerRuntime(client_factory=lambda settings: OwnedClient())
-    with pytest.raises(ValueError):
-        runtime.action({'action': 'normalize'})
-    old_client, old_conn = runtime.client, runtime.conn
-    candidates = []
-
-    def factory(settings):
-        client = OwnedClient()
-        candidates.append(client)
-        return client
-
-    runtime._client_factory = factory
-    assert runtime.reload(before_swap=lambda: 'Legacy replacement failed') == 'Legacy replacement failed'
-    assert candidates[0].closed == 1
-    assert runtime.client is old_client and runtime.conn is old_conn
-    assert old_client.closed == 0
-    assert old_conn.execute('SELECT 1').fetchone()[0] == 1
-    runtime.close()
 
 
 def test_readiness_and_client_agree_on_scoped_credentials_and_models(configured, monkeypatch):

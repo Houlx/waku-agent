@@ -1,4 +1,4 @@
-"""Exercise the transitional Career server and CLI using isolated local sockets."""
+"""Exercise the Career server and CLI using isolated local sockets."""
 import http.client
 import json
 import shutil
@@ -184,3 +184,27 @@ def test_make_career_launches(target, command):
                             text=True, timeout=10, check=False)
     assert result.returncode == 0
     assert result.stdout.strip() == command
+
+
+@pytest.mark.parametrize('length', ['-1', '2000001', 'invalid'])
+def test_request_length_rejection_does_not_execute(server, length, monkeypatch):
+    monkeypatch.setattr(server.runtime, 'action', lambda _: pytest.fail('Rejected body executed'))
+    conn = http.client.HTTPConnection(*server.server_address, timeout=5)
+    try:
+        conn.request('POST', '/api/career', headers={'Content-Length': length})
+        response = conn.getresponse()
+        assert 'error' in json.loads(response.read())
+    finally:
+        conn.close()
+    assert server.runtime.client is None
+
+
+def test_static_symlink_cannot_escape_allowlist(server, tmp_path, monkeypatch):
+    static = tmp_path / 'static'
+    (static / 'career').mkdir(parents=True)
+    outside = tmp_path / 'private.js'
+    outside.write_text('private sentinel')
+    (static / 'career/ui.js').symlink_to(outside)
+    monkeypatch.setattr(career_dashboard, 'STATIC', static)
+    status, _, body = request(server, '/static/career/ui.js')
+    assert status == 404 and b'private sentinel' not in body

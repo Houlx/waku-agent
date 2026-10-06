@@ -8,7 +8,8 @@ here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
 Phase 2 — Career Product Cutover was separately approved and is implemented.
 Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
 product. Phase 3 Batch B1 and Batch B2 consumer closure are implemented.
-Batch C1 feature backend deletion is implemented. C2 and D have not started.
+Batch C1 feature backend deletion and Batch C2 facade retirement are implemented.
+Batch D has not started.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -49,9 +50,8 @@ Profile, JD, report and evidence remain untrusted data.
 | `waku/runtime/career_jobs.py` | Extraction, matching, scoring, activity and saved jobs |
 | `waku/runtime/career_resumes.py` | Generation gates, claim validation, current drafts and Markdown |
 | `waku/tools/career.py` | Scoped submission, FTS5 search and evidence lookup |
-| `waku/ops/dashboard.py` | Transitional old shell; Career API delegates to its dedicated runtime |
 | `waku/ops/static/career/`, `career.html` | Independent Career UI, routes, drafts, requests, Settings and print rules |
-| `waku/ops/static/js/career.js`, `style.css` | Retained rollback dashboard workspace |
+| `waku/ops/debug.py` | Standalone trace/SQL/path utilities without a dashboard server |
 | `evals/career.py` | Explicitly opt-in real-provider evaluation |
 | `evals/fixtures/career_*.json` | Four JDs, varied synthetic profile and review expectations |
 | `evals/deterministic/test_career_*.py` | Offline profile, job, resume and whole-journey regressions |
@@ -1047,3 +1047,109 @@ because they no longer exist. The entire memory, gateway and graph directories r
 - `waku/tools/search.py`
 - `waku/tools/waku_memory.py`
 - `waku/tools/workspace.py`
+
+## Phase 3 Batch C2 facade retirement on 2026-10-06
+
+Batch C2 removes the final general application assembly and compatibility facades.
+Career remains the sole supported runtime. Batch D has not started. The changes
+remain uncommitted for review; no user runtime data or configuration is changed.
+
+### Removed assembly and compatibility
+
+C2 deletes `waku/app.py`, `waku/ops/dashboard.py`, `waku/ops/browser_agent.py`,
+`waku/integrations.py`, `waku/connect.py`, `waku/ops/settings_api.py` and
+`waku/ops/commands.py`. No replacement general framework exists.
+
+CareerRuntime loses only its transitional `_runtime` singleton, singleton lock,
+`current_runtime`, `peek_runtime`, `close_runtime` and dual-runtime `before_swap`
+hook. The existing owner, lazy client, execution lock, candidate replacement,
+rollback and cleanup remain. The unused general `db.connect` wrapper retires;
+`open_connection`, `connect_career` and CAREER_SCHEMA remain.
+
+Standalone generic helpers move from the old dashboard to `waku/ops/debug.py`:
+trace collection/cursors, read-only SQL and confined path reveal. They import no
+facade, expose no HTTP route and assemble no assistant. Career's HTTP server,
+allowlist, frontend, provider setup and coordinators retain their behavior.
+
+### Retained runtime and tests
+
+The supported path is CLI → CareerServer → CareerRuntime → Career coordinators
+and scoped tools. Shared code consists of Settings/home/dotenv handling, provider
+registry/model adapters/catalog/defaults, provider services, SQLite connection
+mechanics, run_loop, ToolRegistry, tracing and standalone debugging. No retained
+production import requires a removed assembly module.
+
+Career profile/job/resume facade tests now call injected CareerRuntime instances.
+Bind tests target Career HTTP directly. Trace encoding checks target standalone
+trace helpers. Regional endpoint, scoped credential/model/label and pin/default
+checks target provider_services, model adapters and catalog persistence directly.
+The import-isolated complete Career journey now refuses every C2 facade import.
+
+C2 retires Connections CLI/health/registry tests, dashboard-only OTel health probes,
+general toggle UI tests, disabled-provider write APIs, pin-route/display tests,
+chat composer and old dashboard polling/header tests. The removed OTel health
+probe had no retained tracing consumer; optional OTel export stays unchanged.
+Old handler/route/source assertions retire; deferred logo, design/font/brand,
+license and syntax checks remain for the assets that still exist.
+
+`test_c2_retirement.py` checks unavailable assembly modules and standalone SQL/path
+confinement, including write CTEs, multiple statements and symlink escapes.
+Career HTTP adds oversized/negative/malformed request-length rejection and an
+allowlisted static symlink escape check. The HTML escaping test executes Career's
+real helper and link renderer in Node instead of inspecting old JavaScript source.
+Existing runtime/provider replacement, serialization, redaction, loop/tool bounds,
+tracing and legacy-row/file/FTS preservation checks remain.
+
+C2 removes no dependency and changes no dependency version or lockfile. The
+remaining extras are eval, dev and tracing. Broad manifest reconciliation belongs
+in Batch D.
+
+### Verification and environment
+
+The final offline gate passes **550 tests with 13 skips**, including all **148
+executable Career checks** and the scripted Chromium journey. Twelve Make checks
+skip because make is unavailable; the exact underlying command runs instead:
+`python -m waku.ops.release_gate`. The remaining skip is the disabled live provider
+probe. The gate records `judge: not run`; no paid/live evaluation runs.
+
+Ruff, environment-template validation, all 23 retained JavaScript syntax checks,
+rulebook/link/distribution/license/design checks and `git diff --check` pass.
+Wheel and sdist builds pass; the sdist rebuilds a wheel. Both wheels install into
+separate temporary targets. Each installation passes default and explicit Career
+launches, all nine approved shell/assets against repository bytes, lazy client
+initialization, Career state, general/static-route rejection and owned shutdown.
+Installed module enumeration confirms all seven C2 facades are absent. Both wheels
+preserve MIT, brand and the three OFL notices.
+
+Two in-memory mutations replace Career escaping with identity output or remove
+static confinement. Their regressions fail at escaped-output and symlink-route
+assertions respectively. No mutation changes implementation files or user data.
+
+The sandbox initially refuses local sockets; reviewed execution enables the
+requested temporary HTTP/browser tests. Chromium initially lacks libnspr4 on its
+loader path; existing libraries under `/tmp/career-phase1-browser-libs` supply it.
+Builds use a temporary uv cache because the default cache is read-only. None of
+these environment adjustments changes project dependencies or configuration.
+
+### Batch D boundary and inventory discrepancies
+
+Batch D still owns `static/index.html`, old `static/style.css`, `static/js/`, old
+logos/mark, protected design/font files and their notices/tests; dormant Settings
+fields and unused outbox creation; package descriptions/keywords/license manifest;
+remaining dependency/config/environment-template reconciliation; pricing utility
+consumer closure; and final documentation polish. Protected copied design files
+remain untouched. Career serves none of the old frontend assets.
+
+No general-product backend or application assembly remains. General-product
+JavaScript implementations still exist only as dormant deferred assets. Generic
+SQL/path/trace utilities remain because the approved batch retains debugging.
+Provider platform/scoped rows and saved defaults remain shared provider contracts,
+without hosted implementation or general integration behavior.
+
+The C1 inventory matches the seven actual facade modules. Its base-URL test also
+retains one old provider-view consumer, now migrated to Career provider status.
+Its design/font/static tests include old server and frontend behavior assertions,
+now retired or migrated while preserving asset/license checks. C1's suggested C2
+asset deletion is superseded by this batch's explicit boundary reserving final
+asset retirement for D. The older Phase 3 audit predates A/B/C1 consumer closure;
+its historical consumers are not restored and no repository-wide audit repeats.

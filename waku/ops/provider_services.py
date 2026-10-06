@@ -1,4 +1,4 @@
-"""Provider configuration shared by Career and the transitional Waku dashboard.
+"""Provider configuration shared by Career.
 
 This module imports no integrations or general runtime. The caller supplies reload
 ownership and, for Career, holds its execution lock across the entire transaction.
@@ -209,7 +209,6 @@ def apply_provider(provider: str, *, key: str | None = None, model: str | None =
                                      updates.get(selected.key_env), updates.get("WAKU_API_KEY")))
         return ProviderResult(False, error=result, can_force=bool(key or os.environ.get(selected.key_env)))
     return ProviderResult(True, changed=affects_active_agent)
-
 
 
 def provider_status(settings):

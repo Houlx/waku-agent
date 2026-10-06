@@ -21,12 +21,11 @@ Batch B1 removes hosted, upstream examples, lab topics, architecture boards and
 teaching walkthroughs. No Elastic License 2.0 implementation enters the MIT runtime.
 Batch C1 removes Session, conversational Memory, general tools, MCP, gateways,
 voice, graph workflows and arenas. The tools package contains only Career tools
-and the shared registry. The old app refuses general construction before touching
-data. The old dashboard retains its static shell, Career delegation, provider
-facades and trace/SQL/path debugging; retired feature routes return 404.
-Browser-agent, command, connector, settings and integration facades remain for C2.
-The integration registry contains only provider rows and optional OTel. General
-DB initialization is retired; its transitional connector only opens existing data.
+and the shared registry. Batch C2 removes general application assembly, the old dashboard/browser-agent,
+command, connector, settings and integration facades. CareerRuntime has no
+transitional singleton or dual-runtime reload hook. Standalone trace/SQL/path
+debugging remains in `waku/ops/debug.py`; Career adds no debugging HTTP routes.
+General DB initialization and its unused compatibility connector are retired.
 Batch B2 removes bundled skills, procedural build validation and general-agent eval construction. The environment template reads
 the provider registry directly, and the release gate runs offline checks.
 

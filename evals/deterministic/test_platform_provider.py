@@ -100,9 +100,10 @@ def test_default_pinned_specs_pins_the_override_not_the_placeholder(hosted):
 
 def test_it_appears_in_no_local_list(local):
     from scripts.generate_env_example import render_env_example
-    from waku.ops.settings_api import settings_info
+    from waku.config import load_settings
+    from waku.ops.provider_services import provider_status
 
-    assert PLATFORM not in [p["name"] for p in settings_info()["providers"]]
+    assert PLATFORM not in [p["key"] for p in provider_status(load_settings())["providers"]]
     block = render_env_example()
     assert PLATFORM not in block and "WAKU_PLATFORM_" not in block
 
@@ -266,7 +267,7 @@ def test_the_page_and_the_turn_name_the_same_model(hosted, monkeypatch):
     from waku.config import load_settings
     from waku.loop.models import get_client
     from waku.ops import catalog
-    from waku.ops.settings_api import settings_info
+    from waku.ops.provider_services import provider_status
 
     def offline(req, timeout=10):
         raise OSError("no network in a deterministic eval")
@@ -278,7 +279,7 @@ def test_the_page_and_the_turn_name_the_same_model(hosted, monkeypatch):
     assert settings.provider == PLATFORM and settings.model == "claude-opus-5"
     get_client(settings)
     turn = settings.model
-    page = settings_info()["model"]
+    page = provider_status(load_settings())["model"]
     picker = catalog.list_models(PLATFORM, use_cache=False)["model"]
     catalog._models_cache.clear()
 
@@ -290,7 +291,6 @@ def test_the_page_and_the_turn_name_the_same_model(hosted, monkeypatch):
     assert turn == "claude-sonnet-4-6", (
         f"expected the deploy-time override, got {turn!r}"
     )
-
 
 
 # --- I5: offline coverage for the remaining consumers this task changed. ----
@@ -346,19 +346,20 @@ def test_unknown_provider_error_includes_it_once_visible(hosted):
     assert PLATFORM in str(exc.value)
 
 
-def test_settings_info_masks_scoped_credentials(hosted, monkeypatch):
+def test_provider_status_masks_scoped_credentials(hosted, monkeypatch):
     """A leftover WAKU_API_KEY/WAKU_BASE_URL from an earlier BYOK save must
-    not read back through settings_info as if it belonged to the scoped
+    not read back through provider_status as if it belonged to the scoped
     platform row -- the same rule get_client and catalog.list_models follow."""
     monkeypatch.setenv("WAKU_PROVIDER", PLATFORM)
     monkeypatch.setenv("WAKU_API_KEY", "leftover-custom-key")
     monkeypatch.setenv("WAKU_BASE_URL", "https://api.anthropic.com")
 
-    from waku.ops.settings_api import settings_info
+    from waku.config import load_settings
+    from waku.ops.provider_services import provider_status
 
-    info = settings_info()
-    assert info["base_url"] == ""
-    assert info["custom_key_set"] is False
+    info = provider_status(load_settings())
+    assert info["endpoint"] == "http://proxy.local:8080"
+    assert info["last4"] == "-abc"
 
 
 def test_default_pinned_specs_skips_the_hidden_row_even_with_a_key(local, monkeypatch):
@@ -375,8 +376,9 @@ def test_default_pinned_specs_skips_the_hidden_row_even_with_a_key(local, monkey
 
 # --- M6: label_text() must actually reach the UI-facing integration title. --
 
-def test_label_text_is_wired_into_the_integration_title(hosted):
-    from waku.integrations import provider_integrations
+def test_label_text_reaches_career_provider_status(hosted):
+    from waku.config import load_settings
+    from waku.ops.provider_services import provider_status
 
-    row = next(i for i in provider_integrations() if i.key == PLATFORM)
-    assert row.name == "Hosted free tier"
+    row = next(i for i in provider_status(load_settings())["providers"] if i["key"] == PLATFORM)
+    assert row["name"] == "Hosted free tier"

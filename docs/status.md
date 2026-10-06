@@ -24,12 +24,11 @@ removes bundled skills, general judge suites and general-agent eval construction
 Batch C1 removes conversational Session/Memory, general tools, MCP, gateways,
 voice, graph workflows, arenas/comparison/general judges and exclusive extras.
 
-The old app, dashboard, browser-agent, integration/connect, settings and command
-facades remain for C2. General construction refuses before accessing runtime data.
-The old dashboard retains static serving, Career/provider delegates and generic
-debugging; retired feature routes return 404. Its general frontend assets and
-protected design/font files remain for their separately bounded retirement.
-Dormant configuration fields and pricing utilities remain pending C2/D closure.
+Batch C2 removes the old app, dashboard, browser-agent, integration/connect,
+settings and command facades, plus transitional Career singleton coordination.
+Standalone trace/SQL/path debugging remains in ops/debug.py. General frontend
+assets, protected design/font files, dormant configuration fields and pricing
+utilities remain for Batch D. Career serves only its independent assets.
 
 Retirement deletes no user data, legacy DB tables, Memory/SOUL files, installed
 skills, configuration, credentials, traces or usage ledger. Career-only initialization
@@ -46,4 +45,4 @@ upstream provider incident reports remain in Git history; this retirement perfor
 no live model-availability audit. No new Career feature or hosting replacement is added.
 
 Career styling loads no protected design files, mark or bundled fonts. Retained
-brand assets and font notices retain their separate licenses. C2 and D have not started.
+brand assets and font notices retain their separate licenses. C2 is implemented; D has not started.

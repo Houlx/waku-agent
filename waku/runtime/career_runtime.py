@@ -89,7 +89,7 @@ class CareerRuntime:
             result = provider_services.apply_provider(**payload, reload=self.reload)
             return {**asdict(result), 'status': self.provider_status()}
 
-    def reload(self, before_swap=None):
+    def reload(self):
         """Build a candidate before swapping; retain usable resources on failure."""
         with self.lock:
             self._check_open()
@@ -102,8 +102,6 @@ class CareerRuntime:
                 conn = self._connection_factory(settings.home, check_same_thread=False)
                 if self.client is not None:
                     client = self._client_factory(settings)
-                if before_swap is not None and (error := before_swap()):
-                    raise RuntimeError(error)
             except (Exception, SystemExit) as exc:
                 self._release(client, conn)
                 return provider_services.redact_error(exc)
@@ -131,29 +129,3 @@ class CareerRuntime:
             self._release(self.client if self._owns_client else None,
                           self.conn if self._owns_conn else None)
             self.client = self.conn = None
-
-
-# The old dashboard also dispatches Career here, without borrowing its chat agent.
-_runtime = None
-_runtime_lock = threading.Lock()
-
-
-def current_runtime():
-    global _runtime
-    with _runtime_lock:
-        if _runtime is None:
-            _runtime = CareerRuntime()
-        return _runtime
-
-
-def close_runtime():
-    global _runtime
-    with _runtime_lock:
-        if _runtime is not None:
-            _runtime.close()
-            _runtime = None
-
-
-def peek_runtime():
-    """Read the transitional singleton without initializing Career."""
-    return _runtime

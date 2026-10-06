@@ -1,8 +1,9 @@
 # Dashboard frontend — the map
 
-Plain static files served as-is by `waku/ops/dashboard.py` (a stdlib HTTP
-server). **No build step, no framework, no bundler, no dependencies.** Edit these
-files to change the UI; edit `dashboard.py` to change the server/API.
+Career serves plain static files through `waku/ops/career_dashboard.py`, a stdlib
+HTTP server. Career uses no build step, framework or bundler. Batch C2 removes
+the old dashboard server. The following old assets await Batch D deletion; they
+are outside the Career static allowlist.
 
 - `index.html` — the shell (sidebar nav, `<main>`, chat dock) + the ordered
   `<script>` tags.
@@ -70,25 +71,8 @@ Data flows one way: `refresh()` (main.js) fetches `/api/data` into the global
 `D`, then `render()` writes `VIEWS[hash](D)` into `#view`. Every mutation
 (`applyModel`, `pinModel`, `saveFact`, …) calls `refresh()` when it's done.
 
-## Rules that bite (read before editing)
-
-- **Inline handlers need global names.** Buttons use `onclick="fn()"` in the
-  HTML strings the JS generates. `fn` must stay a top-level name in some `js/`
-  file. Rename/move a handler and forget its call sites → the button silently
-  breaks. `test_static_assets.py` guards this.
-- **`archSVG` is byte-frozen — do not rewrite the architecture chart.** It emits
-  `data-node="…"`/`data-edge="…"` ids that the `STAGE` map (same file) drives the
-  live animation from. If you ever change a node/edge id, change it in both
-  places. (Both are in `diagram.js` precisely so they stay together.)
-- **The graph chart is data-driven — never hand-edit a topology.** `graphSVG`
-  renders `Graph.describe()` served in `/api/data`, so the picture is provably
-  what the engine runs (`test_graph_topology_payload.py` pins it). To change the
-  chart's shape, change the workflow in `waku/graph/workflows/`. Graph ids are
-  namespaced `g-<node>` / `g-<src>-<dst>` so they can never collide with archSVG's.
-- **No build step / no framework / no new dependencies.** If you reach for one,
-  stop — the whole point is that this reads and runs with nothing installed.
-- **No emojis in UI** (project rule). Known pre-existing exception: the `★`/`☆`
-  pin stars in `models.js` (typographic dingbats, not colour emoji) — left as-is.
+The old frontend table describes deferred files only. Its handlers, graph routes,
+chat dock and polling no longer have a server or supported behavior contract.
 
 ## Design system
 
@@ -96,17 +80,12 @@ How the dashboard looks, the token rules and the `js/ui.js` primitives are in
 [docs/context/design-system.md](../../../docs/context/design-system.md). Read it
 before changing how anything looks.
 
-## Verifying a change (no JS test runner exists)
+## Verifying a Career change
 
-Frontend logic is not unit-tested; verify in the browser preview:
-`make dashboard` (or the preview tool) → hard-reload `localhost:7777` → click the
-sidebar tabs and the chat dock → check the console shows **zero errors**. The
-Python side (`dashboard.py` endpoints, `_thread_history`, pins, session resume)
-*is* covered by `evals/deterministic/`.
+Run the scripted Chromium journey described in [the Career guide](../../../docs/career.md).
+For manual checks, run `make dashboard`, open `localhost:7777`, visit the Career
+routes and Settings, and check the console for errors. Career assets and HTTP
+contracts also have offline checks in `evals/deterministic/`.
 
-**A running server does not pick up Python changes.** Static files here (`.js`,
-`.css`, `index.html`) are read from disk on every request, so a hard-reload shows
-them. But `dashboard.py` and everything it imports are held in memory — after
-pulling or editing backend code, **restart `make dashboard`**, or the page renders
-new markup against stale data (e.g. a new Settings panel that shows nothing because
-the old route isn't sending its fields).
+A running server reads static Career files on each request. Restart the server
+after editing `career_dashboard.py` or an imported Python module.

@@ -121,20 +121,17 @@ def test_first_visit(tmp_path):
     assert state(connect(tmp_path)) == {'profile': None, 'evidence': [], 'jobs': []}
 
 
-def test_dashboard_handlers_use_the_existing_model_and_keep_chat_empty(world, monkeypatch):
-    from waku.ops import dashboard
+def test_runtime_handlers_use_the_existing_model_and_keep_chat_empty(world, monkeypatch):
     from waku.runtime import career_runtime
 
     conn, settings, _ = world
-    monkeypatch.setattr(dashboard, 'load_settings', lambda: settings)
     client = ScriptedClient([
         response([tool_block('submit_stage_result', {'profile': proposal()})], 'tool_use'),
         response([text_block('Done.')])])
     runtime = career_runtime.CareerRuntime(conn=conn, settings=settings, client=client)
-    monkeypatch.setattr(career_runtime, '_runtime', runtime)
-    assert dashboard.career_state()['profile']['normalized'] is None
-    assert dashboard.career_action({'action': 'normalize'})['profile']['normalized'] == proposal()
-    assert dashboard.career_action({'action': 'confirm'})['profile']['confirmed']
+    assert runtime.state()['profile']['normalized'] is None
+    assert runtime.action({'action': 'normalize'})['profile']['normalized'] == proposal()
+    assert runtime.action({'action': 'confirm'})['profile']['confirmed']
     tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert not {'facts', 'chat_log', 'episodes'} & tables
 

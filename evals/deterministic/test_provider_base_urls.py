@@ -10,8 +10,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from waku import integrations
-from waku.config import Settings
+from waku.config import Settings, load_settings
 from waku.loop import models
 from waku.loop.models import PROVIDERS
 from waku.ops import catalog, provider_services
@@ -118,21 +117,6 @@ def test_catalog_follows_selected_provider_region(
     assert captured["url"] == catalog_url
 
 
-def test_provider_view_exposes_base_url_choice(monkeypatch):
-    monkeypatch.setenv("MINIMAX_BASE_URL", "https://api.minimax.io/anthropic")
-
-    view = next(v for v in integrations.list_providers() if v.key == "minimax")
-    base = next(field for field in view.fields if field.name == "MINIMAX_BASE_URL")
-
-    assert base.kind is integrations.FieldKind.CHOICE
-    assert base.value == "https://api.minimax.io/anthropic"
-    assert base.options == (
-        "https://api.minimaxi.com/anthropic",
-        "https://api.minimax.io/anthropic",
-    )
-    assert base.option_labels == ("China", "Global")
-
-
 def test_apply_provider_persists_scoped_base_url_and_clears_legacy_override(
     monkeypatch, tmp_path
 ):
@@ -155,14 +139,6 @@ def test_apply_provider_persists_scoped_base_url_and_clears_legacy_override(
     assert os.environ.get("WAKU_BASE_URL", "") == ""
     contents = Path(".env").read_text()
     assert "MINIMAX_BASE_URL='https://api.minimax.io/anthropic'" in contents
-
-
-def test_models_edit_modal_posts_selected_base_url():
-    source = Path("waku/ops/static/js/models.js").read_text()
-
-    assert 'id="pm-base-url"' in source
-    assert "payload.base_url = baseUrl" in source
-    assert "payload.activate = false" in source
 
 
 @pytest.mark.parametrize(("current_provider", "expected_rebuilds"), [
@@ -215,3 +191,14 @@ def test_saving_noncurrent_provider_does_not_activate_or_rebuild(monkeypatch, tm
     assert os.environ["WAKU_PROVIDER"] == "minimax"
     assert os.environ["MOONSHOT_BASE_URL"] == "https://api.moonshot.cn/anthropic"
     assert rebuilds == []
+
+
+def test_career_provider_view_exposes_regional_endpoints(monkeypatch):
+    monkeypatch.setenv("MINIMAX_BASE_URL", "https://api.minimax.io/anthropic")
+    view = next(v for v in provider_services.provider_status(load_settings())["providers"]
+                if v["key"] == "minimax")
+    assert view["base_url"] == "https://api.minimax.io/anthropic"
+    assert view["endpoints"] == [
+        {"label": "China", "base_url": "https://api.minimaxi.com/anthropic"},
+        {"label": "Global", "base_url": "https://api.minimax.io/anthropic"},
+    ]

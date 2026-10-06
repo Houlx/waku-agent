@@ -281,14 +281,12 @@ def test_matching_limit_is_capped_at_ten(world):
     assert state(world[0])['jobs'][0]['report'] is None
 
 
-def test_dashboard_analyzes_with_existing_client(world, monkeypatch):
-    from waku.ops import dashboard
+def test_runtime_analyzes_with_existing_client(world, monkeypatch):
     from waku.runtime import career_runtime
 
     conn, settings, _, _ = world
     runtime = career_runtime.CareerRuntime(conn=conn, settings=settings, client=JobClient())
-    monkeypatch.setattr(career_runtime, '_runtime', runtime)
-    result = dashboard.career_action({'action': 'analyze_job', 'jd': FIXTURES[0]['jd']})
+    result = runtime.action({'action': 'analyze_job', 'jd': FIXTURES[0]['jd']})
     assert result['jobs'][0]['coverage'] == 50.0
     with pytest.raises(ValueError, match='Unknown Career action'):
         action(conn, {'action': 'unknown_action'})
