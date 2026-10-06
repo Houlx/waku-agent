@@ -12,7 +12,7 @@ PY := $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python)
 # real assistant uses (spec 002). An explicit WAKU_HOME still wins.
 export WAKU_HOME ?= $(CURDIR)/.waku
 
-.PHONY: run dashboard trace eval eval-judge gate lint
+.PHONY: run dashboard trace eval gate lint
 
 run:            ## launch Career Agent at http://localhost:7777/#overview
 	$(PY) -m waku
@@ -27,10 +27,7 @@ trace:          ## deep trace waterfalls (Phoenix) at http://localhost:6006
 eval:           ## deterministic evals (0/1, no judge involved)
 	$(PY) -m pytest -q evals/deterministic
 
-eval-judge:     ## LLM-as-judge evals (scored %, needs an API key)
-	$(PY) -m pytest -q evals/judge
-
-gate:           ## the release gate: deterministic must pass, judge must clear threshold
+gate:           ## offline release gate: all deterministic checks must pass
 	$(PY) -m waku.ops.release_gate
 
 lint:

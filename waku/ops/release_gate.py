@@ -1,11 +1,6 @@
-"""Release gate — the diamond before "Release" on the whiteboard.
+"""Offline release gate for Career and retained shared components.
 
-Changed the prompt? Swapped the model? Tuned retrieval top-k? Run the gate:
-
-    python -m waku.ops.release_gate     (or: make gate)
-
-Deterministic evals must pass 100% — they are unit tests; one failure blocks.
-Judge evals run when a key is present and report scores. Exit code 0 = ship.
+Live Career evaluation remains an explicit `python -m evals.career --live` action.
 """
 
 from __future__ import annotations
@@ -17,10 +12,6 @@ import sys
 from datetime import UTC
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-load_dotenv()  # the key check below must see .env, same as the app does
-
 REPO = Path(__file__).resolve().parents[2]
 
 
@@ -31,6 +22,7 @@ def run(suite: str) -> tuple[int, dict]:
     proc = subprocess.run(
         [sys.executable, "-m", "pytest", "-q", str(REPO / "evals" / suite)],
         cwd=REPO, capture_output=True, text=True, check=False,
+        env={**os.environ, "WAKU_RUN_LIVE_EVALS": "0"},
     )
     print(proc.stdout, end="")
     print(proc.stderr, end="", file=sys.stderr)
@@ -67,25 +59,9 @@ def main() -> None:
         print("\nGATE CLOSED — deterministic evals failed. Fix before releasing.")
         sys.exit(1)
 
-    # judge needs the ACTIVE provider's key (anthropic, openrouter, ...), same
-    # rule as evals/helpers.HAS_KEY
-    from waku.config import load_settings
-    from waku.loop.models import PROVIDERS
+    report("pass", "not run", suites)
 
-    settings = load_settings()
-    provider = PROVIDERS.get(settings.provider)
-    if settings.api_key or (provider and os.getenv(provider.key_env)):
-        code, suites["judge"] = run("judge")
-        if code:
-            report("pass", "fail", suites)
-            print("\nGATE CLOSED — judge scores below threshold.")
-            sys.exit(1)
-        report("pass", "pass", suites)
-    else:
-        report("pass", "skipped", suites)
-        print(f"\n(judge suite skipped: no API key for provider '{settings.provider}')")
-
-    print("\nGATE OPEN — safe to release.")
+    print("\nGATE OPEN — offline checks passed.")
 
 
 if __name__ == "__main__":

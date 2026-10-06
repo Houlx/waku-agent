@@ -5,10 +5,11 @@ Career Agent has offline deterministic evals and an explicitly opt-in live evalu
 Run `make eval` or `python -m pytest -q evals/deterministic` for offline checks.
 CI runs this suite without API keys.
 
-Batch B1 removes hosted deterministic and Docker evals and their Docker workflow.
-General backend evals and the existing judge/release-gate implementation remain
-until later retirement batches. `make eval-judge` and `make gate` can call models;
-do not run them as part of offline retirement verification.
+Batch B2 removes general judge suites and general-assistant eval construction.
+`make gate` runs the remaining deterministic suite offline and forces live provider
+probes off. It preserves the existing local report format with the judge marked
+"not run". General component checks remain until Batch C retires their backend.
+Career live evaluation remains explicitly opt-in; the gate never runs it.
 
 ## Shared tracing and usage
 

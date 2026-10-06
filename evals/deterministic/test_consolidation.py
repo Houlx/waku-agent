@@ -8,7 +8,7 @@ is exactly the kind of rule that quietly stops working.
 Offline throughout: a ScriptedClient stands in for the summarizer, so these
 cases pin the THRESHOLD, the BOOKKEEPING and the FAILURE POSTURE. Whether the
 model extracts good facts from a given conversation is a judgment call and lives
-in evals/judge/.
+through explicitly opt-in live evaluation.
 
 Three properties matter more than the rest:
   * below the threshold, it must not call the model AT ALL (cost)

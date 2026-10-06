@@ -17,7 +17,6 @@ caps it at 100 lines, so the detail lives in the files it points to.
 | start anything non-trivial | [docs/status.md](docs/status.md): what works and what is known-broken |
 | decide how much process a change needs | [conventions §2](docs/context/conventions.md#2-how-much-process-a-change-needs) |
 | add capability (tool, gateway, provider, store) | [conventions §3](docs/context/conventions.md#3-where-new-capability-goes-the-footprint-ladder), the footprint ladder |
-| add a skill | [CONTRIBUTING.md](CONTRIBUTING.md): no Python needed |
 | inspect retained general integrations | [docs/integrations.md](docs/integrations.md) |
 | add a tool | the `new-tool` skill in `.claude/skills/new-tool/` |
 | touch the loop, memory, graph engine or a tool contract | [docs/architecture.md](docs/architecture.md), then conventions §2: it may need a proposal |
@@ -57,22 +56,20 @@ The `validate` workflow runs on every PR. Each of these fails it:
 |---|---|
 | a `uv.lock` change without a `pyproject.toml` change | a step in `.github/workflows/validate-skills.yml` |
 | a lint error in `waku/`, `evals/`, or `scripts/` | `ruff check` |
-| a skill that fails validation | `scripts/validate_skills.py` |
-| a skill that loads on everyday or another skill's messages | `evals/deterministic/test_skill_triggers.py` |
-| `.env.example` out of step with the integrations registry | `scripts/generate_env_example.py` |
+| `.env.example` out of step with Career/provider configuration | `scripts/generate_env_example.py` |
 | an edited design copy, a colour literal, an old token name | `evals/deterministic/test_design_system.py` |
 | retired consumers or runtime data in a distribution | `evals/deterministic/test_distribution_boundary.py` |
 | a second version number | `evals/deterministic/test_version.py` |
 | this file over 100 lines, a broken rulebook link, an unindexed doc, an import from `examples/` or `lab/`, a retired Waku Memory address, an emoji in the rulebook or README, a module-level name defined twice | `evals/deterministic/test_rulebook.py` |
 | any other failing deterministic eval | `pytest evals/deterministic` |
 
-Everything else in the rulebook is checked in review. The judge evals in
-`evals/judge/` need an API key, so `make gate` runs them locally and CI does not.
+Everything else in the rulebook is checked in review. `make gate` runs offline
+checks. Career live evaluation requires an explicit `python -m evals.career --live`.
 
 ## Commands
 
 `make run` · `make dashboard` (localhost:7777) · `make trace` (Phoenix, 6006)
-`make eval` · `make gate` (deterministic + judge) · `make lint` · tests live in `evals/`, not `tests/`
+`make eval` · `make gate` (offline deterministic) · `make lint` · tests live in `evals/`, not `tests/`
 
 ## Maintainers
 

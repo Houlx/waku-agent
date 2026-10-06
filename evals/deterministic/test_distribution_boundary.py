@@ -13,7 +13,7 @@ from hatchling.metadata.core import ProjectMetadata
 from hatchling.plugin.manager import PluginManager
 
 ROOT = Path(__file__).resolve().parents[2]
-RETIRED_COMPONENTS = {"hosted", "examples", "lab", "whiteboard", "whiteboards"}
+RETIRED_COMPONENTS = {"skills", "hosted", "examples", "lab", "whiteboard", "whiteboards"}
 
 
 def _distribution_paths(builder_cls: type) -> list[str]:
@@ -57,3 +57,24 @@ def test_retained_runtime_never_imports_hosted():
             if any(name.split(".")[0] == "hosted" for name in names):
                 offenders.append(path.relative_to(ROOT).as_posix())
     assert not offenders, f"retained runtime imports retired EL2 modules: {offenders}"
+
+
+def test_restored_bundled_skills_are_excluded_from_both_builds(tmp_path):
+    """A local restoration must not silently reintroduce shipped product skills."""
+    import shutil
+
+    for name in ("pyproject.toml", "README.md", "LICENSE", "LICENSE-BRAND"):
+        shutil.copyfile(ROOT / name, tmp_path / name)
+    (tmp_path / "waku").mkdir()
+    shutil.copyfile(ROOT / "waku/__init__.py", tmp_path / "waku/__init__.py")
+    for directory in ("skills/restored", "waku/skills/restored"):
+        path = tmp_path / directory
+        path.mkdir(parents=True)
+        (path / "SKILL.md").write_text("Retired bundled content.\n")
+    for builder_cls in (SdistBuilder, WheelBuilder):
+        manager = PluginManager()
+        builder = builder_cls(str(tmp_path), plugin_manager=manager,
+                              metadata=ProjectMetadata(str(tmp_path), manager))
+        paths = [f.distribution_path for f in builder.recurse_included_files()]
+        assert "waku/__init__.py" in paths
+        assert not any("skills" in Path(p).parts for p in paths)

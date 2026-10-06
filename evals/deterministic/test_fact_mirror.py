@@ -97,8 +97,5 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_nothing_promises_that_local_memory_never_leaves():
     """Spec 003 reversed the rule. These sentences said the opposite."""
     tool = (ROOT / "waku" / "tools" / "waku_memory.py").read_text()
-    skill = (ROOT / "skills" / "waku-memory" / "SKILL.md").read_text()
     assert "nothing here copies local memory up" not in tool
-    assert "never leaves it" not in skill
-    assert "never tell the user that\nlocal memory syncs" not in skill
     assert "<home>/memory/" in tool or "~/.waku/memory/" in tool

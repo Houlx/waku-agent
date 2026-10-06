@@ -7,7 +7,7 @@ memory every turn?"), so it is the one piece that most needs to keep working.
 Everything here is offline: a ScriptedClient plays back whatever the small model
 would have said, so these cases pin the PARSING and the FAILURE POSTURE — the
 parts that are ours. Whether a given model says true or false for a given
-sentence is a judgment call and belongs in evals/judge/, not here.
+sentence is a judgment call and requires explicitly opt-in live evaluation.
 
 The contract in one line: **the gate fails OPEN.** Anything it cannot understand
 must produce "retrieve", because a stale memory beats a lost one. Every case

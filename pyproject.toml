@@ -39,10 +39,9 @@ Changelog = "https://github.com/ShenSeanChen/waku-agent/releases"
 waku = "waku.__main__:main"
 
 [project.optional-dependencies]
-# Eval pillar: LLM-as-judge (deterministic evals need only pytest)
+# Offline Career and shared-runtime evaluation
 eval = [
     "pytest>=8.0",
-    "deepeval>=2.0",
 ]
 # LLM-Ops pillar: local trace dashboard (traces also always land in traces/*.jsonl)
 tracing = [
@@ -148,22 +147,12 @@ path = "waku/__init__.py"
 exclude = [
     "docs", ".claude", ".deepeval", ".github",
     # Keep retired consumers out even if a local checkout restores them.
-    "/hosted/**", "/examples/**", "/lab/**", "/scripts/whiteboard/**",
+    "/skills/**", "/waku/skills/**", "/evals/judge/**", "/hosted/**", "/examples/**", "/lab/**", "/scripts/whiteboard/**",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["waku"]
-
-# The bundled skills live at the repo root because that is where contributors
-# add them (CONTRIBUTING.md, CI's validate-skills job, `skills/community/`).
-# But `packages = ["waku"]` ships only the package, so before 2026-07-31 a
-# `pip install waku-agent` arrived with ZERO skills — procedural memory, one of
-# the four pillars, silently absent while the dashboard shipped fine (it lives
-# under waku/ops/static). Copying them in at build time keeps one contributor-
-# facing location and still ships them; waku.memory.bundled_skill_dirs() looks
-# in both places and explains why.
-[tool.hatch.build.targets.wheel.force-include]
-"skills" = "waku/skills"
+exclude = ["/waku/skills/**"]
 
 [tool.ruff]
 line-length = 100

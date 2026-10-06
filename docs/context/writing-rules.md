@@ -85,6 +85,5 @@ Define only the symbols the document actually uses, and remove unused entries.
 ## Where the other writing rules live
 
 Commit messages follow [conventions §5](conventions.md#5-git-commits-and-prs).
-A SKILL.md description follows the skill section of
-[CONTRIBUTING.md](../../CONTRIBUTING.md), because a test checks which messages
-load it.
+Contributor instructions live in [CONTRIBUTING.md](../../CONTRIBUTING.md).
+Bundled general-assistant skills and their trigger requirements are retired.

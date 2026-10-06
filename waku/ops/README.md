@@ -25,7 +25,7 @@ frontend.
 | `coding_eval.py` | The coding battery used when a race has `delegate_task` switched on. |
 | `tracing.py` | The JSONL trace writer every gateway appends to (+ optional OTel). |
 | `show_trace.py` | `waku trace` — reading those files back in the terminal. |
-| `release_gate.py` | `make gate`: deterministic must pass, judge must clear the threshold. |
+| `release_gate.py` | `make gate`: offline deterministic checks must pass; live evaluation stays explicit. |
 | `brief.py` | The morning brief. |
 | `whiteboard/` | Excalidraw generators for the architecture diagrams in `docs/`. |
 

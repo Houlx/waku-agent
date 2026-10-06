@@ -17,8 +17,8 @@ Three tables, checked in this order by `price_for()`:
 each brain's world knowledge ends, so a 2025 model denying that 2026 models
 exist reads as stale data, not stupidity.
 
-Imported by the arena (per-race cost), the dashboard (the spend chart), and
-`scripts/shootout.py`.
+Imported by Career tracing, provider catalogs and the retained general arena
+and dashboard.
 """
 
 from __future__ import annotations

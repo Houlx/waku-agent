@@ -215,18 +215,6 @@ def test_malformed_json_does_not_raise(monkeypatch):
 
 # --- registration -----------------------------------------------------------
 
-def test_the_tool_is_off_unless_asked_for(tmp_path):
-    """Every registered tool ships in every prompt, so a maintainer-only tool
-    must not appear for people who never asked for it (the footprint
-    ladder). The gather workflow imports this module directly and works with
-    the switch off — the switch only decides whether the MODEL can reach it."""
-    from evals.helpers import ScriptedClient, make_waku
-
-    off = make_waku(tmp_path / "off", client=ScriptedClient([]), gh_tool=False)
-    assert "github_read" not in off.tools._tools
-    on = make_waku(tmp_path / "on", client=ScriptedClient([]), gh_tool=True)
-    assert "github_read" in on.tools._tools
-
 
 def test_the_description_tells_the_model_the_boundary():
     """The model should not have to discover the refusal by trying to merge."""

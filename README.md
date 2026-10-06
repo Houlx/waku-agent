@@ -53,7 +53,7 @@ Career Agent is the sole supported product. Phase 3 Batch A removes the general
 CLI commands and their Make shortcuts. `waku --help` lists the retained commands.
 Batch B1 retires the old hosted deployment, examples, lab and upstream teaching
 boards. General Memory, MCP, gateways, graph, arenas and dashboard implementations
-remain for later backend retirement. Bundled skills remain until Batch B2.
+remain for later backend retirement. Batch B2 retires bundled skills, general judge suites and general-agent eval helpers.
 
 [Architecture](docs/architecture.md), [the documentation index](docs/README.md),
 [contribution rules](CONTRIBUTING.md) and [the handoff](docs/career-agent/HANDOFF.md)

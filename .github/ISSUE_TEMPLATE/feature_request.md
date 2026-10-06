@@ -9,7 +9,7 @@ trying to get waku to do for you?
 **Where it belongs on the [footprint ladder](../../CONTRIBUTING.md)** — every
 registered tool ships in every prompt, so the core stays narrow. Could this be:
 
-- [ ] a skill (`SKILL.md`, no Python)?
+- [ ] Career configuration or documentation?
 - [ ] a CLI + a README the model reads when it needs it?
 - [ ] a tool behind an optional extra?
 - [ ] a gateway (one file, text in and out)?

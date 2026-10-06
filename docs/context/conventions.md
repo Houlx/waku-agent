@@ -17,7 +17,7 @@ decide it.
 
 | Tier | Examples | What to do |
 |---|---|---|
-| **Direct** | a bug fix, a copy change, a provider row, a skill, a test | Open the PR. The eval and the review are the guardrails. |
+| **Direct** | a bug fix, a copy change, a provider row, a test | Open the PR. The eval and the review are the guardrails. |
 | **Short plan** | a tool behind an extra, a gateway, a dashboard view | Comment a 5–10 line plan on the issue before writing code, so a maintainer can point at the right rung early. |
 | **Proposal** | a new top-level package; a change to the loop, the memory interfaces, the graph engine or the tool-call contract; a new core tool; anything that adds to every prompt | Write a design doc in `docs/` and get a maintainer's yes before any code. [the Career refactor plan](../career-agent/CAREER_ONLY_REFACTOR_PLAN.md) is the precedent and shows the bar. |
 
@@ -35,8 +35,8 @@ the rung above cannot do the job:
    `waku/providers.toml` plus a logo — see
    [providers-registry.md](../providers-registry.md). A new memory backend
    matches an existing interface.
-2. **A skill**: `skills/community/<name>/SKILL.md`. It is Markdown with no
-   Python, and it costs no context until the model needs it.
+2. **Product-specific configuration or documentation.** Career does not load
+   bundled general-assistant skills. User-installed runtime skills remain user data.
 3. **A CLI and a README.** Waku can already run any program on your machine,
    and a command-line tool with docs beside it costs nothing until it is used.
 4. **A tool behind an extra**: `waku/tools/`, with heavy dependencies gated by
@@ -53,8 +53,8 @@ deployment is retired from this fork.
 ## 4. Testing
 
 - `evals/deterministic/` holds 0/1 tests that run offline with no API key.
-  `evals/judge/` holds scored LLM-judge evals. The two never mix: one is a unit
-  test, and the other is a scored opinion. Hosted Docker evals are retired.
+  Career live evaluation requires an explicit `python -m evals.career --live`.
+  General judge suites and hosted Docker evals are retired.
 - Every behaviour change gets a deterministic eval. A bug fix adds the case
   that would have caught the bug.
 - **Prove the test can fail.** Break the thing it guards, watch it go red, put
@@ -73,8 +73,8 @@ deployment is retired from this fork.
   that enumerates the ways to go wrong is a guess about an open set.
 - Career routes must preserve the explicit HTTP/static allowlist and rejection
   contracts in `evals/deterministic/test_career_http.py`.
-- Run `make gate` and `make lint` before you push. CI runs the deterministic
-  tier. The judge tier needs a key, so only `make gate` runs it.
+- Run `make gate` and `make lint` before you push. Both the gate and CI run
+  offline checks. The gate never enables live provider probes.
 - The dashboard's JavaScript has no test runner. Verify a frontend change in a
   browser, as [waku/ops/static/README.md](../../waku/ops/static/README.md)
   describes.
@@ -108,11 +108,10 @@ needs a discussion on an issue first.
 
 ## 8. Scope and framing
 
-Scheduling is the flagship teaching task, but the project is growing toward a
-full assistant. New providers, tools, gateways and integrations are welcome
-when they are self-contained, tested, and keep the core legible. We decline
-complexity that muddies how the system works or bloats the default path, and
-we prefer opt-in extras.
+Career Agent is the supported product. The completed V1 contract and approved
+retirement batches govern current work. Retained general backends await Batch C;
+their presence does not authorize new general-assistant features. Preserve
+Career behavior and the shared provider, loop, registry and tracing contracts.
 
 Docs name providers neutrally (Anthropic, OpenAI, Gemini, DeepSeek, Kimi, GLM,
 OpenRouter): no ranking, and no "open-source versus closed" framing.

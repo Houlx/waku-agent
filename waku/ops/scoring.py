@@ -1,10 +1,7 @@
 """Deterministic Completion scoring for the eval battery — the ONE scorer.
 
-Both `scripts/shootout.py` (the CLI table) and the Compare arena (the live
-dashboard scoreboard) score a model's run the same way: did the expected tool
-fire, with the expected args, and did enough of the loop actually run. Keeping
-that judgment here means the terminal number and the on-screen number can never
-drift apart.
+The retained Compare arena scores expected tools, arguments and loop calls.
+Its shared scorer remains until the arena consumers retire in Batch C.
 
 A "case" is one line of `evals/dataset.jsonl`: an input prompt plus its expected
 outcome (`expect_tool` / `expect_in_args` / `expect_min_tool_calls` /

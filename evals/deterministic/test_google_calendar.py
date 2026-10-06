@@ -5,7 +5,6 @@ from __future__ import annotations
 import sys
 from types import ModuleType
 
-from evals.helpers import ScriptedClient, make_waku
 from waku.config import Settings
 from waku.db import connect
 from waku.tools import calendar
@@ -200,12 +199,3 @@ def test_default_mock_never_calls_google_and_schema_is_unchanged(tmp_path, monke
     result = local_tool.fn(title="Offline", start="2026-07-24T11:00")
     assert "Not synced to any calendar app" in result
     conn.close()
-
-
-def test_eval_factory_disables_google_even_when_environment_enables_it(tmp_path, monkeypatch):
-    monkeypatch.setenv("WAKU_GOOGLE_CALENDAR", "1")
-    app = make_waku(tmp_path, client=ScriptedClient([]))
-    try:
-        assert app.settings.google_calendar is False
-    finally:
-        app.close()

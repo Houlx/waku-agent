@@ -13,7 +13,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from evals.helpers import ScriptedClient, make_waku, response, text_block, tool_block
 from waku.config import Settings
 from waku.tools import experimental
 
@@ -38,37 +37,6 @@ def fake_run(record, stdout="Done. Created hello.py.", returncode=0):
         record["kwargs"] = kwargs
         return SimpleNamespace(stdout=stdout, stderr="", returncode=returncode)
     return run
-
-
-def test_delegate_task_invokes_pi_print_mode(tmp_path, monkeypatch):
-    """Full-loop wiring: the model calls delegate_task → pi fires → a scratch task
-    lands in the dated workspace with a MANIFEST + pi transcript, and pi's answer
-    comes back in the tool result."""
-    record = {}
-    monkeypatch.setenv("WAKU_EXPERIMENTAL", "1")
-    monkeypatch.setenv("WAKU_WORKSPACE", str(tmp_path / "ws"))   # keep it out of the repo
-    monkeypatch.setattr(experimental.shutil, "which", lambda _: "/fake/bin/pi")
-    monkeypatch.setattr(experimental.subprocess, "run", fake_run(record))
-
-    gate = response([text_block('{"retrieve": false, "query": "", "reason": "test"}')])
-    script = [gate] + [
-        response([tool_block("delegate_task", {"task": "create hello.py"})], "tool_use"),
-        response([text_block("pi handled it.")]),
-    ]
-    app = make_waku(tmp_path / "home", client=ScriptedClient(script))
-    result = app.respond("have pi create hello.py")
-
-    assert [c["tool"] for c in result.tool_calls] == ["delegate_task"]
-    argv = record["argv"]
-    assert argv[0] == "/fake/bin/pi"
-    assert "-p" in argv and "create hello.py" in argv
-    assert "-a" in argv and "--no-session" in argv          # headless, non-interactive
-    output = result.tool_calls[0]["output"]
-    assert "Done. Created hello.py." in output and "saved to" in output.lower()
-    # the run landed in the dated workspace with a manifest + transcript
-    manifests = list((tmp_path / "ws").rglob("MANIFEST.md"))
-    assert len(manifests) == 1 and "create hello.py" in manifests[0].read_text()
-    assert list((tmp_path / "ws").rglob("pi-transcript.log"))
 
 
 def test_delegate_runs_pi_on_the_calling_model(tmp_path, monkeypatch):
@@ -214,15 +182,3 @@ def test_delegate_kills_a_silent_pi_at_the_deadline(tmp_path, monkeypatch):
     tool = experimental.make_delegate_tool(Settings(home=tmp_path / "home"))
     out = tool.fn(task="anything", timeout_seconds=2)
     assert "2s" in out and "WAKU_DELEGATE_TIMEOUT" in out
-
-
-def test_experimental_flag_gates_registration(tmp_path, monkeypatch):
-    """The demo depends on this: flag off → no delegate_task; flag on → present."""
-    monkeypatch.delenv("WAKU_EXPERIMENTAL", raising=False)
-    app_off = make_waku(tmp_path / "off", client=ScriptedClient([]))
-    assert "delegate_task" not in app_off.tools._tools
-
-    monkeypatch.setenv("WAKU_EXPERIMENTAL", "1")
-    app_on = make_waku(tmp_path / "on", client=ScriptedClient([]))
-    assert "delegate_task" in app_on.tools._tools
-    assert "run_command" in app_on.tools._tools   # skeletons still registered

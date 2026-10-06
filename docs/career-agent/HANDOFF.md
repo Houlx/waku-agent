@@ -7,8 +7,8 @@ stabilization, evaluation, documentation and demo preparation. V1 feature develo
 here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
 Phase 2 — Career Product Cutover was separately approved and is implemented.
 Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
-product. Phase 3 Batch B1 consumer closure is implemented. Batch B2 and Batch C
-backend deletion have not started.
+product. Phase 3 Batch B1 and Batch B2 consumer closure are implemented.
+Batch C backend deletion has not started.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -573,3 +573,211 @@ Useful future maintenance includes broader provider/translation checks, addition
 adversarial examples and print review on other browsers. No embeddings, scraping,
 ATS/application tracking, authentication, SaaS, DOCX, PDF library, resume designer,
 multi-agent execution or revision graph was added or authorized.
+
+
+## Phase 3 Batch B2 consumer closure on 2026-10-06
+
+Batch B2 retires bundled general-product skills and their build/evaluation consumers.
+Career runtime, HTTP/UI, schema, FTS5, extraction, matching, coverage, provenance,
+resume generation and provider behavior are unchanged. Batch C has not started.
+The general backend remains physically present. This batch performs no runtime
+home cleanup, user-skill deletion, credential update or real `.env` write.
+
+### Bundled skills and packaging
+
+The six retired skills are `schedule-meeting`, `weekly-brief`, `waku-memory`,
+`community/meeting-prep`, `community/interview-prep` and
+`community/da-anomaly-analysis`. The bundled template and community README also
+retire. Career loads none of them. Git history preserves the content and its
+community attribution; no legacy archive is added. Runtime-home skills remain
+user data, and the general backend's loader/installer/exporter implementations
+remain for Batch C.
+
+`scripts/validate_skills.py` and its procedural-parser import retire. Bundled
+trigger, encoding, install/export and tracked-content shipping evals retire.
+The wheel force-include disappears. Explicit wheel/sdist exclusions prevent a
+local restoration of repository or package skills from shipping. Build enumeration
+continues to check Career assets, provider/config files, retired consumers and
+runtime-data exclusion. A temporary-project regression restores both skill trees
+and verifies their exclusion through actual Hatchling file enumeration.
+
+### Environment template and CI
+
+The generator renders the complete `.env.example` from `waku/providers.toml`
+and a small Career/shared-configuration list. It imports no Waku module, loads no
+user configuration and creates no runtime home. Public provider keys and scoped
+endpoints/model overrides follow registry rows automatically. Hidden provider
+rows remain omitted from the committed public template, even when configured;
+their runtime resolution and credentials remain compatible.
+
+The template retains `WAKU_PROVIDER`, global key/endpoint/model overrides,
+`WAKU_SMALL_MODEL`, `WAKU_HOME`, iteration/token bounds, LLM timeout, OTel endpoint,
+Career bind/port and the compatible `PORT` fallback. General memory, calendar,
+gateway, MCP and arena configuration no longer belongs to this Career template.
+Their runtime environment reads remain unchanged pending backend retirement.
+
+CI removes bundled-skill validation and checks the Career/provider template.
+The historical `skills-and-evals` job ID remains for branch-protection compatibility.
+Contributor, rulebook, provider, command, architecture, status and eval instructions
+now describe the retained contracts and the offline gate. Repository authoring
+skills under `.claude/` are separate from the retired bundled product skills.
+
+### Evaluation helpers and release gate
+
+`evals.helpers.make_waku` retires after its callers are closed. General history,
+session resume, turn metadata and tool-trigger assembly suites retire. Mixed
+delegate, gateway, calendar, GitHub and triage suites retain their independent
+component tests while dropping general Waku construction. Scripted block/response
+helpers, provider key detection, temporary-home isolation, Career journeys and
+synthetic shared-component tests remain.
+
+New direct `run_loop` regressions preserve plain-answer completion, tool execution
+and recorded results, and bounded runaway iterations with a minimal ToolRegistry.
+No general Memory, Session or app construction is needed for these guarantees.
+
+General response/retrieval judge suites and their DeepEval adapter retire.
+The standalone general `scripts/shootout.py` evaluator and its duplicate scorer/
+report tests retire; existing `test_scoring.py` continues to cover the shared
+scorer. `make eval-judge` disappears. `make gate` executes only the deterministic
+suite and forces `WAKU_RUN_LIVE_EVALS=0` in its subprocess. Existing local report
+fields remain compatible, with the judge recorded as "not run". Gate failure still
+returns a failing exit status. Explicit Career live evaluation remains separate.
+
+### Dependencies
+
+The `[eval]` extra keeps pytest and drops DeepEval. The offline lock refresh removes
+DeepEval and 13 exclusive transitive packages: execnet, nest-asyncio, prompt-toolkit,
+pyfiglet, pytest-asyncio, pytest-repeat, pytest-rerunfailures, pytest-xdist,
+questionary, sentry-sdk, tabulate, wcwidth and wheel. All 290 retained package pins
+remain unchanged. The refresh uses the installed build backend and temporary uv
+cache; it does not require a default dependency change.
+
+Anthropic, OpenAI, python-dotenv and rich remain because retained consumers still
+use them. Tracing and all general gateway/calendar/store/arena/MCP extras remain
+until their last backend/component-test consumers retire in Batch C.
+
+### Verification
+
+The final full deterministic run passes **1,063 tests with 52 skips**, no
+failures or deselections. Chromium is enabled with synthetic clients; temporary
+Make and browser dependencies under `/tmp` enable the existing Career regression.
+The suite preserves all Career checks, provider/model behavior, runtime ownership,
+configuration/home resolution, FTS5/database preservation, generic loop/registry,
+HTTP/static security, assets, documentation links and license/design contracts.
+No paid or live model evaluation runs.
+
+Ruff, all 25 retained JavaScript/fixture syntax checks, environment-template
+validation, offline lock consistency and `git diff --check` pass. Direct wheel,
+sdist and wheel rebuild from extracted sdist pass. Every rebuilt wheel member
+matches the direct wheel byte for byte. Isolated installations of both wheels
+pass default and explicit Career startup, all nine shell/static assets against
+repository bytes, state API, rejected general/static routes, lazy provider
+initialization, absence of app/general-dashboard imports and owned shutdown.
+Both archives retain MIT, brand and all three OFL notices and omit bundled skills.
+
+Removing skill exclusions in a temporary project makes the restored-content
+packaging regression fail. Removing forced offline mode from an in-memory gate
+function makes its live-probe regression fail. The template regression also
+rejects a removed home variable and verifies repair touches only the requested
+example, preserving a separate user-owned dotenv file. No mutation changes
+repository implementation or user runtime files.
+
+The initial restricted-socket run cannot exercise local HTTP. Socket-enabled
+verification resolves that limitation. Its first full run finds a mixed memory
+check reading the retired `waku-memory` skill; that reference is removed while
+its retained general-tool documentation checks remain. Subsequent full runs pass.
+
+### Remaining consumers and audit discrepancies
+
+Batch C must still close imports among app, Session, Memory, general tools,
+MCP, gateways, graph, integration/connect infrastructure, old dashboard/browser
+and arenas. Independent general component evals remain with those implementations;
+`test_memory_arena.py` still imports app for synthetic arena wiring. General
+provider/settings facade tests and old frontend/design contracts need careful
+separation from retained provider services and Career security checks.
+
+General `evals/dataset.jsonl`, `coding.jsonl` and `memory_arena.json` remain because
+retained scoring/coding/memory arenas and their component evals consume them.
+The MCP demo fixture remains required by transport tests. General `ops/judge.py`,
+scoring and arena modules still have consumers and remain physically present.
+The old integrations environment renderer remains inside the backend but no
+longer supplies the repository template; old installer template hints remain
+part of the unsupported backend until its deletion. Shared provider/catalog/
+pricing, config/database, tracing, loop and ToolRegistry must survive Batch C.
+
+The audit's bundled-skill, validator, wheel, generator, helper and DeepEval coupling
+matches actual code. Its scoring-dataset and general judge-module candidates
+cannot be deleted in B2 because arena consumers remain. B1 has already removed
+the hosted Docker skill consumer. Additional closure found in B2 includes the
+standalone shootout script and the mixed fact-mirror skill reference. The hidden
+provider template guarantee is retargeted to the new generator rather than lost.
+No full repository retirement audit is repeated, and no Batch C work begins.
+
+### Changed files
+
+The following inventory includes additions, edits and deletions for this batch.
+Retired paths appear as code rather than links because they no longer exist.
+
+- `.env.example`
+- `.github/ISSUE_TEMPLATE/feature_request.md`
+- `.github/workflows/validate-skills.yml`
+- `AGENTS.md`
+- `CONTRIBUTING.md`
+- `Makefile`
+- `README.md`
+- `docs/architecture.md`
+- `docs/career-agent/HANDOFF.md`
+- `docs/commands.md`
+- `docs/context/conventions.md`
+- `docs/context/writing-rules.md`
+- `docs/evals.md`
+- `docs/providers-registry.md`
+- `docs/status.md`
+- `evals/deterministic/test_all_history.py`
+- `evals/deterministic/test_consolidation.py`
+- `evals/deterministic/test_delegate.py`
+- `evals/deterministic/test_distribution_boundary.py`
+- `evals/deterministic/test_env_example.py`
+- `evals/deterministic/test_fact_mirror.py`
+- `evals/deterministic/test_gateway_runner.py`
+- `evals/deterministic/test_gh_tool.py`
+- `evals/deterministic/test_google_calendar.py`
+- `evals/deterministic/test_history_window.py`
+- `evals/deterministic/test_loop_contract.py`
+- `evals/deterministic/test_models.py`
+- `evals/deterministic/test_only_tracked_skills_ship.py`
+- `evals/deterministic/test_packaging.py`
+- `evals/deterministic/test_platform_provider.py`
+- `evals/deterministic/test_release_gate.py`
+- `evals/deterministic/test_retrieval_gate.py`
+- `evals/deterministic/test_scoring.py`
+- `evals/deterministic/test_session_resume.py`
+- `evals/deterministic/test_session_rotation.py`
+- `evals/deterministic/test_shootout.py`
+- `evals/deterministic/test_skill_encoding.py`
+- `evals/deterministic/test_skill_export.py`
+- `evals/deterministic/test_skill_triggers.py`
+- `evals/deterministic/test_tool_trigger.py`
+- `evals/deterministic/test_triage_workflow.py`
+- `evals/deterministic/test_turn_meta.py`
+- `evals/helpers.py`
+- `evals/judge/anthropic_judge.py`
+- `evals/judge/test_response_quality.py`
+- `evals/judge/test_retrieval_gate_accuracy.py`
+- `pyproject.toml`
+- `scripts/generate_env_example.py`
+- `scripts/shootout.py`
+- `scripts/validate_skills.py`
+- `skills/TEMPLATE.md`
+- `skills/community/README.md`
+- `skills/community/da-anomaly-analysis/SKILL.md`
+- `skills/community/interview-prep/SKILL.md`
+- `skills/community/meeting-prep/SKILL.md`
+- `skills/schedule-meeting/SKILL.md`
+- `skills/waku-memory/SKILL.md`
+- `skills/weekly-brief/SKILL.md`
+- `uv.lock`
+- `waku/ops/README.md`
+- `waku/ops/pricing.py`
+- `waku/ops/release_gate.py`
+- `waku/ops/scoring.py`

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import sqlite3
 import sys
 import threading
 import time
@@ -11,7 +10,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from evals.helpers import ScriptedClient, make_waku, response, text_block
 from waku.gateway import discord as discord_gateway
 from waku.gateway import telegram as telegram_gateway
 from waku.gateway.discord import DiscordHandle
@@ -98,41 +96,6 @@ def test_runner_serializes_concurrent_turns():
 
     assert max_active == 1
     assert order == ["start:one", "end:one", "start:two", "end:two"]
-
-
-def test_real_waku_persists_two_telegram_turns_from_worker(tmp_path):
-    home = tmp_path / "home"
-    client = ScriptedClient([
-        response([text_block('{"retrieve": false, "query": "", "reason": "test"}')]),
-        response([text_block("hello one")]),
-        response([text_block('{"retrieve": false, "query": "", "reason": "test"}')]),
-        response([text_block("hello two")]),
-    ])
-    runner = GatewayAgentRunner(
-        lambda: make_waku(home, client=client, episodic_store="sqlite"),
-        session_id="telegram",
-        source="telegram",
-    )
-
-    async def turns():
-        first = await runner.respond("one")
-        second = await runner.respond("two")
-        return first.reply, second.reply
-
-    assert asyncio.run(turns()) == ("hello one", "hello two")
-    runner.close()
-
-    conn = sqlite3.connect(home / "state.db")
-    rows = conn.execute(
-        "SELECT source, role, content FROM chat_log ORDER BY id"
-    ).fetchall()
-    conn.close()
-    assert rows == [
-        ("telegram", "user", "one"),
-        ("telegram", "assistant", "hello one"),
-        ("telegram", "user", "two"),
-        ("telegram", "assistant", "hello two"),
-    ]
 
 
 def test_gateway_turn_replies_safely_marks_error_and_recovers(monkeypatch):

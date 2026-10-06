@@ -69,7 +69,8 @@ def test_openai_defaults_still_resolve_live():
     sends — chat.completions WITH a function tool attached — because that is the
     combination gpt-5.6-luna passes as a bare call and 400s on.
 
-    Off by default; `make gate` with WAKU_RUN_LIVE_EVALS=1 is where this bites.
+    Off by default; explicitly run this test with WAKU_RUN_LIVE_EVALS=1.
+    The offline release gate disables live probes.
     """
     import openai
 

@@ -27,11 +27,10 @@ retirement batches. Batch B1 closes the former hosted dashboard consumer.
 | `make eval` | runs deterministic evals offline |
 | `make lint` | runs ruff over runtime, evals and scripts |
 | `make trace` | opens optional Phoenix trace waterfalls at localhost:6006 |
-| `make eval-judge` | runs the retained general judge evals; requires provider calls |
-| `make gate` | runs the retained release gate, including general judge evals |
+| `make gate` | runs the offline deterministic release gate |
 
 Batch A removes `legacy-dashboard`, `legacy-chat`, `voice`, `telegram`, `discord`,
 `whatsapp`, `brief`, `gather`, `shootout` and `shootout-coding`. Trace inspection
-remains useful for Career. The existing judge/gate tooling awaits later retirement;
+remains useful for Career. The release gate now runs offline deterministic checks;
 it does not replace the separately opt-in Career evaluation in [career.md](career.md).
 Tests live in `evals/`, not `tests/`. [evals.md](evals.md) explains the eval tiers.

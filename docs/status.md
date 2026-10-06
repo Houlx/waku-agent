@@ -26,15 +26,15 @@ test count is historical. Current verification lives in the Career handoff.
 
 ## Retained general assistant
 
-The retained backend contains the loop, memory, tools and both eval tiers.
+The retained backend contains general memory, tools, gateways and arenas.
 Its general-product CLI commands no longer start. Batch B1 retires hosted,
-examples, lab and upstream teaching consumers.
-General backend implementations remain pending Batch C; bundled skills await Batch B2.
+examples, lab and upstream teaching consumers. Batch B2 retires bundled skills,
+general judge suites and the general-agent eval factory. Backend implementations
+remain pending Batch C.
 
-**950 deterministic evals pass offline**, with no API key; 60 more are live
-evals that skip without one. CI runs the offline tier on every PR along with
-ruff, the skills validator, and a check that `.env.example` still matches the
-integrations registry.
+CI runs the retained deterministic suite with ruff and a Career/provider
+environment-template check. `make gate` runs offline checks and disables live
+provider probes. Current verification results live in the Career handoff.
 
 **0.1.8 is on PyPI and on GitHub Releases.** Pushing a `v*` tag publishes to
 both, so the repo's "Latest" release always matches `pip install waku-agent`.
@@ -61,10 +61,10 @@ things that *might* work.
 
 ## Retirement limits
 
-Batch B1 adds no Career feature or hosting replacement. Career keeps its schema,
+Batches B1 and B2 add no Career feature or hosting replacement. Career keeps its schema,
 pipeline, provider behavior, FTS5, provenance and independent frontend.
 Protected Waku design copies and font notices remain with the old dashboard assets.
 Git history preserves retired teaching and hosted implementation.
 
-The judge evals remain opt-in and require a key. Chromium is an opt-in test-only
+Career live evaluation remains opt-in and requires a key. Chromium is an opt-in test-only
 regression. Windows behavior and OTel exporter shutdown remain unverified here.

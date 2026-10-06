@@ -99,19 +99,19 @@ def test_default_pinned_specs_pins_the_override_not_the_placeholder(hosted):
 
 
 def test_it_appears_in_no_local_list(local):
-    from waku.integrations import render_env_example_block
+    from scripts.generate_env_example import render_env_example
     from waku.ops.settings_api import settings_info
 
     assert PLATFORM not in [p["name"] for p in settings_info()["providers"]]
-    block = render_env_example_block()
+    block = render_env_example()
     assert PLATFORM not in block and "WAKU_PLATFORM_" not in block
 
 
 def test_env_example_never_mentions_it_even_when_hosted(hosted):
     """The file is committed and identical on every machine."""
-    from waku.integrations import render_env_example_block
+    from scripts.generate_env_example import render_env_example
 
-    block = render_env_example_block()
+    block = render_env_example()
     assert PLATFORM not in block and "WAKU_PLATFORM_" not in block
 
 

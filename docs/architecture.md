@@ -21,7 +21,9 @@ Batch B1 removes hosted, upstream examples, lab topics, architecture boards and
 teaching walkthroughs. No Elastic License 2.0 implementation enters the MIT runtime.
 The old app, Session, Memory, tools, MCP, gateways, graph, dashboard, browser agent,
 integration facade and arenas remain physically present until Batch C. Their evals
-still test their behavior. Bundled skills and validation remain until Batch B2.
+retain component checks. Batch B2 removes bundled skills, procedural build
+validation and general-agent eval construction. The environment template reads
+the provider registry directly, and the release gate runs offline checks.
 
 Retirement performs no schema migration, runtime-data deletion or stored configuration
 rewrite. Career initialization preserves existing general rows. Provider/model

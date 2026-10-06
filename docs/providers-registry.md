@@ -49,16 +49,16 @@ price = [3.0, 15.0]
 ```
 
 `waku/loop/models.py` builds `PROVIDERS` and `KEY_URLS` from it at import.
-`waku/ops/pricing.py` builds `PRICING` from the same rows. `waku/integrations.py`
-already derived the `.env.example` block from `PROVIDERS`, so that follows for
-free — contributors editing that file by hand were doing work the generator
-does.
+`waku/ops/pricing.py` builds `PRICING` from the same rows.
+`scripts/generate_env_example.py` reads the TOML file directly to document provider
+credentials, scoped endpoints and model overrides alongside Career configuration.
+It imports no general integration or procedural memory module.
 
 Adding a provider is now:
 
 1. a table in `waku/providers.toml`
 2. `waku/ops/static/logos/<name>.svg`
-3. `python scripts/generate_env_example.py` — mechanical, and CI checks it
+3. `python scripts/generate_env_example.py --write` — mechanical, and CI checks it
 
 No test needs editing, for an ordinary row. `test_providers.py` was already
 parametrised over `PROVIDERS`, and `test_providers_registry.py` walks the
