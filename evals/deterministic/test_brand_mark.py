@@ -1,4 +1,4 @@
-"""The three copies of the Waku mark must stay one drawing.
+"""Retained Waku marks stay one drawing; the Career README excludes them.
 
 The dashboard paints the mark through a CSS mask, so its colour comes from the
 page and one file is enough. A README cannot do that — GitHub gives an <img>
@@ -45,8 +45,11 @@ def test_each_variant_states_its_ink_outright():
         )
 
 
-def test_the_readme_offers_both_inks():
+def test_career_readme_excludes_protected_waku_marks_and_keeps_attribution():
     readme = (ROOT / "README.md").read_text()
-    assert 'media="(prefers-color-scheme: dark)"' in readme
+    assert readme.startswith("# Career Agent\n")
+    assert "Sean Chen (ShenSeanChen)" in readme
+    assert "[LICENSE](LICENSE)" in readme
     for name in VARIANTS:
-        assert f"docs/brand/{name}" in readme, f"README never references {name}"
+        assert f"docs/brand/{name}" not in readme
+    assert "<picture>" not in readme

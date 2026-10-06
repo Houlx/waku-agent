@@ -5,7 +5,8 @@
 Days 1–4 are complete. Day 4 was explicitly approved on 2026-10-02 for
 stabilization, evaluation, documentation and demo preparation. V1 feature development stops
 here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
-Phase 2 remains unauthorized.
+Phase 2 — Career Product Cutover was separately approved and is implemented.
+Phase 3 physical retirement remains unauthorized.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -20,7 +21,7 @@ No default dependencies or AI capabilities were added.
 
 ## Product and architecture
 
-The local `#career` workspace supports onboarding, raw persistence, normalization,
+The local Career workspace at `#overview` supports onboarding, raw persistence, normalization,
 editable profile review, profile-level confirmation, JD analysis, agent-authored
 FTS5 searches, evidence inspection, MATCH/PARTIAL/GAP, deterministic coverage,
 explicit resume generation, cited review, Markdown export and browser printing.
@@ -46,7 +47,8 @@ Profile, JD, report and evidence remain untrusted data.
 | `waku/runtime/career_resumes.py` | Generation gates, claim validation, current drafts and Markdown |
 | `waku/tools/career.py` | Scoped submission, FTS5 search and evidence lookup |
 | `waku/ops/dashboard.py` | Transitional old shell; Career API delegates to its dedicated runtime |
-| `waku/ops/static/js/career.js`, `style.css` | Workspace forms, reports, resume review and print rules |
+| `waku/ops/static/career/`, `career.html` | Independent Career UI, routes, drafts, requests, Settings and print rules |
+| `waku/ops/static/js/career.js`, `style.css` | Retained rollback dashboard workspace |
 | `evals/career.py` | Explicitly opt-in real-provider evaluation |
 | `evals/fixtures/career_*.json` | Four JDs, varied synthetic profile and review expectations |
 | `evals/deterministic/test_career_*.py` | Offline profile, job, resume and whole-journey regressions |
@@ -112,10 +114,10 @@ Follow [the Career guide](../career.md) for clone/setup commands, the architectu
 diagram and the exact demo. Start a fresh isolated demo without deleting data:
 
 ```bash
-WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku career
+WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku
 ```
 
-Open `http://localhost:7777/#career`. Configure a provider through the Career setup button if needed.
+Open `http://localhost:7777/#overview`. Configure a provider through the Settings page if needed.
 Use `evals/fixtures/career_profile.json` and the guide's RAG/PyTorch/production-Python
 JD to demonstrate MATCH/PARTIAL/GAP, evidence inspection and explicit generation.
 
@@ -124,7 +126,7 @@ uv pip install -e '.[eval]'
 uv run python -m pytest -q evals/deterministic/test_career_*.py
 uv run python -m pytest -q evals/deterministic
 uv run --with ruff ruff check waku evals scripts hosted
-node --check waku/ops/static/js/career.js
+node --check waku/ops/static/career/render.js
 uv run python -m evals.career --live --output /tmp/career-evaluation.json
 uv run python -m evals.career --live --scenario 'AI Engineer' --language Chinese --inject-jd --output /tmp/career-adversarial.json
 ```
@@ -204,7 +206,111 @@ that expose `close()` and leaves injected clients under caller ownership.
 General frontend/modules, hosted code and teaching material remain in the repo.
 The existing settings object still creates an unused `outbox` directory.
 These limits do not require general assembly for the explicit Career launch.
-Phase 2 navigation, styling and default-product cutover have not started.
+At Phase 1 completion, Phase 2 navigation, styling and default-product cutover
+had not started. The section below records the subsequent implementation.
+
+## Phase 2 product cutover on 2026-10-06
+
+The approved implementation keeps plain JavaScript and the completed Career
+runtime, database schema, coordinators, tools, retrieval, matching, coverage and
+resume validation. No AI architecture or licensing boundary changed.
+
+The dedicated shell loads only `career/` assets. `ui.js` owns escaping, requests,
+independent primitives and theme behavior. `state.js` separates saved artifacts,
+editor drafts and request/provider progress. `router.js` owns addressable hash
+routes and stable IDs. `actions.js` owns submissions and exports. `render.js`
+owns screens, and `settings.js` owns provider configuration. Bootstrap performs
+initial Career/readiness reads and starts no polling or AI action.
+
+Routes are `#overview`, `#profile`, `#jobs`, `#jobs/<job-id>`,
+`#jobs/<job-id>/resume` and `#settings`. `#career` redirects to Overview.
+Missing jobs and resumes have explicit empty states. Rendering creates no drafts
+and submits no work. Raw/profile/JD/language drafts stay in memory across
+navigation; reload restores saved artifacts only. A navigation counter prevents
+late responses from moving users away from their chosen screen. Busy requests
+block duplicates and editor mutations while leaving navigation available.
+Failures retain inputs and refresh persisted artifacts, including failed jobs.
+
+Profile groups use existing source types and IDs. Job summaries derive status
+counts from saved requirements. Reports retain evidence/source disclosures and
+current/stale gates. Resume language changes require explicit generation.
+Markdown cleanup, resume-only print isolation and CJK system-font fallback remain.
+The independent CSS uses no protected design styles, mark, favicon or bundled
+font files. About and the root README retain MIT upstream attribution.
+
+After browser acceptance passed, `waku`, `waku career`, `make run` and
+`make dashboard` became Career launches at `/#overview`. `waku dashboard` /
+`make legacy-dashboard` retain the old dashboard; `waku chat` / `make legacy-chat`
+retain terminal chat. Old backend modules, assets, hosted code and teaching
+material remain in place. The Career HTTP handler serves an explicit allowlist
+of its shell and eight assets; old shell/static pages return JSON 404 responses.
+
+`test_career_browser.py` launches real Chromium against a temporary Career server
+and SQLite home with scripted initial/replacement clients. Provider writes are
+explicitly redirected to the temporary home's `.env`, and provider credentials
+are removed from the test environment. `career_browser.cjs` covers onboarding,
+Settings failure/recovery, profile edits/confirmation, all routes/history,
+draft retention, delayed actions, duplicate prevention, failed reanalysis with
+retained reports, all statuses/evidence, three explicit language generations,
+Markdown, themes, print isolation, CJK heading fallback, stale gates and reload.
+It rejects page errors and non-Career API/static requests. The browser dependency
+is test-only and opt-in; setup lives in the Career guide. Career-specific asset
+checks inspect the actual loaded scripts, handlers, network routes and timer.
+
+All 122 Career checks passed with the committed Chromium journey enabled.
+The final remaining broad suite passed 2,618 checks with 74 skips and one
+explicit deselection. The deselected hosted concurrency assertion failed in the
+preceding full run and on isolated retry, matching the known handoff failure.
+The preceding full run also exposed the old README-logo assertion; that contract
+now checks independent Career identity and attribution while retaining the
+unchanged mark-geometry/ink checks. Hosted code was not changed.
+
+Ruff, JavaScript syntax, loaded-asset/handler/network/timer contracts, shared
+static/design/rulebook checks, skill validation, environment-example validation
+and `git diff --check` passed. Wheel and source archive builds passed; the wheel
+was installed into an isolated target, served every approved Career asset and
+passed default launch/owned shutdown without importing `waku.app`. Final packaged
+Career files matched repository bytes. A browser-only intercepted mutation
+removed the late-response navigation guard and made the regression fail at its
+Overview-route assertion. No mutation changed repository implementation files.
+
+New files are the eight `waku/ops/static/career/` assets,
+`evals/deterministic/test_career_assets.py`, `test_career_browser.py`, and
+`evals/fixtures/career_browser.cjs` / `career_state.cjs`. Modified product files
+are `career.html`, `career_dashboard.py`, `waku/__main__.py` and `Makefile`.
+The Career HTTP and README brand contracts changed with them. Current README,
+Career guide, frontend map, architecture, status, retained getting-started guide,
+handoff and inspection status now describe the cutover. Historical V1 Product
+Spec and Implementation Plan, the refactor plan, runtime/schema/pipeline code,
+old frontend assets and protected design copies remain unchanged.
+
+An early browser harness failed to redirect provider writes and persisted
+`WAKU_MODEL=offline` in the ignored checkout `.env`. The original value, including
+whether the variable was absent, cannot be recovered reliably: the file has no
+entry in HEAD, the Phase 1 checkpoint, Git history or a stash, and no checkout
+configuration backup was found. The inherited process has no model override,
+and the resolved runtime home has no `.env`; neither proves the prior checkout
+state. The Phase 1 browser dotenv belongs to a separate test runtime and cannot
+establish the user's configuration. The commented example override does not
+establish it either. No restoration or model selection was performed.
+
+The provider-save path could also have persisted its effective endpoint when a
+scoped endpoint was previously absent. The checkout currently contains
+`ZHIPU_BASE_URL=https://api.z.ai/api/anthropic`; without an earlier snapshot,
+that field's prior presence cannot be established. The harness omitted credentials
+and did not switch providers; those fields were not submitted as changes.
+The test process's environment and runtime replacements were transient.
+
+The corrected browser harness redirects provider writes to the temporary home,
+clears provider credentials and the inherited model from its test environment,
+and now verifies both actual temporary model persistence and byte-for-byte
+preservation of the checkout dotenv file. The minimal rerun passed one Chromium
+journey; focused lint and diff checks passed. The checkout `.env` remains unchanged
+from the start of the recovery investigation.
+Real-provider evaluation was not run. System fonts and browser pagination remain
+platform-dependent. Physical retirement requires separate Phase 3 approval;
+shared modules, the rollback shell and package/configuration cleanup still await
+that phase. Career needs no old frontend script or protected visual asset.
 
 ## Verification on 2026-10-02
 

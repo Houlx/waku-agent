@@ -6,14 +6,27 @@
 Read this before opening a PR or filing an issue: most of what is already
 known-broken is below, and half of it already has a fix in flight.
 
-**Last updated:** 2026-09-23
+**Last updated:** 2026-10-06
 
 ---
 
-## What works
+## Current Career product
+
+V1, runtime separation and Phase 2 product cutover are implemented. `waku`,
+`waku career`, `make run` and `make dashboard` launch Career Agent. Its independent
+plain JavaScript frontend supports addressable routes, profile review, saved jobs,
+evidence inspection, explicit resume generation and provider Settings.
+The old dashboard remains available through `waku dashboard` and
+`make legacy-dashboard`; terminal chat uses `waku chat`.
+
+Phase 3 retirement has not started. General modules and assets remain in place.
+The retained general assistant status below records upstream context; its old
+test count is historical. Current verification lives in the Career handoff.
+
+## Retained general assistant
 
 The four pillars run: the loop, memory (semantic + episodic + procedural with
-a retrieval gate), tools, and both eval tiers. `waku`, `waku dashboard`,
+a retrieval gate), tools, and both eval tiers. `waku chat`, `waku dashboard`,
 `waku voice`, `waku telegram`, `waku discord`, `waku brief` and
 `waku connect google` all start.
 

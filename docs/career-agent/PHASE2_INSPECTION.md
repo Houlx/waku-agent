@@ -3,8 +3,9 @@
 Phase 2 will keep plain JavaScript, replace the transitional Career shell,
 and separate routing, application state, draft state, request state and rendering.
 The user approved this frontend recommendation after the inspection on 2026-10-06.
-The user has not authorized Phase 2 implementation. This handoff does not grant
-that authorization.
+At inspection time, the user had not authorized Phase 2 implementation.
+Separate approval subsequently authorized Phase 2 only; the current
+[handoff](HANDOFF.md) records its implementation and verification.
 
 V1 MVP and Phase 1 runtime separation are complete. Physical retirement of the
 old Waku product remains Phase 3. Career should become the default product only

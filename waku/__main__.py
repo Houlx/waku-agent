@@ -1,8 +1,9 @@
 """Entrypoints — installed as the `waku` command (and `python -m waku`):
 
-  waku                       chat in the terminal (default)
-  waku dashboard             the browser cockpit → localhost:7777 (+ Telegram if configured)
-  waku career                the isolated Career workspace → localhost:7777
+  waku                       Career Agent → localhost:7777/#overview (default)
+  waku dashboard             old Waku dashboard for rollback/development
+  waku career                explicit Career Agent launch
+  waku chat                  old terminal chat for rollback/development
   waku connections           list configured integrations and their health
   waku connect google        sign in to Google Calendar (opens your browser)
   waku connect waku-memory   one memory shared with your other agents (opens your browser)
@@ -39,14 +40,14 @@ def _tolerant_stdio() -> None:
 def main() -> None:
     _tolerant_stdio()
     args = sys.argv[1:]
-    if not args:
-        from waku.gateway.cli import main as cli_main
-
-        cli_main()
-    elif args[0] == "career":
+    if not args or args[0] == "career":
         from waku.ops.career_dashboard import main as career_main
 
         career_main()
+    elif args[0] == "chat":
+        from waku.gateway.cli import main as cli_main
+
+        cli_main()
     elif args[0] == "dashboard":
         from waku.ops.dashboard import main as dash_main
 

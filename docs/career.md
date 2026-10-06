@@ -24,21 +24,37 @@ cp .env.example .env
 
 Configure your provider and its key in `.env`, following
 [Getting started](getting-started.md#2-add-one-key). The Career launch page also supports
-provider setup. Start Career with a fresh demo directory to keep your own
+Settings. Start Career with a fresh demo directory to keep your own
 assistant's data separate:
 
 ```bash
-WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku career
+WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku
 ```
 
-Open `http://localhost:7777/#career`. Keep the directory that Waku created to
+Open `http://localhost:7777/#overview`. Keep the directory that Waku created to
 resume this demo later. Restart with that same `WAKU_HOME`; never clear an existing
 runtime directory to reset a demo. Python changes require a server restart.
 
-`waku dashboard` retains the old application for rollback and still exposes
+`waku` and `waku career` launch Career Agent. `make run` and `make dashboard`
+also launch Career. `waku dashboard` / `make legacy-dashboard` retain the old application for rollback and still exposes
 `#career`. Both launch paths dispatch Career stages through the dedicated runtime.
 Do not run both applications against the same runtime home at the same time;
 provider transactions use a process-local lock.
+
+## Navigate the workspace
+
+Overview shows profile readiness and recent analyses. Career Profile groups the
+existing records for review. Jobs lists coverage and MATCH/PARTIAL/GAP counts.
+Job Detail shows sources, requirements, evidence and explicit generation controls.
+Resume shows the saved draft, its language, citations and exports. Settings offers
+only the provider, main model, key and endpoint needed for Career stages.
+
+Routes are `#overview`, `#profile`, `#jobs`, `#jobs/<job-id>`,
+`#jobs/<job-id>/resume` and `#settings`. `#career` redirects to Overview.
+Direct links, browser history and reload restore saved artifacts without AI work.
+Missing jobs and resumes show useful empty states. Navigation during an action
+keeps your selected screen when that action completes. Duplicate submissions are
+blocked, and failed stages retain inputs and earlier artifacts.
 
 ## Create your profile
 
@@ -50,7 +66,7 @@ certifications, research, publications and awards.
 Select **Normalize Profile** to save your input and organize each record into a
 title, description and skills. Review the result, correct inaccurate wording, and
 select **Confirm & Continue**. Confirmation saves your edits and confirms the
-whole profile. Saved data survives reload; unsaved form drafts survive polling and
+whole profile. Saved data survives reload; unsaved form drafts survive
 navigation within the page, but they do not survive reload.
 
 ## Analyze a job
@@ -120,12 +136,13 @@ flowchart TD
 The runtime reuses `run_loop`, provider adapters, `ToolRegistry` and `Tracer`.
 `career_runtime.py` owns settings, a lazy client, a Career SQLite connection and
 an execution lock that also protects provider configuration and replacement.
-`career_dashboard.py` serves the explicit launch without general assistant assembly.
+`career_dashboard.py` serves the default and explicit Career launches without general assistant assembly.
 `provider_services.py` supplies provider-only configuration and masked readiness.
 `career.py` owns profiles and action dispatch, `career_jobs.py` owns extraction,
 matching and scoring, and `career_resumes.py` owns draft generation and exports.
-`waku/tools/career.py` provides stage-scoped tools. `career.js` manages the static
-`#career` workspace without a frontend framework.
+`waku/tools/career.py` provides stage-scoped tools. `static/career/` contains independent plain JavaScript modules for saved state,
+drafts, requests, hash routing, actions, Settings and screen rendering. The old
+`js/career.js` remains only in the rollback dashboard.
 
 Every stage receives fresh messages and at most ten loop iterations. Normalization
 and extraction expose only `submit_stage_result`; matching adds
@@ -167,7 +184,7 @@ uv pip install -e '.[eval]'
 uv run python -m pytest -q evals/deterministic/test_career_profile.py evals/deterministic/test_career_jobs.py evals/deterministic/test_career_resumes.py evals/deterministic/test_career_acceptance.py
 uv run python -m pytest -q evals/deterministic
 uv run --with ruff ruff check waku evals scripts hosted
-node --check waku/ops/static/js/career.js
+node --check waku/ops/static/career/render.js
 ```
 
 The scripted suite exercises the real loop and tools with fixed model proposals.
@@ -176,6 +193,31 @@ whole-journey cases use `evals/fixtures/career_profile.json`, which includes Rea
 Node.js, RAG, prototype Python and education records. Numeric fabrication, invalid
 references, prompt/data separation, generation gates and trace failures have
 regression checks. These tests verify application behavior, not model quality.
+
+## Run the browser regression
+
+Install Playwright only as a test tool outside the product. The frontend has no
+npm build, bundler or runtime dependency:
+
+```bash
+mkdir -p /tmp/career-browser-tools
+npm install --prefix /tmp/career-browser-tools playwright
+/tmp/career-browser-tools/node_modules/.bin/playwright install chromium
+WAKU_CAREER_BROWSER=1 CAREER_PLAYWRIGHT=/tmp/career-browser-tools/node_modules/playwright uv run python -m pytest -s -q evals/deterministic/test_career_browser.py
+```
+
+On Linux, Chromium needs its standard system libraries. Playwright's
+`install-deps chromium` command documents the required packages. Set
+`CAREER_CHROMIUM` to use an existing Chromium executable. The test creates a
+fresh temporary runtime home, injects scripted initial and replacement clients,
+and makes no real-provider calls. Ordinary deterministic runs skip the browser
+journey unless `WAKU_CAREER_BROWSER=1`; asset and handler checks always run.
+
+The journey covers Settings failures/recovery, onboarding, grouped review,
+confirmation, routes/history/direct links, draft retention, delayed actions,
+duplicate prevention, all match statuses, evidence, explicit Japanese generation,
+Markdown, both themes, print isolation, CJK font fallback, stale gates and reload.
+It rejects page errors and requests outside Career/provider APIs.
 
 The real-provider suite is separately opt-in and sends only synthetic facts:
 
@@ -199,14 +241,14 @@ and an SSR metric; the agent must continue treating that instruction as JD data.
 
 ## Reproduce the recommended demo
 
-Use the fresh directory above and open **Career Agent**. Enter Alex Chen's basic
+Use the fresh directory above and select **Set Up Career Profile** on Overview. Enter Alex Chen's basic
 information from `evals/fixtures/career_profile.json`. Add its four records using
 the corresponding work/project/education fields and paste each record's `text`
 into **Tell your Career Agent**. The fixture uses fictional employers and schools.
 
 1. Select **Normalize Profile** and show that original input remains inspectable.
 2. Review or correct the normalized wording, then select **Confirm & Continue**.
-3. Paste this JD and select **Analyze Job**:
+3. Select **Analyze New Job**, paste this JD and select **Analyze Job**:
 
    ```text
    AI Engineer. Required: Build retrieval augmented generation applications.

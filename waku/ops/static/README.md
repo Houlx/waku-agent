@@ -11,13 +11,38 @@ files to change the UI; edit `dashboard.py` to change the server/API.
 - `design/`, `fonts/` — the Waku Memory design system and its three fonts.
 - `js/` — the app, split by concern (below).
 
-## The transitional Career launch
+## The Career product
 
-`waku career` serves `career.html` through `career_dashboard.py`. It loads the
-existing `util.js`, `ui.js`, `theme.js` and `career.js`, followed by
-`career_bootstrap.js`. The bootstrap defines the Career entry and provider setup;
-it reads `/api/provider-status` and `/api/career` without general dashboard polls.
-The existing styles remain unchanged until the approved product cutover.
+`waku` and `waku career` serve `career.html` through `career_dashboard.py`.
+`make dashboard` starts Career; `make legacy-dashboard` starts the old shell.
+The dedicated server allows only `career.html` and its eight Career assets.
+
+`career/` contains small classic scripts sharing the `CA` namespace:
+
+| File | Responsibility |
+|---|---|
+| `ui.js` | Escaping, JSON requests, independent primitives and theme behavior |
+| `state.js` | Saved snapshot, editor drafts, request progress and provider state |
+| `router.js` | Hash parsing, stable job URLs, compatibility redirect and navigation |
+| `actions.js` | Draft editing, explicit submissions, failure recovery and exports |
+| `render.js` | Overview, grouped profile, jobs, reports, evidence and resumes |
+| `settings.js` | Provider readiness, retained form inputs and explicit configuration |
+| `bootstrap.js` | Initial reads and routing; no polling or AI actions |
+| `style.css` | Independent Career visuals, responsive layout and resume print isolation |
+
+Rendering starts no requests and creates no drafts. Navigation owns URL state;
+a navigation counter prevents action completion from redirecting a user who moved
+away. Saved artifacts, raw/profile/JD/language drafts and request errors have
+separate owners. Drafts stay in memory for the tab; only the theme uses storage.
+Busy editors disable inputs while allowing navigation. Settings retains its own
+form and failure state even after the user leaves it.
+
+The Career shell loads no old helper scripts, design files, fonts, mark or favicon.
+MIT helper behavior is adapted with independent appearance. The rollback files
+below remain unchanged for Phase 3. Verify Career with the checked-in
+[browser regression](../../../docs/career.md#run-the-browser-regression) and
+`test_career_assets.py`, which audits the actual loaded graph and its network/timer
+boundary. Real-provider evaluation is separate.
 
 ## The files (`js/`), in load order
 

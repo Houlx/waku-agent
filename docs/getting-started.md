@@ -1,5 +1,10 @@
 # Getting started
 
+Career Agent now launches by default with `waku` or `waku career`.
+[The Career guide](career.md) covers the current product. This page describes the
+retained general Waku assistant, launched explicitly through `waku dashboard`
+or `waku chat` during the Phase 2 rollback period.
+
 Five steps take you from nothing to a Waku that remembers you. Each step ends
 with a check, so you know it worked before you move on. Everything runs on your
 own machine.
@@ -24,7 +29,7 @@ In a checkout, `uv run waku …` needs no venv activation. Three ways to run it:
 | Command | When |
 |---|---|
 | `uv run waku dashboard` | quick start, zero activation (recommended) |
-| `source .venv/bin/activate` → `waku dashboard` | activate once, bare `waku` all session |
+| `source .venv/bin/activate` → `waku dashboard` | activate once, bare `waku dashboard` all session |
 | `uv tool install .` → `waku dashboard` | install `waku` **globally**, forever |
 
 **Check:** `waku connections` prints a list of integrations.
@@ -41,7 +46,7 @@ OpenCode Go work the same way. You can also paste a key in the dashboard's
 Settings later. Either way it stays in your local `.env` and is never sent to
 the browser.
 
-**Check:** run `waku` and say hi. It answers in the terminal.
+**Check:** run `waku chat` and say hi. It answers in the terminal.
 
 ## 3. Open the dashboard
 
@@ -49,7 +54,7 @@ the browser.
 waku dashboard          # → http://localhost:7777
 ```
 
-`waku` and `waku dashboard` are two doors into the **same** Waku. The dashboard
+`waku chat` and `waku dashboard` are two doors into the **same** Waku. The dashboard
 is a small web server on your machine (`127.0.0.1`): the browser is the UI, and
 the same process runs every turn. Set `TELEGRAM_BOT_TOKEN` and it starts your
 Telegram bot too.

@@ -1,5 +1,13 @@
 # Architecture — the whiteboard, refreshed
 
+Career Agent is the default product launched by `waku` or `waku career`.
+Its dedicated runtime and HTTP server bypass general assistant assembly.
+`ops/static/career/` owns independent styling, hash routes and separate saved,
+draft and request state. `waku dashboard` and `waku chat` retain the general
+application for rollback; the general architecture below describes that retained
+implementation. Phase 2 changes no Career schema, retrieval or AI pipeline.
+
+
 The same system as the two whiteboard diagrams from the previous videos
 (the generic Harness/Loop/Memory/LLM-Ops one and the Hermes-specific one),
 now with a file path on every box.
@@ -110,12 +118,12 @@ Memory importer already uploads one memory per file. Episodes, `MEMORY.md` and
 - `waku/gateway/` — how text gets in and out: `cli.py`, `voice.py` (wake word),
   `telegram.py`, `discord.py` and `whatsapp.py`, started by `runner.py` and
   `supervisor.py`. Gateways only move text.
-- `waku/runtime/career.py` — opt-in Career profile normalization and action dispatch.
+- `waku/runtime/career.py` — Career profile normalization and action dispatch.
   `career_jobs.py` extracts job requirements, retrieves Career evidence and scores
   matches over the same loop with scoped tools. `career_resumes.py` generates
   cited current drafts after explicit user action; Career stages bypass chat memory.
 - `waku/runtime/career_runtime.py` — Career settings, lazy client, connection and
-  execution/replacement lock. `ops/career_dashboard.py` serves `waku career` without
+  execution/replacement lock. `ops/career_dashboard.py` serves `waku` / `waku career` without
   general assistant assembly; `ops/provider_services.py` owns provider-only saves.
 - `waku/runtime/session.py` — working memory for one turn: SOUL.md, memory
   context and chat history.

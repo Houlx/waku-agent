@@ -12,10 +12,10 @@ PY := $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python)
 # real assistant uses (spec 002). An explicit WAKU_HOME still wins.
 export WAKU_HOME ?= $(CURDIR)/.waku
 
-.PHONY: run voice telegram discord brief dashboard trace eval eval-judge gate lint
+.PHONY: run voice telegram discord brief dashboard legacy-dashboard legacy-chat trace eval eval-judge gate lint
 .PHONY: run voice telegram whatsapp brief dashboard trace eval eval-judge gate lint
 
-run:            ## chat with Waku in the terminal
+run:            ## launch Career Agent at http://localhost:7777/#overview
 	$(PY) -m waku
 
 voice:          ## talk to it — push-to-talk, or always-on with WAKU_WAKE_WORD
@@ -38,8 +38,14 @@ gather:         ## same job as a GRAPH: 4 sources in parallel, then one digest
 # The server holds dashboard.py in memory: static JS/CSS reload on refresh, but
 # Python routes do NOT. After pulling a change that touches dashboard.py (or any
 # imported module), stop this and re-run it, or the UI shows stale backend data.
-dashboard:      ## everything on one page — http://localhost:7777 (restart after a backend pull)
-	$(PY) -m waku.ops.dashboard
+dashboard:      ## launch Career Agent (restart after a backend pull)
+	$(PY) -m waku career
+
+legacy-dashboard: ## old Waku dashboard for rollback/development
+	$(PY) -m waku dashboard
+
+legacy-chat:    ## old Waku terminal chat for rollback/development
+	$(PY) -m waku chat
 
 trace:          ## deep trace waterfalls (Phoenix) at http://localhost:6006
 	$(PY) -m phoenix.server.main serve

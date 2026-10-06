@@ -1,26 +1,19 @@
-<!doctype html><html><head><meta charset="utf-8">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<script>try{var t=localStorage.getItem("waku-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Career Agent</title>
-<!-- Transitional shell reuses the existing fork's styles; product styling is Phase 2. -->
-<link rel="stylesheet" href="/static/design/fonts.css">
-<link rel="stylesheet" href="/static/design/tokens.css">
-<link rel="stylesheet" href="/static/design/type.css">
-<link rel="stylesheet" href="/static/design/controls.css">
-<link rel="stylesheet" href="/static/style.css"></head><body>
-<main>
-  <header class="pagehead">
-    <h1>Career Agent</h1>
-    <button class="btn btn-secondary" onclick="careerProviderSetup()">Provider setup</button>
-    <button id="theme-toggle" class="btn btn-tertiary" onclick="cycleTheme()"></button>
-    <div id="provider-status" role="status"></div>
-  </header>
-  <div id="view"></div>
-</main>
-<script src="/static/js/util.js"></script>
-<script src="/static/js/ui.js"></script>
-<script src="/static/js/theme.js"></script>
-<script>const VIEWS = {};</script>
-<script src="/static/js/career.js"></script>
-<script src="/static/js/career_bootstrap.js"></script>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('career-theme')==='dark'?'dark':'light'}catch(e){}</script>
+<link rel="stylesheet" href="/static/career/style.css">
+</head><body>
+<header><a class="identity" href="#overview">Career Agent</a>
+<nav aria-label="Career navigation"><a href="#overview">Overview</a><a href="#profile">Career Profile</a><a href="#jobs">Jobs</a><a href="#settings">Settings</a></nav>
+<button id="theme-toggle" onclick="CA.toggleTheme()">Change theme</button></header>
+<main><p id="provider-status" role="status"></p><div id="view"></div></main>
+<script src="/static/career/ui.js"></script>
+<script src="/static/career/state.js"></script>
+<script src="/static/career/router.js"></script>
+<script src="/static/career/actions.js"></script>
+<script src="/static/career/render.js"></script>
+<script src="/static/career/settings.js"></script>
+<script src="/static/career/bootstrap.js"></script>
 </body></html>

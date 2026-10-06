@@ -1,4 +1,4 @@
-"""Explicit Career launch path, retaining the old dashboard for rollback."""
+"""Career product HTTP entry, retaining the old dashboard for rollback."""
 from __future__ import annotations
 
 import json
@@ -12,6 +12,9 @@ from waku.ops.provider_services import redact_error
 from waku.runtime.career_runtime import CareerRuntime
 
 STATIC = Path(__file__).resolve().parent / 'static'
+CAREER_ASSETS = frozenset({'career.html', *(f'career/{name}' for name in (
+    'style.css', 'ui.js', 'state.js', 'router.js', 'actions.js', 'render.js',
+    'settings.js', 'bootstrap.js'))})
 STATIC_TYPES = {'.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml',
                 '.html': 'text/html; charset=utf-8', '.woff2': 'font/woff2'}
 
@@ -69,7 +72,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._file(STATIC / 'career.html')
             elif url.path.startswith('/static/'):
                 target = (STATIC / unquote(url.path[len('/static/'):])).resolve()
-                if STATIC.resolve() not in target.parents or not target.is_file():
+                if (STATIC.resolve() not in target.parents or not target.is_file()
+                        or target.relative_to(STATIC.resolve()).as_posix() not in CAREER_ASSETS):
                     self._json({'error': 'Static file not found.'}, 404)
                 else:
                     self._file(target)
@@ -121,7 +125,7 @@ def main():
             if exc.errno == EADDRINUSE:
                 continue
             raise
-        print(f'Career Agent → http://localhost:{server.server_port}/#career  (Ctrl-C to stop)')
+        print(f'Career Agent → http://localhost:{server.server_port}/#overview  (Ctrl-C to stop)')
         try:
             server.serve_forever()
         except KeyboardInterrupt:
