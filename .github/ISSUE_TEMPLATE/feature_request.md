@@ -1,21 +1,17 @@
 ---
 name: Feature request
-about: A capability waku doesn't have yet
+about: A capability Career Agent does not have yet
 ---
 
-**What you're trying to do** — the goal, not the implementation. What are you
-trying to get waku to do for you?
+**Describe the goal.** Explain what you want Career Agent to help you do.
 
-**Where it belongs on the [footprint ladder](../../CONTRIBUTING.md)** — every
-registered tool ships in every prompt, so the core stays narrow. Could this be:
+**Explain the current behavior.** Include a concrete profile, job or resume example
+without personal data or credentials.
 
-- [ ] Career configuration or documentation?
-- [ ] a CLI + a README the model reads when it needs it?
-- [ ] a tool behind an optional extra?
-- [ ] a gateway (one file, text in and out)?
-- [ ] something that genuinely has to live in the core?
+**Identify the retained boundary.** Explain whether the change extends Career
+configuration, its interface, scoped tools or provider/runtime infrastructure.
+The [conventions](../../docs/context/conventions.md) describe proposal requirements.
 
-**Who else needs this?** Speculative abstractions with no second caller get
-declined — see CONTRIBUTING. A concrete use case is worth more than a design.
+**Describe a useful check.** Explain how a reviewer could verify the result.
 
-**Would you want to build it?** Say so and it gets assigned to you.
+**Offer to contribute.** Say whether you want to implement the change.

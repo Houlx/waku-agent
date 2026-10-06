@@ -26,9 +26,10 @@ voice, graph workflows, arenas/comparison/general judges and exclusive extras.
 
 Batch C2 removes the old app, dashboard, browser-agent, integration/connect,
 settings and command facades, plus transitional Career singleton coordination.
-Standalone trace/SQL/path debugging remains in ops/debug.py. General frontend
-assets, protected design/font files, dormant configuration fields and pricing
-utilities remain for Batch D. Career serves only its independent assets.
+Standalone trace/SQL/path debugging remains in `ops/debug.py`. Batch D removes
+general frontend assets, protected design/font files and dormant
+configuration fields and unused pricing reports/cache. Catalog price metadata
+remains. Career ships only its independent assets.
 
 Retirement deletes no user data, legacy DB tables, Memory/SOUL files, installed
 skills, configuration, credentials, traces or usage ledger. Career-only initialization
@@ -44,5 +45,6 @@ Windows behavior and OTel exporter shutdown remain unverified here. Historical
 upstream provider incident reports remain in Git history; this retirement performs
 no live model-availability audit. No new Career feature or hosting replacement is added.
 
-Career styling loads no protected design files, mark or bundled fonts. Retained
-brand assets and font notices retain their separate licenses. C2 is implemented; D has not started.
+Career styling loads no protected design files, mark or bundled fonts. The upstream
+MIT copyright and Waku names notice remain. No brand assets or
+fonts ship. Phase 3 productization is complete.

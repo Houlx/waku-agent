@@ -9,7 +9,7 @@ Phase 2 — Career Product Cutover was separately approved and is implemented.
 Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
 product. Phase 3 Batch B1 and Batch B2 consumer closure are implemented.
 Batch C1 feature backend deletion and Batch C2 facade retirement are implemented.
-Batch D has not started.
+Batch D final cleanup is implemented; final verification is recorded below.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -20,7 +20,8 @@ govern runtime separation.
 Career code remains MIT.
 
 Batch B1 retires the Elastic License 2.0 hosted implementation; no code moved
-across that boundary. Retained brand assets and fonts keep their separate notices.
+across that boundary. Batch D removes unused brand assets and fonts; the upstream
+MIT copyright and Waku names notice remain.
 No default dependencies or AI capabilities were added.
 
 ## Product and architecture
@@ -1153,3 +1154,139 @@ now retired or migrated while preserving asset/license checks. C1's suggested C2
 asset deletion is superseded by this batch's explicit boundary reserving final
 asset retirement for D. The older Phase 3 audit predates A/B/C1 consumer closure;
 its historical consumers are not restored and no repository-wide audit repeats.
+
+## Phase 3 Batch D final cleanup on 2026-10-06
+
+Phase 3 and Career-only productization are complete. Career Agent is the sole
+supported product. The unchanged supported execution path is CLI → CareerServer
+→ CareerRuntime → Career coordinators → run_loop and scoped ToolRegistry tools.
+Provider configuration/catalogs, SQLite mechanics, tracing and standalone debugging
+remain shared Waku infrastructure. No post-Phase-3 feature work starts.
+
+### Assets, configuration and pricing
+
+D removes 57 old static files: the general shell and stylesheet, 16 general
+JavaScript files, protected design copies, the mark, provider/integration logos,
+three font binaries and their three OFL notices. The two `docs/brand/` mark variants
+also retire. The copied design files are deleted as authorized; their contents
+are never changed or incorporated into Career styling. The retained static tree
+contains `career.html`, seven Career scripts, Career CSS and its README. Career
+continues to use system fonts, CJK fallback, Markdown export and print isolation.
+
+Settings removes these 17 dormant fields: `disabled_providers`, `history_turns`,
+`consolidate_every`, `retrieval_top_k`, `semantic_store`, `episodic_store`,
+`apple_calendar`, `google_calendar`, `google_calendar_id`, `apple_tools`, `gh_tool`,
+`gh_repo`, `experimental`, `graph_workflows`, `telegram_token`, `whatsapp_token`
+and `whatsapp_phone_number_id`. Obsolete environment values are ignored, including
+malformed former numeric values. `ensure_home` stops creating an unused outbox;
+existing outbox contents remain untouched.
+
+Settings retains `provider`, `api_key`, `base_url`, `model`, `small_model`, `home`,
+`max_iterations`, `max_tokens` and `otel_endpoint`. Timeout, HTTP binding/port,
+scoped provider overrides and dotenv precedence retain their existing consumers.
+The environment template already documents only those retained settings and needs
+no regeneration. Legacy home startup notices now identify Career Agent.
+
+Catalog parsing retains per-model input/output prices directly in response entries.
+D deletes `ops/pricing.py`, including remember_price, unused price/cache/cutoff
+reporting and spend aggregation. No retained code read that cache. Registry price
+metadata and saved model pins/default resolution remain compatible.
+
+### Dependencies, packaging and automation
+
+No dependency or extra is removed in D: Anthropic/OpenAI supply the model adapters,
+python-dotenv supplies configuration, and Rich supplies the standalone trace viewer.
+`eval` retains pytest; `dev` retains pytest, pinned Ruff and Hatchling; `tracing`
+retains Phoenix, OTel SDK and OTLP export. No version or lock pin changes. Offline
+`uv lock --check` resolves the existing 155-package lock without changes.
+
+Package description and keywords identify Career. Wheel/sdist exclusions reject
+restored retired static assets, and distribution tests inspect actual Hatchling
+members. The license expression becomes `MIT AND LicenseRef-Waku-Brand`, with
+LICENSE and LICENSE-BRAND in both distributions. OFL files/globs retire with their
+fonts. Upstream MIT copyright stays unchanged; LICENSE-BRAND still governs names.
+No protected brand assets, font binaries or EL2 implementation ship.
+
+Make's six targets already correspond to supported functionality: run, dashboard,
+trace, eval, gate and lint. No target needs deletion. JavaScript syntax checks now
+inspect only Career scripts. Old first-run/design/logo/disabled-provider/spend
+contracts retire; Career security, browser, provider and shared-runtime guarantees
+remain. New regressions enforce the exact static tree, retained Settings fields,
+ignored obsolete values, preserved home files, absent outbox creation and build
+exclusion of synthetically restored retired assets.
+
+CI retains lint, environment validation and deterministic checks; release retains
+build/artifact validation. The historical workflow filename `validate-skills.yml`
+and job ID `skills-and-evals` remain for external branch-protection compatibility.
+The local preview preset now launches Career. The obsolete general new-tool
+maintenance skill and design sync script retire. Retained review/worktree/ship
+skills use supported Career commands, temporary homes and offline gates.
+
+### Documentation and retained tree
+
+Current README, Career guide, handoff, architecture, status, getting-started,
+provider guide, docs index, ops/static READMEs, contributor/rulebook/conventions,
+security and maintainer guidance describe Career. Commands/evals/integrations docs
+already describe only supported commands and retained behavior. Their retirement
+notes explain upstream ancestry. Historical V1 spec/plan, refactor plan, Phase 2
+inspection and Phase 3 audit receive only a current-status banner.
+
+| Retained area | Files and reason |
+|---|---|
+| Top-level Python | `__init__.py` owns version/identity; `__main__.py` owns Career dispatch; `config.py` owns compatible settings/home/dotenv; `db.py` owns connection mechanics and Career schema |
+| `waku/loop` | `__init__.py`, `agent.py`, `models.py` retain run_loop and provider adapters |
+| `waku/runtime` | `__init__.py`, `career_runtime.py`, `career.py`, `career_jobs.py`, `career_resumes.py` retain lifecycle and profile/job/resume stages |
+| `waku/tools` | `__init__.py`, `registry.py`, `career.py` retain the tool contract and scoped Career tools |
+| `waku/ops` | `__init__.py`, `career_dashboard.py`, `provider_services.py`, `catalog.py`, `tracing.py`, `show_trace.py`, `debug.py`, `release_gate.py` retain HTTP, providers, observability, standalone debugging and offline verification |
+| Static | `career.html`; `career/ui.js`, `state.js`, `router.js`, `actions.js`, `render.js`, `settings.js`, `bootstrap.js`, `style.css`; `README.md` documents ownership |
+| Data registry | `waku/providers.toml` retains provider defaults, scoped adapter contracts and compatible metadata |
+| Extras | `eval`, `dev`, `tracing` retain current evaluation/build/debug consumers |
+| Current docs | Root README, AGENTS, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT and licenses; docs README, career, architecture, status, getting-started, commands, evals, providers-registry, integrations; context conventions, design-system, writing-rules, gotchas, maintainers; proposal policy; Career handoff; ops/static READMEs |
+
+No obvious general-product implementation or frontend artifact remains in the
+retained tree. Waku-oriented package/module names remain to preserve stable imports
+and installed commands. `WAKU_*`, `.waku`, `state.db`, provider adapter fields,
+platform row and saved pins retain configuration/data compatibility. Standalone
+trace/SQL/path utilities remain intentionally supported without debugging HTTP
+pages. Legacy fixture SQL proves preservation rather than recreating old features.
+Ignore patterns protect dormant user data and telemetry. Maintenance skills are
+repository authoring tools, excluded from distributions; Career loads no skills.
+Upstream URLs, LICENSE-BRAND and historical docs preserve attribution and ancestry.
+
+### Final verification
+
+The full offline release gate with Chromium enabled passes **475 tests with 13
+skips**, with no deselections. Twelve Make checks skip because make is unavailable;
+the exact supported underlying commands run directly. The remaining skip is the
+disabled live-provider probe. All Career/profile/job/resume, grounding/provenance,
+exact coverage, FTS5/database preservation, provider/model/lifecycle, loop/registry,
+tracing, config/home/dotenv and HTTP/static-security regressions pass.
+
+The scripted Chromium journey passes provider failure/recovery, profile editing,
+routes/drafts/navigation, matching/evidence, explicit multilingual generation,
+Markdown, themes, print isolation, stale artifacts and reload. Its network allowlist
+rejects retired assets and APIs. The harness verifies checkout dotenv preservation.
+Chromium/Playwright and missing loader libraries are installed only under `/tmp`.
+
+Ruff, Career/fixture JavaScript syntax, environment-template validation, all 26
+current/historical Markdown file-link scans, rulebook checks, retained notices,
+lock consistency, maintenance-skill validation and `git diff --check` pass.
+Wheel and sdist builds pass; isolated wheel installation and direct source archive
+installation both pass default `waku` and explicit `waku career` dispatch, state
+API, all nine approved shell/assets against checkout bytes, retired-route rejection,
+lazy client initialization and owned connection shutdown. Installed module checks
+confirm general backends/facades and pricing are absent. Both archives retain MIT
+and the Waku names notice and distribute no fonts, marks or old styles/scripts.
+
+Three mutations confined to temporary projects or patched functions restore an
+extra static asset, unused outbox creation or retired-asset distribution inclusion.
+Each corresponding regression fails. No mutation edits repository implementation.
+The initial restricted suite cannot create sockets; reviewed socket-enabled runs
+pass. An installed smoke harness initially assumed a new profile was truthy;
+checking the valid empty profile contract resolves that harness error.
+
+D modifies no user dotenv, credentials, runtime data, legacy rows/tables, schema,
+SOUL files, chat/memory files, traces or usage. No paid/live evaluation runs.
+Windows behavior, live provider availability and OTel exporter shutdown remain
+outside this verification, as before. The Phase 3 Definition of Done is satisfied
+for the retained project and its requested offline/build/browser/install checks.

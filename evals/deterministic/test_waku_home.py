@@ -54,7 +54,7 @@ def test_a_legacy_folder_keeps_answering_and_prints_the_copy_command(tmp_path):
     cwd, user_home = _layout(tmp_path, legacy_db=True, global_dir=False, global_db=False)
     assert resolve_home(env={}, cwd=cwd, user_home=user_home) == config.HomeChoice(cwd / ".waku", "legacy")
     notice = home_notice(env={}, cwd=cwd, user_home=user_home)
-    assert "Waku is using ./.waku" in notice
+    assert "Career Agent is using ./.waku" in notice
     assert COPY_COMMAND in notice
     assert COPY_COMMAND == "mkdir -p ~/.waku && cp -R ./.waku/. ~/.waku/"
 

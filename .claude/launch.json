@@ -2,16 +2,24 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "waku-dashboard",
+      "name": "career-agent",
       "runtimeExecutable": ".venv/bin/python",
-      "runtimeArgs": ["-m", "waku.ops.dashboard"],
+      "runtimeArgs": [
+        "-m",
+        "waku",
+        "career"
+      ],
       "port": 7777,
       "autoPort": false
     },
     {
       "name": "phoenix-traces",
       "runtimeExecutable": ".venv/bin/python",
-      "runtimeArgs": ["-m", "phoenix.server.main", "serve"],
+      "runtimeArgs": [
+        "-m",
+        "phoenix.server.main",
+        "serve"
+      ],
       "port": 6006
     }
   ]

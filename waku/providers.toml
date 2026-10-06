@@ -1,11 +1,7 @@
 # Every model provider Waku can talk to, as data.
 #
-# Adding one is this file plus a logo at waku/ops/static/logos/<name>.svg.
-# Nothing else: the loop, the model picker, the pricing table, the spend chart
-# and .env.example are all built from the rows below. Before 2026-09-22 a
-# provider meant editing seven to nine files across three directories, four of
-# them tests, and provider pull requests piled up because each one was a
-# careful review rather than a glance at a table.
+# Add a compatible provider table and regenerate .env.example. Career model
+# adapters and catalogs read these rows; no logo or spend chart is distributed.
 #
 # Fields
 #   kind         the wire format: "anthropic" or "openai". Nothing else exists;
@@ -14,8 +10,8 @@
 #                not a row here.
 #   key_env      which environment variable holds the key
 #   base_url     omit for a provider whose SDK default is right (anthropic, openai)
-#   model        the loop's default; small_model runs the gate and summaries
-#   flagship/fast  the two models the chat switcher pins by default. Blank
+#   model        the loop's default; small_model is the compatible secondary default
+#   flagship/fast  the two models used for compatible default pins. Blank
 #                falls back to model/small_model. These are starting points --
 #                any model the live catalog lists is one click away.
 #   catalog_url  where to LIST models, when that differs from base_url/models
@@ -24,12 +20,11 @@
 #                global and would leak across providers.
 #   key_url      where a human goes to get a key. It is printed when the key is
 #                missing, so it has to be a real page, not ".env.example".
-#   price        rough [in, out] dollars per million tokens, for the spend
-#                estimate. Deliberately approximate and labelled "est" in the
-#                UI; a live catalog overrides it per model where one exists.
-#   endpoints    official regional alternatives, offered in the Models dialog.
+#   price        compatible rough [in, out] price metadata; live catalogs
+#                return per-model prices separately. No spend report remains.
+#   endpoints    official regional alternatives, offered in Career Settings.
 #
-# Seven more fields exist, all opt-in and used only by the hosted free-tier row
+# Seven more fields exist, all opt-in and used only by the scoped platform adapter
 # below -- setting none of them is what every other row already does:
 #   label                 what the UI calls the row, instead of its table name
 #   hidden_unless_env     invisible everywhere (pages, lists, error messages,
@@ -43,8 +38,7 @@
 #   scoped_credentials    ignore WAKU_API_KEY / WAKU_BASE_URL; use only this
 #                         row's own key_env / base_url_env
 #
-# Model ids age. When one 404s, fix the row -- every past race and spend figure
-# is derived at read time, so a correction here fixes history too.
+# Model ids age. Preserve adapter compatibility when updating a default.
 
 [anthropic]
 kind = "anthropic"
@@ -219,7 +213,7 @@ small_model = "deepseek-v4-flash"
 key_url = "https://opencode.ai/zen"
 price = [0.435, 0.87]
 
-# The hosted free tier. Hidden on a local machine: with no
+# Compatible platform provider. Hidden on a local machine: with no
 # WAKU_PLATFORM_BASE_URL set it appears in no page, list or error message,
 # and never in .env.example. In a tenant container the four WAKU_PLATFORM_*
 # variables point it at the metering proxy, which holds the real key -- the

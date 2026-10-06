@@ -18,8 +18,8 @@ decide it.
 | Tier | Examples | What to do |
 |---|---|---|
 | **Direct** | a bug fix, a copy change, a provider row, a test | Open the PR. The eval and the review are the guardrails. |
-| **Short plan** | a tool behind an extra, a gateway, a dashboard view | Comment a 5–10 line plan on the issue before writing code, so a maintainer can point at the right rung early. |
-| **Proposal** | a new top-level package; a change to the loop, the memory interfaces, the graph engine or the tool-call contract; a new core tool; anything that adds to every prompt | Write a design doc in `docs/` and get a maintainer's yes before any code. [the Career refactor plan](../career-agent/CAREER_ONLY_REFACTOR_PLAN.md) is the precedent and shows the bar. |
+| **Short plan** | a Career tool or interface view | Comment a 5–10 line plan on the issue before writing code, so a maintainer can point at the right rung early. |
+| **Proposal** | a new top-level package; a change to the loop, runtime ownership or the tool-call contract; a new core tool; anything that adds to every prompt | Write a design doc in `docs/` and get a maintainer's yes before any code. [the Career refactor plan](../career-agent/CAREER_ONLY_REFACTOR_PLAN.md) is the precedent and shows the bar. |
 
 If you are unsure which tier you are in, ask on the issue. That conversation
 costs less than a rejected PR.
@@ -32,13 +32,13 @@ is deliberately high. Start at the top of this ladder and move down only when
 the rung above cannot do the job:
 
 1. **Extend something that already exists.** A new provider is one table in
-   `waku/providers.toml` plus a logo — see
+   `waku/providers.toml` — see
    [providers-registry.md](../providers-registry.md). Career evidence uses its
    existing persistence and retrieval contracts.
 2. **Product-specific configuration or documentation.** Career does not load
    bundled general-assistant skills. User-installed runtime skills remain user data.
-3. **A CLI and a README.** Waku can already run any program on your machine,
-   and a command-line tool with docs beside it costs nothing until it is used.
+3. **A standalone utility and a README.** Keep development utilities outside
+   Career runtime startup.
 4. **A tool behind an extra**: `waku/tools/`, with heavy dependencies gated by
    an extra and off by default.
 5. **A product communication boundary** requires an approved proposal. Career
@@ -101,7 +101,8 @@ material. Distribution checks exclude those retired consumers.
 
 ## 7. Dependencies and extras
 
-The default install is the stdlib plus the Anthropic and OpenAI clients. An
+The default install uses Anthropic/OpenAI clients, python-dotenv and Rich for
+standalone trace inspection. An
 optional feature goes behind an extra in `pyproject.toml`, and it fails with an
 install hint, not a crash, when the extra is missing. A new core dependency
 needs a discussion on an issue first.
@@ -110,7 +111,7 @@ needs a discussion on an issue first.
 
 Career Agent is the supported product. The completed V1 contract and approved
 retirement batches govern current work. Batch C1 retires general feature backends.
-Batch C2 removes general facades. Old static assets await Batch D. Preserve
+Batch C2 removes general facades. Batch D completes static/configuration/packaging cleanup. Preserve
 Career behavior and the shared provider, loop, registry and tracing contracts.
 
 Docs name providers neutrally (Anthropic, OpenAI, Gemini, DeepSeek, Kimi, GLM,
@@ -123,7 +124,7 @@ OpenRouter): no ranking, and no "open-source versus closed" framing.
 | `AGENTS.md` | the routing table, hard rules, what CI blocks, commands | 100 lines at most (test). Push detail down into these files; never split it in two. |
 | `docs/context/conventions.md` | process, testing, git, scope | Replace, never append. |
 | `docs/architecture.md` | the system, and which file is which box | Present tense. A change that makes a sentence false fixes it in the same PR. |
-| `docs/context/design-system.md` | how the dashboard looks, and which primitive to use | Changes with the design files. |
+| `docs/context/design-system.md` | how the dashboard looks, and which primitive to use | Changes with Career interface behavior. |
 | `docs/context/writing-rules.md` | how we write English for a reader | A rule arrives with the Bad/Good pair that produced it. A rule that two others cover is deleted. |
 | `docs/context/gotchas.md` | traps someone already stepped on | The only append-only file. Every entry has a date and a `Retire when:`; 40 entries at most (test). Anyone deletes an entry that no longer holds. |
 | `docs/status.md` | what works, what is known-broken, what is deliberately not built | Rewritten whole, never appended; 120 lines at most (test). It holds no decisions. |

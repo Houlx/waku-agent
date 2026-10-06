@@ -4,16 +4,14 @@ name = "waku-agent"
 # disagreed for four releases (0.1.4 here, 0.1.0 there) because nothing
 # forced them to match. Now there is only one number to bump.
 dynamic = ["version"]
-description = "A minimal, transparent, local-first Waku: harness + loop + memory + eval, in code you can read in an afternoon."
+description = "A local-first Career Agent for evidence-grounded job analysis and tailored resumes."
 readme = "README.md"
-# Code is MIT; the Waku brand assets are not (LICENSE-BRAND); the bundled fonts
-# are SIL OFL 1.1. PEP 639 lets the package say all three, so PyPI no longer
-# reports the whole wheel as MIT.
-license = "MIT AND OFL-1.1 AND LicenseRef-Waku-Brand"
-license-files = ["LICENSE", "LICENSE-BRAND", "waku/ops/static/fonts/OFL-*.txt"]
+# Code is MIT. Retained Waku names follow LICENSE-BRAND; no fonts or marks ship.
+license = "MIT AND LicenseRef-Waku-Brand"
+license-files = ["LICENSE", "LICENSE-BRAND"]
 authors = [{ name = "Sean Chen (ShenSeanChen)" }]
 requires-python = ">=3.11"
-keywords = ["ai-agent", "llm", "agent-framework", "local-first", "llmops", "memory", "eval"]
+keywords = ["ai-agent", "llm", "career", "resume", "local-first", "llmops", "eval"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,7 +21,7 @@ classifiers = [
 ]
 dependencies = [
     "anthropic>=0.40",   # anthropic wire format: Anthropic, Kimi, GLM, MiniMax
-    "openai>=1.50",      # openai wire format: OpenAI, Gemini, DeepSeek (and embeddings)
+    "openai>=1.50",      # openai wire format: OpenAI, Gemini, DeepSeek
     "python-dotenv>=1.0",
     "rich>=13.0",
 ]
@@ -43,7 +41,7 @@ waku = "waku.__main__:main"
 eval = [
     "pytest>=8.0",
 ]
-# LLM-Ops pillar: local trace dashboard (traces also always land in traces/*.jsonl)
+# Optional local trace dashboard (traces also always land in traces/*.jsonl)
 tracing = [
     "arize-phoenix>=7.0",
     "opentelemetry-sdk>=1.27",
@@ -82,11 +80,17 @@ exclude = [
     "docs", ".claude", ".deepeval", ".github",
     # Keep retired consumers out even if a local checkout restores them.
     "/skills/**", "/waku/skills/**", "/evals/judge/**", "/hosted/**", "/examples/**", "/lab/**", "/scripts/whiteboard/**",
+    "/docs/brand/**", "/waku/ops/static/js/**", "/waku/ops/static/design/**",
+    "/waku/ops/static/fonts/**", "/waku/ops/static/logos/**",
+    "/waku/ops/static/index.html", "/waku/ops/static/style.css", "/waku/ops/static/waku-mark.svg",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["waku"]
-exclude = ["/waku/skills/**"]
+exclude = ["/waku/skills/**", "/waku/ops/static/js/**",
+           "/waku/ops/static/design/**", "/waku/ops/static/fonts/**",
+           "/waku/ops/static/logos/**", "/waku/ops/static/index.html",
+           "/waku/ops/static/style.css", "/waku/ops/static/waku-mark.svg"]
 
 [tool.ruff]
 line-length = 100

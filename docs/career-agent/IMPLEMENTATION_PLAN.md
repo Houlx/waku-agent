@@ -1,5 +1,7 @@
 # Career Agent Web MVP — Approved Final Implementation Plan
 
+> This historical document records an earlier project stage. [Current status](../status.md) and [the handoff](HANDOFF.md) describe the retained product.
+
 The user approved this plan before Day 1 implementation. [PRODUCT_SPEC.md](PRODUCT_SPEC.md)
 holds the authoritative requirements. [HANDOFF.md](HANDOFF.md) records actual code
 and the next stage's authorization.

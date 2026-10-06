@@ -4,7 +4,7 @@ Career Agent is the sole supported product. Follow [the Career guide](career.md)
 for installation, startup, profile review, JD analysis and resume generation.
 `waku` and `waku career` launch the local workspace at `http://localhost:7777/#overview`.
 
-## 2. Add one key
+## Configure a provider
 
 Copy `.env.example` to a local `.env` and set `WAKU_PROVIDER` plus the selected
 provider's scoped key. You can also configure the provider through Career Settings.

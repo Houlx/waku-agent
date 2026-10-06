@@ -15,8 +15,7 @@ after changing credential or scoped override fields. The
 Bundled general-assistant skills are retired. Career does not install or load them.
 User-installed skills in runtime homes remain user data and must never be deleted
 as part of repository cleanup. Git history preserves retired bundled content.
-General gateways, memory, dashboard and arena implementations remain pending
-Batch C; their physical presence does not make them supported Career features.
+Phase 3 retirement is complete. Career is the sole supported product.
 
 Follow [conventions §2](docs/context/conventions.md#2-how-much-process-a-change-needs)
 when deciding how much process a change needs. Behavior changes require offline
@@ -31,11 +30,11 @@ CI checks lint, the Career/provider environment template and the deterministic s
 [The Career guide](docs/career.md) documents the Chromium regression and explicit
 live evaluation. Paid evaluation never replaces deterministic checks.
 Packaging must preserve Career assets, installed startup, runtime-data exclusions
-and MIT/brand/OFL notices. Describe the checks you ran in the PR.
+and MIT attribution and the Waku names notice. Describe the checks you ran in the PR.
 
 ## Attribution
 
 Contributions retain the upstream MIT copyright in [LICENSE](LICENSE).
-Retained brand assets remain under [LICENSE-BRAND](LICENSE-BRAND), and bundled
-fonts retain their SIL OFL notices. Do not copy retired hosted implementation into
+Retained Waku names remain under [LICENSE-BRAND](LICENSE-BRAND). No brand assets
+or bundled fonts ship. Do not copy retired hosted implementation into
 Career or restore teaching archives into product distributions.

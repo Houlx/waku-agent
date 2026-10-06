@@ -10,7 +10,7 @@ labels: bug
 a command you ran, a file you opened.
 
 **Your setup**
-- waku version / commit:
+- Career Agent package version / commit:
 - Python version (`python -V`):
 - OS:
 - Provider and model (e.g. `anthropic` / `claude-opus-4-8`):

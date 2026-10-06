@@ -1,14 +1,4 @@
-"""waku/providers.toml — the provider list, as data.
-
-A provider is one table in that file plus a logo. These are the checks that
-used to be spread across four hand-edited eval files: that a row is complete,
-that its key is reachable by a human, that the dashboard has a picture for it,
-and that the loop can actually build a Provider from it.
-
-Everything here reads the file. Adding a provider adds cases automatically; no
-test needs editing, which is the whole point of moving the list out of Python.
-"""
-
+"""Provider registry rows preserve model, credential and endpoint contracts."""
 from __future__ import annotations
 
 import tomllib
@@ -19,7 +9,6 @@ import pytest
 from waku.loop.models import PROVIDERS, REGISTRY, Provider
 
 REGISTRY_PATH = Path(__file__).resolve().parents[2] / "waku" / "providers.toml"
-LOGOS = Path(__file__).resolve().parents[2] / "waku" / "ops" / "static" / "logos"
 NAMES = sorted(REGISTRY)
 REQUIRED = ("kind", "key_env", "model", "small_model", "key_url", "price")
 
@@ -61,12 +50,6 @@ def test_price_is_a_pair_of_positive_numbers(name):
     assert all(isinstance(v, int | float) and v >= 0 for v in price), \
         f"{name}: price {price} is not two positive numbers"
 
-
-@pytest.mark.parametrize("name", NAMES)
-def test_the_dashboard_has_a_logo_for_it(name):
-    """The Models grid renders /static/logos/<name>.svg. A missing file is an
-    invisible broken image, so it is cheaper to fail here."""
-    assert (LOGOS / f"{name}.svg").exists(), f"{name}: no waku/ops/static/logos/{name}.svg"
 
 
 @pytest.mark.parametrize("name", NAMES)

@@ -14,8 +14,12 @@ HTTP server without assembling the general Waku assistant. The
 | `waku/tools/career.py` | Scoped stage submission and FTS5 evidence tools |
 | `waku/db.py` | Connection mechanics and Career-only initialization |
 | `waku/loop/agent.py`, `loop/models.py`, `tools/registry.py` | Shared loop, provider adapters and tool contract |
-| `waku/ops/catalog.py`, `pricing.py`, `tracing.py` | Shared model catalogs, usage pricing and JSONL/optional OTel tracing |
+| `waku/ops/catalog.py`, `tracing.py` | Shared model catalogs with price metadata and JSONL/optional OTel tracing |
 | `waku/ops/static/career/`, `career.html` | Independent Career assets, routes and draft state |
+
+Phase 3 retirement is complete. Batch D removes dormant configuration and all
+general frontend assets. Catalogs preserve returned prices without the unused
+pricing cache or spend reporting.
 
 Batch B1 removes hosted, upstream examples, lab topics, architecture boards and
 teaching walkthroughs. No Elastic License 2.0 implementation enters the MIT runtime.

@@ -10,7 +10,7 @@ Every agent framework is ultimately this while-loop with more indirection:
         else:
             done                                 # reply to the human
 
-End-loop guardrails (the orange box's exit conditions):
+Loop guardrails:
   1. the model stops asking for tools  → natural end of turn
   2. max_iterations reached            → hard stop, never spin forever
 """
@@ -25,8 +25,8 @@ import anthropic
 
 from waku.tools.registry import ToolRegistry
 
-# Observers let the gateway show tool calls live and let ops/tracing record
-# them — without either being wired into the loop's logic.
+# Observers let Career record tool activity and tracing without coupling
+# either consumer to the loop logic.
 LoopEvent = dict[str, Any]
 Observer = Callable[[str, LoopEvent], None]
 
@@ -38,10 +38,7 @@ def error_text(exc: BaseException) -> str:
     show that one. Anything else keeps today's {type}: {message}, which is
     the right amount of detail for a bug rather than a decision.
 
-    It lives here, beside the 4xx rule above, because a refusal reaches a
-    reader by two routes — the gateway's "done" event and a graph node's
-    entry in a run's `errors` map — and two copies of this would drift the
-    way the dashboard's two chat implementations once did.
+    Career stage failures and provider callers share this error formatter.
     """
     message = getattr(exc, "message", "")
     if message and getattr(exc, "status_code", 0):
@@ -72,8 +69,7 @@ def run_loop(
     calls, tool results), which is exactly what gets traced.
 
     stream=True emits the assistant's text as it's generated (notify("text",
-    {"delta": ...})) so a gateway can show it appear token by token — used by
-    the dashboard. Falls back to a single call for clients without streaming."""
+    {"delta": ...})) for compatible streaming observers. Falls back to a single call for clients without streaming."""
     notify = observer or (lambda kind, ev: None)
     result = LoopResult(reply="")
     can_stream = stream and hasattr(client.messages, "stream")

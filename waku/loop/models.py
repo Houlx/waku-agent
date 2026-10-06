@@ -42,7 +42,7 @@ class Provider:
     key_env: str     # which env var holds the key
     base_url: str | None
     model: str       # default main model (the loop)
-    small_model: str  # default cheap model (retrieval gate + consolidation)
+    small_model: str  # secondary model retained for provider compatibility
     # Where to LIST this provider's models (the Settings picker). openai-wire
     # providers get {base_url}/models automatically; set this for providers
     # whose chat endpoint and catalog endpoint differ (e.g. kimi talks the
@@ -60,7 +60,7 @@ class Provider:
     # override for backwards compatibility, but must not leak across providers.
     base_url_env: str = ""
     endpoints: tuple[ProviderEndpoint, ...] = ()
-    # Seven opt-in fields, used only by the hosted free-tier row. Each
+    # Seven opt-in fields, used only by the scoped platform adapter. Each
     # defaults to the behaviour every other row already has.
     label: str = ""
     hidden_unless_env: bool = False
@@ -87,7 +87,7 @@ class Provider:
 
     def is_visible(self) -> bool:
         """False while a hidden row's endpoint is unset -- a local user must
-        never see the hosted row in a page, a list or an error message."""
+        never see the platform row in a page, a list or an error message."""
         if not self.hidden_unless_env:
             return True
         return bool(os.getenv(self.base_url_env, "").strip()) if self.base_url_env else False
@@ -96,8 +96,8 @@ class Provider:
         """[flagship, fast], deduped — the switcher's default picks.
 
         Falls back to models_now(), not the raw model/small_model fields, so
-        a row with a model_env/small_model_env override (the hosted free
-        tier) never hands out its TOML placeholder here — every reader of
+        a row with a model_env/small_model_env override (the scoped platform
+        adapter) never hands out its TOML placeholder here — every reader of
         this pair (default_pinned_specs, _known_default_ids) would otherwise
         pin an id the container will never actually call.
         """
@@ -222,13 +222,13 @@ def _belongs_elsewhere(model: str, provider_name: str) -> bool:
     when the family is one some OTHER provider actually owns, which is the case
     that produces a 400 rather than a surprise.
 
-    A row with claims_families = false (the hosted free tier) is left out of
+    A row with claims_families = false (the scoped platform adapter) is left out of
     the OWNER map below, because it fronts a live catalog behind a single
     placeholder id and its own family tells you nothing about what is valid
     there. It is still JUDGED by the map, and that is deliberate
     (spec 001, "The free tier is a provider"): a real anthropic owns
     "claude", so a leftover
-    claude-* WAKU_MODEL under the hosted row is replaced by the row's own
+    claude-* WAKU_MODEL under the platform row is replaced by the row's own
     model rather than reaching the proxy, where it would meet the allowlist.
     """
     family = model.split("-")[0].lower()
@@ -247,7 +247,7 @@ def models_for(provider_name: str, model: str = "", small_model: str = "") -> tu
     settings_info/list_models report them, so the Models page can never name a
     model the next turn will not use — which is what spec 001 asks of the two
     readers ("report the model get_client will actually use, not the one in
-    .env"). They drifted apart once already: the hosted row resolved a leftover
+    .env"). They drifted apart once already: the platform row resolved a leftover
     claude-* to the deploy-time override in get_client while both readers still
     showed the leftover.
 
@@ -295,7 +295,7 @@ def get_client(settings: Settings):
 
     # .strip() so a trailing newline/space from a copy-paste doesn't corrupt the
     # auth header (headers are latin-1; a stray non-ASCII char errors cryptically).
-    # A scoped_credentials row (the hosted free tier) never falls back to
+    # A scoped_credentials row (the scoped platform adapter) never falls back to
     # WAKU_API_KEY: that global override exists for BYOK and must not outrank
     # the platform token a tenant container was actually given.
     api_key = (os.getenv(provider.key_env, "") if provider.scoped_credentials

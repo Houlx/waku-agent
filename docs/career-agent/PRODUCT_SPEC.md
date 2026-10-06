@@ -1,5 +1,7 @@
 # Approved Career Agent Product Requirements
 
+> This historical document records an earlier project stage. [Current status](../status.md) and [the handoff](HANDOFF.md) describe the retained product.
+
 This file preserves the complete approved product specification below and serves
 as the authoritative product requirements for future sessions. The approved
 implementation plan is [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), and

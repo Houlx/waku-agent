@@ -34,12 +34,12 @@ _models_cache: dict[str, tuple[float, list]] = {}
 
 def _known_default_ids(prov, out: dict, is_active: bool) -> list[dict]:
     """Best-effort model list when the live catalog is unreachable: the provider's
-    flagship + fast + loop/gate defaults — so the showcase model (e.g. opus-4.8)
+    flagship + fast + main/secondary defaults — so the showcase model (e.g. opus-4.8)
     is offered too, not just the two loop defaults — plus the active model when
     this is the active provider.
 
     default_pair() already resolves through models_now(), so it alone carries
-    the loop/gate defaults AND any live override (flagship/fast fall back to
+    the main/secondary defaults AND any live override (flagship/fast fall back to
     the overridden model/small_model, not the raw TOML fields) — appending a
     second, un-overridden model/small_model pair here would put a stale
     placeholder id ahead of the real one in the deduped list.
@@ -70,7 +70,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
     # WAKU_BASE_URL only applies to the provider it was set for).
     name = provider or s.provider
     prov = PROVIDERS.get(name)
-    # A scoped_credentials row (the hosted free tier) never reads the global
+    # A scoped_credentials row (the scoped platform adapter) never reads the global
     # WAKU_BASE_URL override — a leftover custom endpoint must not leak into
     # the row that always talks to the metering proxy.
     if prov is not None and prov.scoped_credentials:
@@ -91,7 +91,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
     # Where can this provider's models be listed? An explicit catalog_url wins
     # (kimi chats on the anthropic wire but lists on its OpenAI-compatible API;
     # anthropic itself has GET /v1/models); otherwise openai-wire endpoints get
-    # {base_url}/models; a catalog_from_base_url row (the hosted free tier)
+    # {base_url}/models; a catalog_from_base_url row (the scoped platform adapter)
     # gets {base_url}/v1/models even on the anthropic wire, because the proxy
     # behind it speaks the OpenAI-style listing endpoint; otherwise fall back
     # to the two known defaults.
@@ -104,7 +104,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
         url = base.rstrip("/") + "/v1/models"
     else:
         # No catalog endpoint: fall back to the provider's own known defaults
-        # (flagship + fast + loop/gate), not just the active model.
+        # (flagship + fast + main/secondary), not just the active model.
         return {**out, "listed": False,
                 "models": _known_default_ids(prov, out, name == s.provider)}
 
@@ -154,7 +154,7 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
         # still offer the provider's known defaults so the picker isn't empty
         known = _known_default_ids(prov, out, name == s.provider)
         # cache the failure (defaults + reason) for ~1 minute so an unreachable
-        # catalog doesn't stall every 5-second dashboard poll for 10s — and so a
+        # catalog doesn't stall repeated catalog requests for 10s — and so a
         # cache hit still shows the defaults and the reason, not a blank list.
         _models_cache[url] = (time.time() - 240, known, msg)
         return {**out, "listed": False, "models": known, "error": msg}
@@ -170,17 +170,13 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
             "free": mid.endswith(":free") or pricing.get("prompt") == "0",
             # None means the endpoint doesn't say (only OpenRouter reports this)
             "tools": ("tools" in params) if params is not None else None,
-            # reasoning models spend tokens thinking out loud, which breaks the
-            # gate's tiny budget: the UI steers them away from the gate slot
+            # Preserve endpoint capability metadata for provider consumers.
             "reasoning": ("reasoning" in params) if params is not None else None,
             "context": m.get("context_length"),
         }
         try:
-            # OpenRouter prices are $/token strings; keep $/M for display + cost
-            from waku.ops.pricing import remember_price
-
+            # OpenRouter prices are $/token strings; keep $/M for catalog metadata
             pin, pout = float(pricing["prompt"]) * 1e6, float(pricing["completion"]) * 1e6
-            remember_price(mid, pin, pout)
             entry["price_in"], entry["price_out"] = round(pin, 3), round(pout, 3)
         except (KeyError, TypeError, ValueError):
             pass
@@ -234,8 +230,8 @@ def _stale_platform_pin(spec: str) -> bool:
 
 def pinned_specs() -> list[str]:
     """The user's curated 'provider:model' shortlist (ordered), from
-    .waku/models.json. The chat switcher shows exactly these. Before they've
-    saved anything, fall back to the flagship+fast defaults."""
+    .waku/models.json. Provider default resolution reads this list. Before any pins are
+    saved, fall back to the flagship+fast defaults."""
     p = _models_json()
     if p.exists():
         try:

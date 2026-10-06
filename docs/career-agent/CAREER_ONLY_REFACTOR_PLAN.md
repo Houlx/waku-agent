@@ -1,5 +1,7 @@
 # Career-only productization plan
 
+> This historical document records an earlier project stage. [Current status](../status.md) and [the handoff](HANDOFF.md) describe the retained product.
+
 Career Agent can become the sole product without replacing the existing agent
 loop, provider adapters, Career pipeline or database schema. The main work is to
 remove general assistant assembly from Career startup, separate provider setup

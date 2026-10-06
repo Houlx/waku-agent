@@ -1,5 +1,7 @@
 # Phase 2 — Career Product Cutover inspection
 
+> This historical document records an earlier project stage. [Current status](../status.md) and [the handoff](HANDOFF.md) describe the retained product.
+
 Phase 2 will keep plain JavaScript, replace the transitional Career shell,
 and separate routing, application state, draft state, request state and rendering.
 The user approved this frontend recommendation after the inspection on 2026-10-06.

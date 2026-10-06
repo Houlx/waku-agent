@@ -141,8 +141,8 @@ an execution lock that also protects provider configuration and replacement.
 `career.py` owns profiles and action dispatch, `career_jobs.py` owns extraction,
 matching and scoring, and `career_resumes.py` owns draft generation and exports.
 `waku/tools/career.py` provides stage-scoped tools. `static/career/` contains independent plain JavaScript modules for saved state,
-drafts, requests, hash routing, actions, Settings and screen rendering. The old
-`js/career.js` remains only in the rollback dashboard.
+drafts, requests, hash routing, actions, Settings and screen rendering.
+Phase 3 retirement removes the old dashboard and all its assets.
 
 Every stage receives fresh messages and at most ten loop iterations. Normalization
 and extraction expose only `submit_stage_result`; matching adds
@@ -275,5 +275,4 @@ literal token search has limited cross-language recall.
 
 Read the [product requirements](career-agent/PRODUCT_SPEC.md),
 [approved implementation plan](career-agent/IMPLEMENTATION_PLAN.md), and
-[current handoff](career-agent/HANDOFF.md) before maintenance. Day 4 stabilizes the
-existing MVP and introduces no further product stage.
+[current handoff](career-agent/HANDOFF.md) before maintenance. Phase 3 productization is complete; historical plans preserve earlier intent.

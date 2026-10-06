@@ -1,4 +1,4 @@
-"""The actual Career asset graph is independent of the rollback dashboard."""
+"""The actual Career asset graph is independent of retired product assets."""
 import re
 import subprocess
 from pathlib import Path

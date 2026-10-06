@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  # Preserve the job ID used by existing branch protection.
+  # The historical filename/job ID remain for branch-protection compatibility.
   skills-and-evals:
     runs-on: ubuntu-latest
     steps:

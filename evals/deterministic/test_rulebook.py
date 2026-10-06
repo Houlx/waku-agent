@@ -143,15 +143,6 @@ def test_product_and_evals_never_reach_into_examples_or_lab():
     assert not offenders, f"these reach into examples/ or lab/: {offenders}"
 
 
-def test_no_retired_waku_memory_address():
-    """Waku Memory's MCP server is https://api.waku.one/mcp. The address before
-    it now refuses clients, so a doc that still shows it hands readers a setup
-    that cannot work."""
-    docs = [ROOT / "README.md", *DOCS.rglob("*.md")]
-    stale = [str(p.relative_to(ROOT)) for p in docs
-             if p.is_file() and "cloudfront.net" in p.read_text(encoding="utf-8", errors="ignore")]
-    assert not stale, f"use https://api.waku.one/mcp in: {stale}"
-
 
 def test_no_emoji_in_rulebook_or_readme():
     hits = [

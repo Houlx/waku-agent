@@ -1,7 +1,7 @@
 """Configuration — every knob is an env var, documented in .env.example.
 
 No settings framework: a dataclass read once at startup. If you can read this
-file, you know everything Waku can be configured to do.
+file, you can see the retained Career settings.
 """
 
 from __future__ import annotations
@@ -30,8 +30,7 @@ def _load_env() -> str:
     running `waku` from a subdirectory of your project still finds the .env at
     its root — the same rule git, npm and pytest already taught everyone.
 
-    Returns the path that was loaded (empty string if none) so `waku doctor`
-    and the first-run error can say WHICH file was read, rather than leaving
+    Returns the path that was loaded (empty string if none) so provider errors can say WHICH file was read, rather than leaving
     people guessing between three .env files.
     """
     path = find_dotenv(usecwd=True)
@@ -61,11 +60,11 @@ def resolve_home(env: Mapping[str, str] | None = None, cwd: Path | None = None,
 
     1. WAKU_HOME is set: use it.
     2. ./.waku/state.db exists and ~/.waku/state.db does not: keep using the
-       folder's ./.waku. A person's older memory answers until they copy it.
-    3. Otherwise: ~/.waku, so the same assistant answers from every folder.
+       folder's ./.waku. A person's older state stays available until they copy it.
+    3. Otherwise: ~/.waku, so the same Career workspace opens from every folder.
 
     Rule 2 checks for ~/.waku/state.db, not for the ~/.waku folder. A ~/.waku
-    holding unrelated files must not hide a person's real memory, and copying
+    holding unrelated files must not hide a person's retained state, and copying
     the old folder creates state.db, so the copy is what moves them over.
     """
     env = os.environ if env is None else env
@@ -86,17 +85,17 @@ def home_notice(cwd: Path | None = None, user_home: Path | None = None,
     choice = resolve_home(env=env, cwd=cwd, user_home=user_home)
     legacy = cwd / ".waku"
     if choice.rule == "legacy":
-        return ("Waku is using ./.waku (your memory from before v0.2). To move it to "
-                f"~/.waku, where Waku looks from any folder: {COPY_COMMAND}")
+        return ("Career Agent is using ./.waku (your state from before v0.2). To move it to "
+                f"~/.waku, where Career Agent looks from any folder: {COPY_COMMAND}")
     if (choice.rule == "global" and (legacy / "state.db").exists()
             and legacy.resolve() != choice.path.resolve()):
-        return ("Waku is using ~/.waku and ignoring ./.waku in this folder, which holds "
-                "older memory. Nothing in it was moved or deleted.")
+        return ("Career Agent is using ~/.waku and ignoring ./.waku in this folder, which holds "
+                "older state. Nothing in it was moved or deleted.")
     return ""
 
 
 def describe_home(choice: HomeChoice) -> str:
-    """One line for `waku connections`: the resolved home and why."""
+    """Describe the resolved runtime home: the resolved home and why."""
     why = {"WAKU_HOME": "set by WAKU_HOME",
            "legacy": "older memory in this folder, used until you copy it",
            "global": "the default"}[choice.rule]
@@ -137,15 +136,9 @@ class Settings:
     model: str = field(default_factory=lambda: os.getenv("WAKU_MODEL", ""))
     # Secondary provider model retained for configuration compatibility.
     small_model: str = field(default_factory=lambda: os.getenv("WAKU_SMALL_MODEL", ""))
-    # Providers the user turned off in the dashboard (comma-separated ids).
-    # Disabled providers are hidden from pickers/switchers; the ACTIVE provider
-    # can't be disabled (guarded in integrations.apply_provider_disabled).
-    disabled_providers: frozenset[str] = field(default_factory=lambda: frozenset(
-        p.strip() for p in os.getenv("WAKU_DISABLED_PROVIDERS", "").split(",") if p.strip()))
-
-    # --- Home: where Waku keeps its state (memory DB, calendar, outbox, traces).
-    # ~/.waku by default, so the same assistant answers from every folder; a
-    # folder's older ./.waku keeps answering until it is copied. resolve_home()
+    # --- Home: where Waku keeps its state (Career DB and traces).
+    # ~/.waku by default, so the same Career workspace opens from every folder; a
+    # folder's older ./.waku stays active until it is copied. resolve_home()
     # above has the rules. Every file Waku writes is in it, so you can look.
     home: Path = field(default_factory=lambda: resolve_home().path)
 
@@ -157,73 +150,6 @@ class Settings:
     # (watched kimi-k3 do exactly that at 2048). 8192 leaves room to think AND
     # answer; it's a ceiling, not a target, so efficient models still cost the same.
     max_tokens: int = field(default_factory=lambda: int(os.getenv("WAKU_MAX_TOKENS", "8192")))
-    # Working memory is a SLIDING WINDOW (like context RAM): only the last N
-    # turns go into the prompt. Older turns aren't lost — they're in state.db,
-    # distilled into facts by consolidation, and pulled back by the retrieval
-    # gate when relevant. Without this cap a long thread (esp. the always-on
-    # Telegram session) resends its whole history every turn until it explodes.
-    history_turns: int = field(default_factory=lambda: int(os.getenv("WAKU_HISTORY_TURNS", "12")))
-
-    # --- Dormant general-feature compatibility fields (retired behavior; C2/D cleanup)
-    # Consolidate (distill chats into durable facts) only after N new exchanges.
-    consolidate_every: int = field(default_factory=lambda: int(os.getenv("WAKU_CONSOLIDATE_EVERY", "6")))
-    retrieval_top_k: int = field(default_factory=lambda: int(os.getenv("WAKU_RETRIEVAL_TOP_K", "4")))
-    # 'sqlite' (default, zero setup) or 'supabase' (pgvector upgrade path — see launch-rag).
-    semantic_store: str = field(default_factory=lambda: os.getenv("WAKU_SEMANTIC_STORE", "sqlite"))
-    # 'sqlite' (default, zero setup) or 'notion' (episodes live in a Notion database).
-    episodic_store: str = field(default_factory=lambda: os.getenv("WAKU_EPISODIC_STORE", "sqlite"))
-
-    # --- Tools
-    # Sync created events into Apple Calendar (a dedicated "Waku" calendar)
-    # via AppleScript. Opt-in because it writes to your real calendar app.
-    apple_calendar: bool = field(
-        default_factory=lambda: os.getenv("WAKU_APPLE_CALENDAR", "") in ("1", "true", "yes")
-    )
-    # Mirror locally-created events to Google Calendar. SQLite + ICS remain the
-    # source of truth; this is only an opt-in write target.
-    google_calendar: bool = field(
-        default_factory=lambda: os.getenv("WAKU_GOOGLE_CALENDAR", "") in ("1", "true", "yes")
-    )
-    google_calendar_id: str = field(
-        default_factory=lambda: os.getenv("WAKU_GOOGLE_CALENDAR_ID", "") or "primary"
-    )
-    # Give the agent read/write access to Apple Calendar, Mail, Reminders, Notes
-    # (macOS; first use triggers the system Automation permission prompts).
-    apple_tools: bool = field(
-        default_factory=lambda: os.getenv("WAKU_APPLE_TOOLS", "") in ("1", "true", "yes")
-    )
-    # Read-only GitHub access through the `gh` CLI's own auth (no token here).
-    # Off by default and deliberately so: every registered tool ships in every
-    # prompt, and reading PRs is maintainer capability, not assistant capability.
-    # The gather workflow calls waku/tools/github.py as a library and does NOT
-    # need this on — the switch only decides whether the MODEL can reach it.
-    gh_tool: bool = field(
-        default_factory=lambda: os.getenv("WAKU_GH_TOOL", "") in ("1", "true", "yes")
-    )
-    # owner/name to assume when a call omits it — for when Waku runs outside a
-    # checkout, where `gh` has no remote to infer from.
-    gh_repo: str = field(default_factory=lambda: os.getenv("WAKU_GH_REPO", ""))
-    # Register the experimental tools (delegate_task -> pi sub-agent, ...). Env is
-    # the global switch; the arena sets this per-race so a coding race can hand
-    # work to pi WITHOUT flipping it on for the whole process.
-    experimental: bool = field(
-        default_factory=lambda: os.getenv("WAKU_EXPERIMENTAL", "") in ("1", "true", "yes")
-    )
-    # Route every message through the triage graph workflow first (a small model
-    # classifies it; trivial messages get a fast small-model reply, real tasks
-    # run the normal loop as a graph node). Any failure anywhere fails open to
-    # the plain loop, so this can never make Waku worse — only faster/cheaper.
-    graph_workflows: bool = field(
-        default_factory=lambda: os.getenv("WAKU_GRAPH_WORKFLOWS", "") in ("1", "true", "yes")
-    )
-
-    # --- Optional gateway
-    telegram_token: str = field(default_factory=lambda: os.getenv("TELEGRAM_BOT_TOKEN", ""))
-    whatsapp_token: str = field(default_factory=lambda: os.getenv("WHATSAPP_TOKEN", ""))
-    whatsapp_phone_number_id: str = field(
-        default_factory=lambda: os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
-    )
-
     # --- Tracing (JSONL always; OTel exports if an endpoint is set)
     otel_endpoint: str = field(
         default_factory=lambda: os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "")
@@ -232,7 +158,6 @@ class Settings:
     def ensure_home(self) -> Path:
         self.home.mkdir(parents=True, exist_ok=True)
         (self.home / "traces").mkdir(exist_ok=True)
-        (self.home / "outbox").mkdir(exist_ok=True)
         return self.home
 
 

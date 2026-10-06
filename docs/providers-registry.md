@@ -1,98 +1,21 @@
-# Adding a provider: the registry
+# Provider registry
 
-Batch B1 retires the old hosted deployment. The hidden `waku-platform` registry
-row and its scoped-credential contracts remain for provider compatibility; this
-fork supplies no hosted service or deployment instructions.
+Career Agent resolves providers from `waku/providers.toml`. Each table specifies
+wire format, credential variable, default model pair, catalog URL, key URL,
+regional endpoints and compatible metadata. `waku/loop/models.py` builds frozen
+provider adapters from these rows. Career Settings uses masked provider readiness
+and explicit configuration transactions.
 
-**Status:** shipped 2026-09-22. Supersedes the "one `PROVIDERS` row" advice in
-[conventions §3](context/conventions.md#3-where-new-capability-goes-the-footprint-ladder),
-which was true of the code and false of the work.
+To add a compatible provider, add its table and run
+`python scripts/generate_env_example.py --write`. Deterministic registry checks
+validate required fields, wire formats, endpoint scoping, model defaults and
+credential variables. No logo is required or distributed.
 
-## The problem
+Catalog responses preserve free/tool/reasoning/context and price metadata when
+supplied by the endpoint. Career retains saved pins and default-model reads for
+compatibility. No spend aggregation or model-cutoff reporting remains.
 
-The rulebook said a new provider was "usually one `PROVIDERS` row". The two
-provider pull requests open when this was written disagreed:
-
-```
-waku/loop/models.py              the row, and a KEY_URLS row
-waku/ops/pricing.py              a PRICING row
-.env.example                     a generated block, edited by hand anyway
-waku/ops/static/logos/<name>.svg the logo
-README.md                        a mention
-evals/deterministic/…            two to four separate test files
-```
-
-Seven to nine files across three directories, four of them tests, for what the
-documentation called a one-line change. Nine of the eighteen pull requests open
-on 2026-09-22 were providers or model plumbing, the oldest 39 days. They were
-not hard to review; they were tedious to review, which is worse, because
-tedious review is what gets postponed.
-
-## The change
-
-Providers move out of Python and into `waku/providers.toml`. One table per
-provider carrying everything: wire format, key variable, default models,
-flagship/fast pair, catalog URL, regional endpoints, where a human gets a key,
-and rough pricing.
-
-```toml
-[anthropic]
-kind = "anthropic"
-key_env = "ANTHROPIC_API_KEY"
-model = "claude-sonnet-5"
-small_model = "claude-haiku-4-5-20251001"
-catalog_url = "https://api.anthropic.com/v1/models"
-flagship = "claude-opus-4-8"
-fast = "claude-sonnet-5"
-key_url = "https://console.anthropic.com/settings/keys"
-price = [3.0, 15.0]
-```
-
-`waku/loop/models.py` builds `PROVIDERS` and `KEY_URLS` from it at import.
-`waku/ops/pricing.py` builds `PRICING` from the same rows.
-`scripts/generate_env_example.py` reads the TOML file directly to document provider
-credentials, scoped endpoints and model overrides alongside Career configuration.
-It imports no general integration or procedural memory module.
-
-Adding a provider is now:
-
-1. a table in `waku/providers.toml`
-2. `waku/ops/static/logos/<name>.svg`
-3. `python scripts/generate_env_example.py --write` — mechanical, and CI checks it
-
-No test needs editing, for an ordinary row. `test_providers.py` was already
-parametrised over `PROVIDERS`, and `test_providers_registry.py` walks the
-file: every row complete, a wire format that exists, a reachable key URL, a
-logo on disk, a price, no two providers sharing a key variable, and a
-regional endpoint that carries its own env var rather than leaking through
-the global one.
-
-A row that turns on one of the seven opt-in fields (see the header of
-`waku/providers.toml`) is the exception. Adding the hosted `waku-platform`
-row edited `test_providers.py` and `test_integrations.py`, and added
-`test_platform_provider.py` to exercise the fields those two files don't
-cover.
-
-## Why TOML rather than a Python package
-
-A provider is data. `tomllib` is in the standard library, so this adds no
-dependency, and a data file cannot execute anything on import — which matters
-when the thing you want is for a stranger's pull request to be safe to merge
-on a glance. It also keeps the comments: the reasons a model id is pinned
-(gpt-5.5 rather than a `-latest` alias, kimi's missing plain `k2.7`) live
-beside the row they explain, which is where they were and where they belong.
-
-## What did not change
-
-`Provider` and `ProviderEndpoint` were the same frozen dataclasses, built with
-the same fields, when this file replaced the hand-written list: the registry
-it produced was diffed field by field against that list before the old code
-was deleted, and it matched. `Provider` has since gained seven opt-in
-fields — `label`, `hidden_unless_env`, `claims_families`,
-`catalog_from_base_url`, `model_env`, `small_model_env`,
-`scoped_credentials` — each one defaulting to what every other row already
-does, and used only by the hosted `waku-platform` row.
-
-A provider that speaks neither wire format still needs code, and still needs a
-proposal. This lowers the cost of the common case; it does not remove the
-review from the uncommon one.
+The hidden `waku-platform` row retains scoped credentials, visibility, dynamic
+catalog endpoints and model overrides for existing provider adapters. This fork
+supplies no hosted deployment. Provider SDKs and `WAKU_*` names retain their
+existing behavior. A new wire format requires an architecture proposal.

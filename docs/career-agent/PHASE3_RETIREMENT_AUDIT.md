@@ -1,5 +1,7 @@
 # Phase 3 retirement audit
 
+> This historical document records an earlier project stage. [Current status](../status.md) and [the handoff](HANDOFF.md) describe the retained product.
+
 Career Agent can retire the general Waku product after its remaining hosted,
 teaching, test and packaging consumers have been resolved. Career execution
 already bypasses the general assistant. Physical deletion has not started.

@@ -1,12 +1,4 @@
-"""OFFLINE provider-table checks: every PROVIDERS entry must build the right
-client, fill its default model ids, and be covered by the dashboard's pricing
-and model-listing fallbacks. No network, no real keys (fakes via monkeypatch).
-
-Born from a live regression hunt: adding a provider touches shared paths
-(get_client, HAS_KEY, /api/models, PRICING), and nothing offline proved the
-other five still worked. Now something does.
-"""
-
+"""Offline provider adapters and model catalogs use synthetic credentials."""
 from __future__ import annotations
 
 import anthropic
@@ -61,12 +53,6 @@ def test_unknown_provider_names_the_choices():
     with pytest.raises(SystemExit, match="openrouter"):
         get_client(settings)
 
-
-@pytest.mark.parametrize("name", list(PROVIDERS))
-def test_dashboard_pricing_covers_every_provider(name):
-    from waku.ops.pricing import PRICING
-
-    assert name in PRICING
 
 
 @pytest.mark.parametrize("name", [n for n, p in PROVIDERS.items()
@@ -148,50 +134,6 @@ def test_catalog_url_is_used_with_both_auth_styles(monkeypatch):
     assert "kimi-k3" in [m["id"] for m in result["models"]]
     catalog._models_cache.clear()
 
-
-def test_price_for_layers_model_over_provider():
-    """Receipts correctness: a kimi-k3 run must be priced at K3's $3/$15, not
-    the kimi provider's K2.7 rate — and unknown models still fall back to the
-    provider estimate. (Live-catalog and :free paths are covered above.)"""
-    from waku.ops.pricing import MODEL_PRICING, PRICING, price_for
-
-    assert price_for("kimi", "kimi-k3") == MODEL_PRICING["kimi-k3"] == (3.0, 15.0)
-    assert price_for("kimi", "kimi-k2.7") == (0.95, 4.0)
-    assert price_for("kimi", "some-future-model") == PRICING["kimi"]
-    assert price_for("openrouter", "whatever:free") == (0.0, 0.0)
-
-    # Regression: within a provider, models diverge hugely — fable-5 is priced at
-    # $10/$50, ~2x opus's $5/$25. A provider-level fallback once made fable-5 look
-    # CHEAPER than opus on the scoreboard; each must carry its own per-model rate.
-    assert price_for("anthropic", "claude-fable-5") == (10.0, 50.0)
-    assert price_for("anthropic", "claude-opus-4-8") == (5.0, 25.0)
-    fable_in, fable_out = price_for("anthropic", "claude-fable-5")
-    opus_in, opus_out = price_for("anthropic", "claude-opus-4-8")
-    assert fable_in > opus_in and fable_out > opus_out   # fable is never cheaper
-
-
-def test_every_priced_model_has_a_knowledge_cutoff():
-    """Arena honesty: the Compare arena discloses each model's knowledge cutoff
-    so stale world knowledge isn't misread as low capability (gemini-3.1-pro
-    confidently denies 2026 models exist — its cutoff is 2025-01). Every model
-    in MODEL_PRICING must have a MODEL_CUTOFF entry. None is a valid value
-    (vendor hasn't published a cutoff; the UI shows a dash) — a MISSING key
-    means someone added a model without deciding, which is what this catches."""
-    import re
-
-    from waku.ops.pricing import MODEL_CUTOFF, MODEL_PRICING, cutoff_for
-
-    missing = set(MODEL_PRICING) - set(MODEL_CUTOFF)
-    assert not missing, f"models priced but missing a MODEL_CUTOFF entry: {sorted(missing)}"
-
-    for model, cutoff in MODEL_CUTOFF.items():
-        if cutoff is not None:
-            assert re.fullmatch(r"20\d\d-(0[1-9]|1[0-2])", cutoff), \
-                f"{model}: cutoff {cutoff!r} is not YYYY-MM"
-
-    # The motivating case, plus the unknown-model path (no guessing).
-    assert cutoff_for("gemini-3.1-pro-preview") == "2025-01"
-    assert cutoff_for("some-future-model") is None
 
 
 # --- a model name belongs to the provider it was configured for --------------

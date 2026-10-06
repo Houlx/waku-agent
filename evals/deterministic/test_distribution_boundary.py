@@ -78,3 +78,37 @@ def test_restored_bundled_skills_are_excluded_from_both_builds(tmp_path):
         paths = [f.distribution_path for f in builder.recurse_included_files()]
         assert "waku/__init__.py" in paths
         assert not any("skills" in Path(p).parts for p in paths)
+
+
+def test_distributed_static_files_are_only_career_assets():
+    from waku.ops.career_dashboard import CAREER_ASSETS
+
+    for builder in (SdistBuilder, WheelBuilder):
+        paths = _distribution_paths(builder)
+        static = {p.removeprefix('waku/ops/static/') for p in paths
+                  if p.startswith('waku/ops/static/')}
+        assert static == CAREER_ASSETS | {'README.md'}
+        assert not any(p.endswith('.woff2') for p in paths)
+        assert not any(p.startswith('docs/brand/') for p in paths)
+
+
+def test_restored_product_assets_are_excluded(tmp_path):
+    import shutil
+
+    for name in ('pyproject.toml', 'README.md', 'LICENSE', 'LICENSE-BRAND'):
+        shutil.copyfile(ROOT / name, tmp_path / name)
+    (tmp_path / 'waku').mkdir()
+    shutil.copyfile(ROOT / 'waku/__init__.py', tmp_path / 'waku/__init__.py')
+    retired = ('index.html', 'style.css', 'waku-mark.svg', 'js/restored.js',
+               'design/restored.css', 'fonts/restored.woff2', 'logos/restored.svg')
+    for name in (*retired, 'career.html'):
+        path = tmp_path / 'waku/ops/static' / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('Synthetic asset restoration.\n')
+    for builder_cls in (SdistBuilder, WheelBuilder):
+        manager = PluginManager()
+        builder = builder_cls(str(tmp_path), plugin_manager=manager,
+                              metadata=ProjectMetadata(str(tmp_path), manager))
+        paths = {f.distribution_path for f in builder.recurse_included_files()}
+        assert 'waku/ops/static/career.html' in paths
+        assert not paths.intersection(f'waku/ops/static/{name}' for name in retired)
