@@ -18,8 +18,8 @@ normalization example below must omit TypeScript unless user input supports it;
 the no-invention requirement takes precedence over illustrative examples.
 
 Sections 39 and 43 preserve the original delivery and planning instructions.
-They do not grant new execution approval. Consult HANDOFF.md before continuing;
-Days 1–3 are implemented, and optional Day 4 requires explicit approval.
+They do not grant new execution approval. Consult HANDOFF.md before maintenance;
+Days 1–4 are complete, and development stops at the approved MVP.
 
 ---
 

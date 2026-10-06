@@ -1,130 +1,174 @@
 # Career Agent handoff
 
-## Status and authorization
+## Status
 
-Days 1–3 are implemented. The user approved Day 3 on 2026-10-02. Stop for
-Day 3 review; optional Day 4 has not been approved. The product requirements in
-[PRODUCT_SPEC.md](PRODUCT_SPEC.md) and architecture in
-[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) remain authoritative.
+Days 1–4 are complete. Day 4 was explicitly approved on 2026-10-02 for
+stabilization, evaluation, documentation and demo preparation. Development stops
+here; no Day 5 or additional features are authorized.
 
-Day 1 is committed in `838226b`; Day 2 is committed in `8e7bac3`. Day 3 changes
-remain uncommitted.
+Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
+Day 4 changes remain uncommitted. The [product specification](PRODUCT_SPEC.md)
+and [implementation plan](IMPLEMENTATION_PLAN.md) remain authoritative.
 
 Career code remains MIT.
 
-Hosted policy remains Elastic License 2.0. No code moved across the license boundary.
+Hosted policy remains Elastic License 2.0; no code moved across that boundary.
+No default dependencies or product architecture were added.
 
-## Implemented journey
+## Product and architecture
 
-The local `#career` workspace preserves the provider gate and existing dashboard
-patterns. First visits open onboarding. Raw source records persist separately
-from normalization and explicit edits. Users review and confirm the whole profile.
-Career facts never enter ordinary chat or conversational memory.
+The local `#career` workspace supports onboarding, raw persistence, normalization,
+editable profile review, profile-level confirmation, JD analysis, agent-authored
+FTS5 searches, evidence inspection, MATCH/PARTIAL/GAP, deterministic coverage,
+explicit resume generation, cited review, Markdown export and browser printing.
+Saved artifacts survive reload. Unsaved drafts survive polling and navigation,
+but not reload. Failed stages retain inputs and earlier successful artifacts.
 
-Job analysis extracts required/preferred requirements, lets the agent formulate
-bounded FTS5 searches, inspects cited records and validates MATCH/PARTIAL/GAP.
-Python calculates coverage using required weight 2, preferred weight 1, MATCH 1,
-PARTIAL 0.5 and GAP 0. Reports expose explanations, evidence snapshots, strengths,
-gaps and recommended focus. Saved data survives reload; unsaved forms survive
-polling and navigation but not reload. Failed reanalysis preserves earlier reports.
+Career stages reuse Waku's configured client, unchanged `run_loop`, `ToolRegistry`,
+SQLite, dashboard execution lock and `Tracer`. Each stage has fresh messages,
+a dedicated prompt and at most ten iterations. Career runs bypass ordinary chat,
+conversational memory, consolidation, retrieval gates, MCP and unrelated tools.
+Profile, JD, report and evidence remain untrusted data.
 
-Job analysis never generates a resume. Users review the report, select English,
-Chinese or Japanese and explicitly click Generate Tailored Resume. Generation
-requires a confirmed profile, a completed current job analysis and usable
-requirements. Backend gates reject unconfirmed, unknown, failed, outdated and
-insufficient analyses before calling a model. Profile changes require reanalysis.
+| File | Responsibility |
+|---|---|
+| `waku/db.py` | Additive, idempotent Career schema initialization |
+| `waku/runtime/career.py` | Profile storage, normalization, confirmation and action dispatch |
+| `waku/runtime/career_jobs.py` | Extraction, matching, scoring, activity and saved jobs |
+| `waku/runtime/career_resumes.py` | Generation gates, claim validation, current drafts and Markdown |
+| `waku/tools/career.py` | Scoped submission, FTS5 search and evidence lookup |
+| `waku/ops/dashboard.py` | Career API and existing client/lock reuse |
+| `waku/ops/static/js/career.js`, `style.css` | Workspace forms, reports, resume review and print rules |
+| `evals/career.py` | Explicitly opt-in real-provider evaluation |
+| `evals/fixtures/career_*.json` | Four JDs, varied synthetic profile and review expectations |
+| `evals/deterministic/test_career_*.py` | Offline profile, job, resume and whole-journey regressions |
 
-## Files and architecture
+## Database and provenance
 
-- `waku/db.py` adds the current-resume table without clearing runtime data.
-- `waku/runtime/career.py` dispatches explicit generation and invalidates drafts
-  when factual profile input changes.
-- `waku/runtime/career_jobs.py` records observer-derived activity, exposes saved
-  resumes and language defaults, and invalidates old drafts after reanalysis.
-- `waku/runtime/career_resumes.py` validates, generates, persists and exports drafts.
-- `waku/ops/dashboard.py` reuses the configured agent client and execution lock.
-- `waku/ops/static/js/career.js` adds language selection, generation, cited review,
-  downloads, printing and activity. `style.css` adds resume and print rules.
-- `evals/deterministic/test_career_resumes.py` adds 22 focused cases. Existing
-  profile/job evals now reject an unknown action and assert no automatic draft.
-- `docs/career.md`, `docs/architecture.md`, the frontend README and the product
-  specification's stage-status preamble reflect the completed behavior.
+Career tables share the existing `state.db`:
 
-Resume generation calls the existing `run_stage` and unchanged `run_loop` with
-fresh messages, a dedicated system prompt and only `get_evidence` and
-`submit_stage_result`. Iterations remain capped at ten. Profile, JD, report and
-evidence are labelled untrusted data. The coordinator saves only a valid result
-from a completed stage. Failures retain the previous draft.
+- `career_profile`: singleton raw input, normalized JSON, explicit edits,
+  confirmation and update timestamp.
+- `career_evidence`: stable evidence/source IDs, type, original text, normalized
+  JSON, search text and active flag. Singleton ownership is implicit; no `profile_id` exists.
+- `career_evidence_fts`: external-content FTS5 over search text with insert,
+  update and delete triggers.
+- `jobs`: raw JD, extracted title/summary/responsibilities, status, outdated flag,
+  coverage, report/evidence snapshots, activity and timestamps.
+- `job_requirements`: job-owned atomic requirements, category, importance,
+  keywords and verbatim JD excerpts.
+- `job_matches`: one assessment per requirement, status, evidence IDs and reason.
+- `resumes`: ID, unique job ID, language, structured content/evidence snapshots,
+  outdated flag, activity and timestamps. Successful regeneration replaces one
+  current draft; no version history exists.
 
-## Schema, provenance and language
+Raw input remains separate from normalization and explicit user corrections.
+Evidence IDs are `career-<source_id>` and remain attached to coherent source
+records. Removed records become inactive. Unchanged confirmation does not convert
+AI wording into user-authored facts. Profile changes invalidate analyses and
+resumes; successful reanalysis leaves old drafts outdated until regeneration.
 
-Existing tables remain `career_profile`, `career_evidence`, `jobs`,
-`job_requirements` and `job_matches`, with external-content `career_evidence_fts`.
-Singleton evidence ownership remains implicit without `profile_id`.
+MATCH/PARTIAL need active, inspected evidence. Every substantive resume claim
+needs unique inspected references; bullets must cite their own record. Validation
+rejects unknown/inactive IDs, extra heading-field proposals and new numeric values.
+Python supplies contact details, canonical titles and raw structured heading fields.
+Evidence IDs establish traceability, not semantic proof.
 
-`resumes` contains `id`, unique `job_id`, `language`, `content_json`, `outdated`,
-`activity_json`, `created_at` and `updated_at`. Successful regeneration updates
-one row per job. Profile changes and successful reanalysis mark old drafts
-outdated; only successful regeneration clears that flag. No version history exists.
+Coverage uses required weight 2, preferred weight 1, MATCH 1, PARTIAL 0.5 and GAP 0:
+`100 × sum(weight × value) / sum(weight)`, rounded to one decimal. Empty
+requirements yield insufficient information and block generation. The UI calls
+this JD Requirement Coverage and explicitly excludes hiring/interview probability.
 
-Model output contains `summary` and `skills` arrays of `{text, evidence_ids}`,
-and `records` containing `{evidence_id, bullets}`. Every substantive claim needs
-unique active evidence references inspected during that stage. Record bullets
-must cite their own record. Unknown IDs, inactive records, uninspected citations,
-extra protected-field proposals and new numeric values are rejected before saving.
-Python attaches confirmed basic information, canonical record titles, raw structured
-fields and evidence snapshots. Employers, positions, education fields and dates
-in headings come from factual records; the model cannot replace those fields.
+## APIs, tools and tracing
 
-Evidence IDs remain `career-<source_id>`. Raw structured fields and narratives
-remain available together with explicit corrections. Confirmation of unchanged
-AI wording does not turn it into user-authored input.
+`GET /api/career` returns profile/evidence and saved job/resume artifacts.
+`POST /api/career` accepts `save_onboarding`, `normalize`, `save_profile`,
+`confirm`, `analyze_job` and `generate_resume`. Hosted policy blocks Career access.
 
-Language defaults use a small script heuristic: Japanese kana selects Japanese;
-Han-dominant text selects Chinese; otherwise English. Users override the default.
-No new model call or language-detection dependency exists.
+Normalization and extraction expose only `submit_stage_result`. Matching adds
+`search_career_evidence` and `get_evidence`; generation exposes only evidence lookup
+and submission. Search accepts bounded agent-authored query batches, safely
+quotes literal tokens and deduplicates results. Resume generation requires an
+explicit action, confirmed profile, completed current analysis and usable requirements.
 
-## Export and tracing
+Day 4 closes failed Career traces with terminal records and records search queries
+and result counts in Career Activity. Activity shows tools, evidence IDs, status,
+latency and tokens. Traces omit system prompts and assistant prose/reasoning, but
+contain factual tool inputs/results. The permanent usage ledger remains unchanged.
+Resume headings inherit the resume font stack for CJK fallback. The existing
+Markdown blob cleanup timer is registered in the dashboard timer audit.
 
-HTML review escapes all factual and generated text. Expandable citations show
-source records. Markdown is derived deterministically from saved structured data,
-with Markdown syntax escaped; it excludes citation/debug data.
+## Run and evaluation commands
 
-Browser printing temporarily selects the light theme and hides dashboard chrome,
-buttons, evidence and activity. Resume typography uses Chinese/Japanese system-font
-fallbacks. No PDF library, DOCX export, template system or visual editor exists.
+Follow [the Career guide](../career.md) for clone/setup commands, the architecture
+diagram and the exact demo. Start a fresh isolated demo without deleting data:
 
-The stage observer forwards events to the existing Tracer, stamps job IDs, and
-collects concise tool/stage activity without assistant prose or reasoning.
-Activity includes evidence IDs, stage elapsed time, token usage and coverage.
-JSONL, the permanent usage ledger and optional OpenTelemetry remain unchanged.
-Older analyses without stored activity show an empty-activity message.
+```bash
+WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku dashboard
+```
 
-## Verification and limits
+Open `http://localhost:7777/#career`. Configure the existing provider if needed.
+Use `evals/fixtures/career_profile.json` and the guide's RAG/PyTorch/production-Python
+JD to demonstrate MATCH/PARTIAL/GAP, evidence inspection and explicit generation.
 
-The focused Career and adjacent route, hosted-policy, design, static-asset and
-rulebook group passed 140 checks. Ruff over `waku evals scripts hosted`, JavaScript
-syntax checking and `git diff --check` passed. A process-local mutation disabled
-numeric validation; the invented-70%-metric case failed as expected. No mutation
-changed repository files or user runtime data.
+```bash
+uv pip install -e '.[eval]'
+uv run python -m pytest -q evals/deterministic/test_career_profile.py evals/deterministic/test_career_jobs.py evals/deterministic/test_career_resumes.py evals/deterministic/test_career_acceptance.py
+uv run python -m pytest -q evals/deterministic
+uv run --with ruff ruff check waku evals scripts hosted
+node --check waku/ops/static/js/career.js
+uv run python -m evals.career --live --output /tmp/career-evaluation.json
+uv run python -m evals.career --live --scenario 'AI Engineer' --language Chinese --inject-jd --output /tmp/career-adversarial.json
+```
 
-An isolated temporary runtime and scripted model passed Chromium checks for
-analysis without automatic generation, explicit Japanese selection, cited review,
-light/dark themes, Markdown download, print visibility/PDF export and reload.
-The browser recorded zero page errors. Browser artifacts remain under `/tmp`.
+Live evaluation uses synthetic facts in new temporary runtimes and the existing
+provider client. It judges extraction, retrieval, match grounding, gap honesty,
+resume grounding/relevance, profile grounding and language separately. A deliberately
+false draft checks judge sensitivity to unsupported technology, metrics and fields.
+Offline tests use scripted proposals and never claim to measure real-model quality.
 
-No live-provider generation, semantic groundedness or translation evaluation ran.
-Citation and numeric validation cannot prove every paraphrase or inferred skill.
-Users must review claims. The headless environment lacks CJK fonts, so its Japanese
-labels show missing glyphs despite system-font fallbacks; glyph rendering needs a
-machine with suitable fonts. Failed stages can still lack a terminal trace event.
-Mixed-language or kanji-only JDs may need manual language override. Print pagination
-uses browser defaults. The full deterministic suite was not rerun for Day 3.
+## Verification on 2026-10-02
 
-## Remaining optional Day 4
+The full deterministic suite passed 2,585 checks with 73 skips. All 88 Career
+checks passed; focused checks also cover print, timer and rulebook contracts.
+Ruff, JavaScript syntax, skill validation and `git diff --check` passed.
+The full suite needs localhost sockets and `jq` for existing hosted shell tests;
+verification used a temporary extracted `jq`, without adding a project dependency.
+A process-local mutation removed terminal tracing; all nine failure-trace cases
+failed as expected. No mutation changed repository files or user runtime data.
+Offline span stubs verify that terminal records flush after the root span closes.
 
-Day 4 requires explicit approval. It can run a live-provider groundedness and
-translation smoke check, verify CJK printing with installed fonts, check failed
-trace completion, run the full essential gate and fix acceptance issues found.
-Small usage/demo documentation and UI polish remain optional. Add no major
-architecture, feature, deployment or application-tracking infrastructure.
+A fresh isolated runtime and scripted model passed the complete Chromium journey:
+first visit, adding/removing records, draft preservation, normalization/editing,
+confirmation, analysis, three statuses, evidence inspection, explicit generation,
+three language selections, both themes, Markdown, print visibility, outdated gates
+and reload. The browser recorded zero page errors. Temporary Noto CJK fonts rendered
+Chinese/Japanese headings; the real Japanese draft preview/print used Noto Sans CJK JP.
+Browser artifacts remain under `/tmp/career-day4-*`.
+
+Real-provider evaluation ran through GLM `glm-5.2`: AI Engineer in Japanese,
+Frontend/Full Stack/Technical Support in English, and an injected AI Engineer JD
+in Chinese. All eight evaluator dimensions passed on all five runs. Scores were
+50.0, 83.3, 80.0, 16.7 and 50.0 respectively. Production PyTorch, Kubernetes and
+customer support stayed unsupported. The injected run did not add five years of
+PyTorch experience or a 70% SSR metric. Adversarial drafts were flagged as ungrounded.
+Saved artifacts are `/tmp/career-day4-live.json`, `career-day4-live-remaining.json`
+and `career-day4-live-adversarial.json`. These results cover one provider/model;
+model judgments do not guarantee factual correctness or translation quality.
+The evaluator uses the same configured model as generation.
+
+## Limits and deferred maintenance
+
+Users must review semantic matches, paraphrases, technologies and translations.
+One Japanese output contained a small mixed-language phrase despite the evaluator's
+passing language verdict. Language defaults are heuristic; mixed-language/kanji-only
+JDs may need an override. FTS5 literal search has limited cross-language recall.
+CJK rendering needs installed fonts, and browser defaults control pagination.
+OpenTelemetry export and other providers were not independently exercised on Day 4.
+An existing hosted concurrency assertion failed in one full run and passed an
+isolated retry. Day 4 did not change hosted behavior.
+
+Useful future maintenance includes broader provider/translation checks, additional
+adversarial examples and print review on other browsers. No embeddings, scraping,
+ATS/application tracking, authentication, SaaS, DOCX, PDF library, resume designer,
+multi-agent execution or revision graph was added or authorized.

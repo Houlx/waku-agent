@@ -943,7 +943,7 @@ dialog.dialog :focus-visible{outline:var(--focus-ring-width) solid var(--accent)
 .career-field textarea { resize: vertical; }
 
 .career-resume { font-family: var(--face-sans), "Noto Sans CJK SC", "Noto Sans CJK JP", "Yu Gothic", "Microsoft YaHei", sans-serif; padding: var(--space-6); }
-.career-resume h2 { font-size: var(--text-lg); margin-top: var(--space-6); }
+.career-resume h2 { font-family: inherit; font-size: var(--text-lg); margin-top: var(--space-6); }
 @media print {
   body.career-print { display: block; height: auto; overflow: visible; }
   body.career-print > :not(main) { display: none !important; }

@@ -1,0 +1,9 @@
+{
+  "basic": {"Name": "Alex Chen", "Email": "alex@example.test", "Current Location": "Tokyo"},
+  "records": [
+    {"source_id": "frontend", "type": "work", "fields": {"Company": "Example Software", "Position": "Software Engineer", "Start Date": "2022-04", "End Date": "2025-03"}, "text": "I migrated a React application from React 16 to React 18 using TypeScript. I resolved dependency and compatibility problems and coordinated the migration with other developers. I maintained Node.js server-side rendering and improved SSR performance. I did not measure a percentage improvement."},
+    {"source_id": "rag", "type": "project", "fields": {"Project Name": "Employee knowledge assistant"}, "text": "I built an employee knowledge assistant using retrieval augmented generation (RAG), Node.js and document search. I implemented retrieval and connected the retrieved documents to an LLM to answer questions. I tested answers against source documents."},
+    {"source_id": "python", "type": "project", "fields": {"Project Name": "Python data prototype"}, "text": "I used Python to build a small local data-processing prototype. I have not operated Python services in production."},
+    {"source_id": "education", "type": "education", "fields": {"School": "Example University", "Degree": "Bachelor", "Major": "Computer Science", "Start Date": "2018", "End Date": "2022"}, "text": "I studied computer science and completed a database course project."}
+  ]
+}

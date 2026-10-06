@@ -69,9 +69,16 @@ at the end of every step.
 
 Open **Career Agent** in the local dashboard to describe your experience, review
 an AI-organized profile, and confirm your career facts. Paste a job description
-to see requirement coverage and inspect the supporting evidence. Resume generation
-is not available yet.
-[The Career guide](docs/career.md) explains storage, evidence and review.
+to see evidence-backed MATCH, PARTIAL and GAP assessments. Python calculates
+**JD Requirement Coverage**. After reviewing the report, explicitly generate a
+tailored resume in English, Chinese or Japanese, inspect its citations, download
+Markdown, or print it from your browser.
+
+Career Agent keeps candidate facts separate from conversational memory. The
+existing Waku loop formulates FTS5 searches and rewrites supported experience;
+application code validates references, persists artifacts and calculates scores.
+[The Career guide](docs/career.md) covers setup, architecture, evaluation,
+limitations and a reproducible demo.
 
 ## Connect Waku Memory
 

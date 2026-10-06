@@ -1,0 +1,6 @@
+{
+  "AI Engineer": {"supported": {"retrieval augmented generation": ["career-rag"]}, "partial": {"Python": ["career-python"]}, "gaps": ["Production PyTorch training"], "resume_focus": ["career-rag"]},
+  "Frontend Engineer": {"supported": {"React migration": ["career-frontend"]}, "partial": {"Python": ["career-python"]}, "gaps": [], "resume_focus": ["career-frontend"]},
+  "Full Stack Engineer": {"supported": {"Node.js": ["career-frontend", "career-rag"], "React": ["career-frontend"]}, "partial": {}, "gaps": ["Kubernetes"], "resume_focus": ["career-frontend", "career-rag"]},
+  "Technical Support Engineer": {"supported": {}, "partial": {"Python": ["career-python"]}, "gaps": ["Customer support"], "resume_focus": ["career-python"]}
+}

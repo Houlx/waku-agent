@@ -37,6 +37,9 @@ Career runs bypass `Waku.respond()` because it assembles conversational memory,
 ordinary tools, chat persistence, and consolidation. They reuse its underlying
 loop, client, connection, and tracing components directly.
 
+The implementation splits job and resume stages into `career_jobs.py` and
+`career_resumes.py` alongside the profile coordinator. Each module owns its prompts.
+
 ## B. Final Minimal Database Schema
 
 Use the existing SQLite database. Initialize Career tables additively and
@@ -52,6 +55,9 @@ idempotently; do not clear runtime data.
 | `resumes` | One current draft per job: `id`, unique `job_id`, `language`, `content_json`, `activity_json`, timestamps | Structured claims contain evidence IDs. Markdown and HTML derive from this content. |
 
 Additional rules:
+
+- The single-user implementation keeps evidence ownership implicit and omits
+  `career_evidence.profile_id`. The current resume also stores an `outdated` flag.
 
 - Application code assigns source and evidence IDs; the LLM references them
   rather than inventing them.

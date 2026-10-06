@@ -344,6 +344,8 @@ FETCH_ALIAS_SHAPES = {
 # shape, already in the codebase and harmless because it repaints. Walking
 # only setInterval would let the next one fetch.
 DECLARED_TIMERS = {
+    # Career's Markdown download releases a local blob URL; it makes no request.
+    ("career.js", "careerDownload", "setTimeout"): {"()=>URL.revokeObjectURL(url)"},
     # the demo animation: a self-rescheduling repaint, no request
     ("diagram.js", "hot", "setTimeout"): {"()=>el.classList.remove(cls)"},
     ("diagram.js", "playNext", "setTimeout"): {"playNext"},

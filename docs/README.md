@@ -39,7 +39,7 @@ into four groups.
 | [evals.md](evals.md) | the two kinds of eval, the Docker tier, the release gate, traces and spend |
 | [roadmap.md](roadmap.md) | what is live, what is still a skeleton, upgrade paths |
 
-- [career.md](career.md) explains local Career onboarding, job analysis and evidence inspection.
+- [career.md](career.md) explains Career setup, architecture, resumes, evaluation and a demo.
 
 ## Career Agent project
 
