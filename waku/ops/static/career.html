@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{var t=localStorage.getItem("waku-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Career Agent</title>
+<!-- Transitional shell reuses the existing fork's styles; product styling is Phase 2. -->
+<link rel="stylesheet" href="/static/design/fonts.css">
+<link rel="stylesheet" href="/static/design/tokens.css">
+<link rel="stylesheet" href="/static/design/type.css">
+<link rel="stylesheet" href="/static/design/controls.css">
+<link rel="stylesheet" href="/static/style.css"></head><body>
+<main>
+  <header class="pagehead">
+    <h1>Career Agent</h1>
+    <button class="btn btn-secondary" onclick="careerProviderSetup()">Provider setup</button>
+    <button id="theme-toggle" class="btn btn-tertiary" onclick="cycleTheme()"></button>
+    <div id="provider-status" role="status"></div>
+  </header>
+  <div id="view"></div>
+</main>
+<script src="/static/js/util.js"></script>
+<script src="/static/js/ui.js"></script>
+<script src="/static/js/theme.js"></script>
+<script>const VIEWS = {};</script>
+<script src="/static/js/career.js"></script>
+<script src="/static/js/career_bootstrap.js"></script>
+</body></html>

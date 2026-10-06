@@ -63,32 +63,15 @@ STATIC = Path(__file__).resolve().parent / "static"
 
 
 def career_state():
-    from waku.runtime.career import state
+    from waku.runtime.career_runtime import current_runtime
 
-    settings = load_settings()
-    settings.ensure_home()
-    with agent_lock:
-        conn = connect(settings.home)
-        try:
-            return state(conn)
-        finally:
-            conn.close()
+    return current_runtime().state()
 
 
 def career_action(payload):
-    from waku.runtime.career import action
+    from waku.runtime.career_runtime import current_runtime
 
-    with agent_lock:
-        if payload.get("action") in {"normalize", "analyze_job", "generate_resume"}:
-            agent = get_agent()
-            return action(agent.conn, payload, agent.settings, agent.client)
-        settings = load_settings()
-        settings.ensure_home()
-        conn = connect(settings.home)
-        try:
-            return action(conn, payload)
-        finally:
-            conn.close()
+    return current_runtime().action(payload)
 
 
 def chat(message: str) -> dict:
@@ -1301,6 +1284,10 @@ def main() -> None:
             server.serve_forever()
         finally:
             supervisor.shutdown()
+            from waku.runtime.career_runtime import close_runtime
+
+            close_runtime()
+            server.server_close()
         return
     raise SystemExit(f"no free port in {base}–{base + 9}")
 

@@ -125,17 +125,17 @@ def test_first_visit(tmp_path):
 
 
 def test_dashboard_handlers_use_the_existing_model_and_keep_chat_empty(world, monkeypatch):
-    from types import SimpleNamespace
-
     from waku.ops import dashboard
+    from waku.runtime import career_runtime
 
     conn, settings, _ = world
     monkeypatch.setattr(dashboard, 'load_settings', lambda: settings)
     client = ScriptedClient([
         response([tool_block('submit_stage_result', {'profile': proposal()})], 'tool_use'),
         response([text_block('Done.')])])
-    monkeypatch.setattr(dashboard, 'get_agent', lambda: SimpleNamespace(
-        conn=conn, settings=settings, client=client))
+    runtime = career_runtime.CareerRuntime(conn=conn, settings=settings, client=client)
+    monkeypatch.setattr(career_runtime, '_runtime', runtime)
+    monkeypatch.setattr(dashboard, 'get_agent', lambda: pytest.fail('Career constructed Waku'))
     assert dashboard.career_state()['profile']['normalized'] is None
     assert dashboard.career_action({'action': 'normalize'})['profile']['normalized'] == proposal()
     assert dashboard.career_action({'action': 'confirm'})['profile']['confirmed']

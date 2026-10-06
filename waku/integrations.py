@@ -791,125 +791,38 @@ def apply_provider(provider: str, *, key: str | None = None, model: str | None =
                    small_model: str | None = None, base_url: str | None = None,
                    custom_key: str | None = None, force: bool = False,
                    activate: bool = True) -> ApplyResult:
-    """Save provider fields and optionally make that provider active."""
-    if provider not in PROVIDERS:
-        return ApplyResult(False, error="unknown provider")
-    from waku.ops import browser_agent, catalog
+    """Keep the general dashboard contract while sharing provider-only saves."""
+    from contextlib import nullcontext
+
+    from waku.ops import browser_agent, provider_services
+    from waku.runtime.career_runtime import peek_runtime
 
     previous = os.environ.get("WAKU_PROVIDER", "")
-    selected = PROVIDERS[provider]
-    # THE FIRST WORKING KEY BECOMES THE CURRENT PROVIDER, whatever the caller
-    # asked for.
-    #
-    # The Models modal's save button sends activate=False on purpose: once you
-    # have a provider that works, adding a second one should not silently move
-    # your turns onto it. But that default is wrong in the one case where the
-    # user has nothing -- they paste their first key, the save does not
-    # activate, WAKU_PROVIDER still names whatever it named before, and the
-    # next message fails with no visible reason.
-    #
-    # It is not hypothetical. On 2026-09-28 a hosted tenant's WAKU_PROVIDER
-    # said `waku-platform` -- the free tier, whose row had just been removed
-    # from the build -- so the setting named a provider that no longer
-    # existed. They pasted a valid Anthropic key, the dashboard showed it
-    # configured, and every turn went nowhere, quietly.
-    #
-    # So: adopt when the CURRENT provider cannot serve a turn and the one
-    # being saved can. Both halves matter. Without the first, adding a second
-    # provider hijacks a working setup; without the second, a save that
-    # carries no key moves the user from one dead provider to another.
-    if not activate and _adoptable(selected, key):
-        activate = True
-    switching = activate and provider != previous
-    updates: dict[str, str] = {"WAKU_PROVIDER": provider} if activate else {}
-    if model is not None:
-        updates["WAKU_MODEL"] = model
-    elif switching:
-        updates["WAKU_MODEL"] = catalog.default_model_for(provider)
-    if small_model is not None:
-        updates["WAKU_SMALL_MODEL"] = small_model
-    elif switching:
-        updates["WAKU_SMALL_MODEL"] = ""
-    if key:
-        updates[selected.key_env] = key
-    # Regional providers own their endpoint choice.  Keeping it beside that
-    # provider's key prevents a MiniMax URL, for example, from leaking into Kimi
-    # after a switch.  A legacy WAKU_BASE_URL for the current provider is
-    # migrated the next time its endpoint is saved.
-    if selected.base_url_env and (base_url is not None or switching):
-        legacy = os.environ.get("WAKU_BASE_URL", "") if provider == previous else ""
-        selected_base_url = (base_url or legacy or selected.configured_base_url() or "").strip()
-        if selected_base_url:
-            updates[selected.base_url_env] = selected_base_url
-        updates["WAKU_BASE_URL"] = ""
-    elif base_url is not None:
-        updates["WAKU_BASE_URL"] = base_url
-    if custom_key is not None:
-        updates["WAKU_API_KEY"] = custom_key
-    # The modal always submits its selected Base URL.  Compare effective values
-    # rather than field presence so reopening and saving an unchanged provider
-    # does not perform a synchronous network probe every time.
-    current_key = os.environ.get(selected.key_env, "")
-    legacy_base_url = os.environ.get("WAKU_BASE_URL", "") if provider == previous else ""
-    current_base_url = legacy_base_url or selected.configured_base_url() or ""
-    candidate_base_url = (
-        updates.get(selected.base_url_env, current_base_url)
-        if selected.base_url_env else updates.get("WAKU_BASE_URL", current_base_url)
-    )
-    key_changed = bool(key and key != current_key)
-    base_url_changed = (
-        base_url is not None
-        and candidate_base_url.rstrip("/") != current_base_url.rstrip("/")
-    )
-    changed_updates = {
-        name: value for name, value in updates.items()
-        if (os.environ.get(name) or "") != value
-    }
-    path = _env_path()
-    contents = path.read_text(encoding="utf-8") if path.exists() else None
-    before = {name: os.environ.get(name) for name in changed_updates}
-    try:
-        # Validate a newly supplied key before persisting it.  catalog's probe
-        # intentionally reads environment variables, so expose only the
-        # candidate values for the duration of this non-writing request.
-        candidate_key = key or os.environ.get(selected.key_env, "")
-        if candidate_key and (key_changed or base_url_changed) and not force:
-            probe_names = {"WAKU_PROVIDER", selected.key_env}
-            if selected.base_url_env:
-                probe_names.update({selected.base_url_env, "WAKU_BASE_URL"})
-            probe_before = {name: os.environ.get(name) for name in probe_names}
-            os.environ["WAKU_PROVIDER"] = provider
-            os.environ[selected.key_env] = candidate_key
-            if selected.base_url_env and selected.base_url_env in updates:
-                os.environ[selected.base_url_env] = updates[selected.base_url_env]
-                os.environ["WAKU_BASE_URL"] = ""
-            elif base_url is not None:
-                os.environ["WAKU_BASE_URL"] = base_url
-            try:
-                _provider_probe({selected.key_env: candidate_key})
-            finally:
-                for name, old in probe_before.items():
-                    if old is None:
-                        os.environ.pop(name, None)
-                    else:
-                        os.environ[name] = old
-        if changed_updates:
-            _write_updates(changed_updates, ())
-        affects_active_agent = bool(changed_updates) and (provider == previous or activate)
-        if affects_active_agent and browser_agent.current() is not None:
-            if error := browser_agent.rebuild():
-                raise RuntimeError(error)
-            current_agent = browser_agent.current()
-            if current_agent is not None:
-                current_agent.tracer.event("config", {"from": {"provider": previous},
-                                                       "to": {"provider": provider}})
-        status = (IntegrationStatus(IntegrationState.ERROR, "Saved without a successful test")
-                  if force else IntegrationStatus(IntegrationState.CONNECTED))
-        record_health(provider, status)
-    except Exception as exc:
-        _restore(path, contents, before)
-        result = _safe_error(exc, changed_updates, _find_integration(provider) or provider_integrations()[0])
-        return ApplyResult(False, error=result, can_force=bool(key or os.environ.get(selected.key_env)))
+    runtime = peek_runtime()
+
+    def reload():
+        if runtime is not None:
+            callback = browser_agent.rebuild if browser_agent.current() is not None else None
+            return runtime.reload(before_swap=callback)
+        if browser_agent.current() is not None:
+            return browser_agent.rebuild()
+        return None
+
+    with runtime.lock if runtime is not None else nullcontext():
+        result = provider_services.apply_provider(
+            provider, key=key, model=model, small_model=small_model, base_url=base_url,
+            custom_key=custom_key, force=force, activate=activate, reload=reload,
+            probe=_provider_probe, env_path=_env_path, write_updates=_write_updates,
+            restore=_restore,
+        )
+    if not result.ok:
+        return ApplyResult(False, error=result.error, can_force=result.can_force)
+    if result.changed and (agent := browser_agent.current()):
+        agent.tracer.event("config", {"from": {"provider": previous},
+                                      "to": {"provider": provider}})
+    status = (IntegrationStatus(IntegrationState.ERROR, "Saved without a successful test")
+              if force else IntegrationStatus(IntegrationState.CONNECTED))
+    record_health(provider, status)
     return ApplyResult(True, _current_view(provider))
 
 

@@ -243,6 +243,9 @@ NETWORK_TOKENS = ("fetch", "postJSON")
 #   "primitive"   postJSON itself, which forwards whatever headers its caller
 #                 hands it and decides nothing.
 NETWORK_CALLERS = {
+    # The explicit Career launch reads readiness on entry and saves on user action.
+    ("career_bootstrap.js", "careerReadiness"): "user",
+    ("career_bootstrap.js", "careerSaveProvider"): "user",
     ("career.js", "careerLoad"): "user",  # first workspace open or explicit retry; never polled
     ("career.js", "careerRun"): "user",
     ("compare.js", "loadCompareHistory"): "background",

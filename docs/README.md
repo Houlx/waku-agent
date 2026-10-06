@@ -49,6 +49,8 @@ into four groups.
   the approved plan and final clarifications.
 - [career-agent/HANDOFF.md](career-agent/HANDOFF.md) records current code,
   verification results, and stage authorization.
+- [career-agent/CAREER_ONLY_REFACTOR_PLAN.md](career-agent/CAREER_ONLY_REFACTOR_PLAN.md)
+  proposes Career-only runtime, backend and frontend cleanup after the MVP.
 
 ## Whiteboards
 

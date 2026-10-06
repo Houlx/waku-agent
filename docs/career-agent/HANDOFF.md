@@ -3,17 +3,20 @@
 ## Status
 
 Days 1–4 are complete. Day 4 was explicitly approved on 2026-10-02 for
-stabilization, evaluation, documentation and demo preparation. Development stops
-here; no Day 5 or additional features are authorized.
+stabilization, evaluation, documentation and demo preparation. V1 feature development stops
+here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
+Phase 2 remains unauthorized.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
-Day 4 changes remain uncommitted. The [product specification](PRODUCT_SPEC.md)
-and [implementation plan](IMPLEMENTATION_PLAN.md) remain authoritative.
+The [product specification](PRODUCT_SPEC.md) and
+[implementation plan](IMPLEMENTATION_PLAN.md) record historical V1 intent. Actual
+code and the approved [Career-only refactor plan](CAREER_ONLY_REFACTOR_PLAN.md)
+govern runtime separation.
 
 Career code remains MIT.
 
 Hosted policy remains Elastic License 2.0; no code moved across that boundary.
-No default dependencies or product architecture were added.
+No default dependencies or AI capabilities were added.
 
 ## Product and architecture
 
@@ -24,20 +27,25 @@ explicit resume generation, cited review, Markdown export and browser printing.
 Saved artifacts survive reload. Unsaved drafts survive polling and navigation,
 but not reload. Failed stages retain inputs and earlier successful artifacts.
 
-Career stages reuse Waku's configured client, unchanged `run_loop`, `ToolRegistry`,
-SQLite, dashboard execution lock and `Tracer`. Each stage has fresh messages,
+Career stages use a dedicated runtime's configured client and SQLite connection,
+the unchanged `run_loop`, `ToolRegistry` and `Tracer`. The runtime execution lock
+also serializes complete provider configuration/replacement transactions.
+Each stage has fresh messages,
 a dedicated prompt and at most ten iterations. Career runs bypass ordinary chat,
 conversational memory, consolidation, retrieval gates, MCP and unrelated tools.
 Profile, JD, report and evidence remain untrusted data.
 
 | File | Responsibility |
 |---|---|
-| `waku/db.py` | Additive, idempotent Career schema initialization |
+| `waku/db.py` | Connection mechanics plus separate general/Career initialization |
+| `waku/runtime/career_runtime.py` | Settings, lazy client, connection, serialization and owned cleanup |
+| `waku/ops/career_dashboard.py` | Explicit Career HTTP launch without general startup |
+| `waku/ops/provider_services.py` | Provider-only configuration, rollback and masked readiness |
 | `waku/runtime/career.py` | Profile storage, normalization, confirmation and action dispatch |
 | `waku/runtime/career_jobs.py` | Extraction, matching, scoring, activity and saved jobs |
 | `waku/runtime/career_resumes.py` | Generation gates, claim validation, current drafts and Markdown |
 | `waku/tools/career.py` | Scoped submission, FTS5 search and evidence lookup |
-| `waku/ops/dashboard.py` | Career API and existing client/lock reuse |
+| `waku/ops/dashboard.py` | Transitional old shell; Career API delegates to its dedicated runtime |
 | `waku/ops/static/js/career.js`, `style.css` | Workspace forms, reports, resume review and print rules |
 | `evals/career.py` | Explicitly opt-in real-provider evaluation |
 | `evals/fixtures/career_*.json` | Four JDs, varied synthetic profile and review expectations |
@@ -104,16 +112,16 @@ Follow [the Career guide](../career.md) for clone/setup commands, the architectu
 diagram and the exact demo. Start a fresh isolated demo without deleting data:
 
 ```bash
-WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku dashboard
+WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku career
 ```
 
-Open `http://localhost:7777/#career`. Configure the existing provider if needed.
+Open `http://localhost:7777/#career`. Configure a provider through the Career setup button if needed.
 Use `evals/fixtures/career_profile.json` and the guide's RAG/PyTorch/production-Python
 JD to demonstrate MATCH/PARTIAL/GAP, evidence inspection and explicit generation.
 
 ```bash
 uv pip install -e '.[eval]'
-uv run python -m pytest -q evals/deterministic/test_career_profile.py evals/deterministic/test_career_jobs.py evals/deterministic/test_career_resumes.py evals/deterministic/test_career_acceptance.py
+uv run python -m pytest -q evals/deterministic/test_career_*.py
 uv run python -m pytest -q evals/deterministic
 uv run --with ruff ruff check waku evals scripts hosted
 node --check waku/ops/static/js/career.js
@@ -126,6 +134,77 @@ provider client. It judges extraction, retrieval, match grounding, gap honesty,
 resume grounding/relevance, profile grounding and language separately. A deliberately
 false draft checks judge sensitivity to unsupported technology, metrics and fields.
 Offline tests use scripted proposals and never claim to measure real-model quality.
+
+## Phase 1 runtime separation on 2026-10-06
+
+`waku career` serves the existing Career forms through a separate HTTP bootstrap.
+It starts no general Waku agent, Memory, Session, MCP, graph or gateway services.
+`waku dashboard` remains available for rollback; its Career actions also use the
+new runtime. The Career pipeline and schema definitions remain unchanged.
+The transitional page reuses the existing fork's styles without editing design
+copies. Phase 2 must resolve visual-asset rights before product styling changes.
+
+The runtime owns factory-created connections and clients. Injected resources
+remain caller-owned. It constructs the model lazily on an AI action, preserves
+`get_client` model resolution, and builds replacement resources before swapping.
+Failed replacements release candidate resources and restore provider environment
+and configuration while retaining the old runtime. Successful replacements close
+old owned resources. Server shutdown waits for HTTP workers and closes its owned
+runtime. SDK cleanup failures retain exception class names in `cleanup_errors`
+and do not reverse a completed swap or prevent connection cleanup.
+
+One runtime lock protects Career actions, its shared connection, complete provider
+transactions and shutdown. Provider probes and temporary environment overrides
+stay inside that boundary. The old provider facade coordinates an existing Career
+runtime and chat runtime during saves. Locks are process-local; users should not
+run both applications against the same home concurrently.
+
+Career exposes `GET /api/provider-status`, `GET /api/models` and
+`POST /api/providers` alongside its unchanged Career API. Readiness resolves the
+same provider/model and scoped credentials as execution, reports masked status,
+and makes no provider call. Explicit catalog requests and changed-key/endpoint
+saves may make provider calls. The new provider services import no general
+integration infrastructure; the old integrations facade retains its API and
+health reporting. `Settings`, dotenv precedence, home resolution, provider registry
+and catalog/default-pin mechanics remain shared for compatibility.
+
+`connect_career` opens the existing `state.db` with SQLite rows, a 3,000 ms busy
+timeout and the appropriate thread setting. It initializes only Career SQL and
+never runs general schema migrations. Preservation checks compare all stored
+rows, including FTS shadow tables and legacy rows, before and after reopening.
+An older chat table retains its original columns. No user runtime data was read,
+deleted or migrated during implementation; verification used temporary homes.
+
+Phase 1 verification used scripted clients and synthetic credentials. The focused
+Career and shared-runtime checks passed, including the four fixture journeys,
+import isolation, client injection, replacement failures, serialization, scoped
+credentials, shutdown, profile/job/resume behavior, tracing and database
+preservation. The final focused run passed 455 checks with 12 skips.
+All 114 Career checks passed. Ruff, both Career JavaScript syntax checks, skill
+validation, environment-example validation and `git diff --check` passed.
+
+A broader sweep passed 2,609 checks with 73 skips and one failure in the existing
+hosted concurrency assertion
+`test_two_simultaneous_requests_at_the_cap_cannot_both_start`. The assertion passed
+on an isolated retry; the V1 handoff already records this intermittent failure.
+The first broad run also needed a temporary `jq` binary for hosted shell checks;
+those checks passed once it was available. No default dependency changed.
+
+The Chromium compatibility journey passed provider setup, synthetic onboarding,
+normalization, confirmation, analysis, explicit generation, Markdown download and
+reload with zero page errors. The page requested only Career/provider APIs.
+Process-local mutations that restored general schema initialization, removed the
+execution lock or disabled resource cleanup each made the new regressions fail.
+No mutation edited repository files. Real-provider evaluation was not run.
+
+Shared lifecycle limits remain outside Phase 1: stage-local OTel initialization
+still uses the global provider API and has no explicit exporter shutdown;
+general `Waku.close()` still only closes MCP. The new owner can close SDK adapters
+that expose `close()` and leaves injected clients under caller ownership.
+General frontend/modules, hosted code and teaching material remain in the repo.
+The existing settings object still creates an unused `outbox` directory.
+These limits do not require general assembly for the explicit Career launch.
+Phase 2 navigation, styling and default-product cutover have not started.
 
 ## Verification on 2026-10-02
 

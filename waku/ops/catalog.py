@@ -28,7 +28,6 @@ import os
 from pathlib import Path
 
 from waku.config import load_settings
-from waku.ops.pricing import remember_price
 
 _models_cache: dict[str, tuple[float, list]] = {}
 
@@ -178,6 +177,8 @@ def list_models(provider: str | None = None, *, use_cache: bool = True) -> dict:
         }
         try:
             # OpenRouter prices are $/token strings; keep $/M for display + cost
+            from waku.ops.pricing import remember_price
+
             pin, pout = float(pricing["prompt"]) * 1e6, float(pricing["completion"]) * 1e6
             remember_price(mid, pin, pout)
             entry["price_in"], entry["price_out"] = round(pin, 3), round(pout, 3)

@@ -2,6 +2,7 @@
 
   waku                       chat in the terminal (default)
   waku dashboard             the browser cockpit → localhost:7777 (+ Telegram if configured)
+  waku career                the isolated Career workspace → localhost:7777
   waku connections           list configured integrations and their health
   waku connect google        sign in to Google Calendar (opens your browser)
   waku connect waku-memory   one memory shared with your other agents (opens your browser)
@@ -42,6 +43,10 @@ def main() -> None:
         from waku.gateway.cli import main as cli_main
 
         cli_main()
+    elif args[0] == "career":
+        from waku.ops.career_dashboard import main as career_main
+
+        career_main()
     elif args[0] == "dashboard":
         from waku.ops.dashboard import main as dash_main
 

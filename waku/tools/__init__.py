@@ -7,11 +7,13 @@ from __future__ import annotations
 import sqlite3
 
 from waku.config import Settings
-from waku.tools import calendar, memory_admin, messages, notes, search
 from waku.tools.registry import ToolRegistry
 
 
 def build_registry(conn: sqlite3.Connection, settings: Settings, memory=None) -> ToolRegistry:
+    # Career imports registry and its own tools without loading the general persona.
+    from waku.tools import calendar, memory_admin, messages, notes, search
+
     registry = ToolRegistry()
     registry.register(
         calendar.make_tool(

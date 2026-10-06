@@ -114,6 +114,9 @@ Memory importer already uploads one memory per file. Episodes, `MEMORY.md` and
   `career_jobs.py` extracts job requirements, retrieves Career evidence and scores
   matches over the same loop with scoped tools. `career_resumes.py` generates
   cited current drafts after explicit user action; Career stages bypass chat memory.
+- `waku/runtime/career_runtime.py` — Career settings, lazy client, connection and
+  execution/replacement lock. `ops/career_dashboard.py` serves `waku career` without
+  general assistant assembly; `ops/provider_services.py` owns provider-only saves.
 - `waku/runtime/session.py` — working memory for one turn: SOUL.md, memory
   context and chat history.
 - `waku/loop/agent.py` — the loop. `loop/models.py` — pluggable providers over

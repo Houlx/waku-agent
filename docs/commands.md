@@ -8,6 +8,7 @@ targets are aliases for the same things, plus the eval and tracing tools.
 | Command | Does |
 |---|---|
 | `waku` | chat in the terminal |
+| `waku career` | the isolated Career workspace at localhost:7777; the existing Career forms use provider-only setup |
 | `waku dashboard` | the live cockpit at localhost:7777 (+ Telegram if `TELEGRAM_BOT_TOKEN` is set) |
 | `waku voice` | talk to it — the "waku waku" wake word, or push-to-talk (needs the `[voice]` extra) |
 | `waku telegram` | message it from your phone (needs `TELEGRAM_BOT_TOKEN`) |

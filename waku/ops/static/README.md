@@ -11,6 +11,14 @@ files to change the UI; edit `dashboard.py` to change the server/API.
 - `design/`, `fonts/` — the Waku Memory design system and its three fonts.
 - `js/` — the app, split by concern (below).
 
+## The transitional Career launch
+
+`waku career` serves `career.html` through `career_dashboard.py`. It loads the
+existing `util.js`, `ui.js`, `theme.js` and `career.js`, followed by
+`career_bootstrap.js`. The bootstrap defines the Career entry and provider setup;
+it reads `/api/provider-status` and `/api/career` without general dashboard polls.
+The existing styles remain unchanged until the approved product cutover.
+
 ## The files (`js/`), in load order
 
 They are **classic scripts sharing one global scope** — a `function`/`let`/`const`

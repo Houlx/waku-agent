@@ -1,6 +1,6 @@
 # Career Agent
 
-Career Agent is a local, single-user workspace in Waku's dashboard. It organizes
+Career Agent is a local, single-user workspace with an isolated runtime. It organizes
 natural-language career history into a reviewable profile, analyzes pasted job
 descriptions, retrieves factual evidence, and explains requirement coverage. Users
 explicitly choose when to generate a tailored resume in English, Chinese or Japanese.
@@ -23,17 +23,22 @@ cp .env.example .env
 ```
 
 Configure your provider and its key in `.env`, following
-[Getting started](getting-started.md#2-add-one-key). The dashboard also supports
-provider setup. Start the dashboard with a fresh demo directory to keep your own
+[Getting started](getting-started.md#2-add-one-key). The Career launch page also supports
+provider setup. Start Career with a fresh demo directory to keep your own
 assistant's data separate:
 
 ```bash
-WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku dashboard
+WAKU_HOME="$(mktemp -d /tmp/waku-career-demo.XXXXXX)" uv run waku career
 ```
 
 Open `http://localhost:7777/#career`. Keep the directory that Waku created to
 resume this demo later. Restart with that same `WAKU_HOME`; never clear an existing
 runtime directory to reset a demo. Python changes require a server restart.
+
+`waku dashboard` retains the old application for rollback and still exposes
+`#career`. Both launch paths dispatch Career stages through the dedicated runtime.
+Do not run both applications against the same runtime home at the same time;
+provider transactions use a process-local lock.
 
 ## Create your profile
 
@@ -112,8 +117,11 @@ flowchart TD
     Validate --> Export[Resume review, Markdown and browser print]
 ```
 
-The runtime reuses `run_loop`, the configured provider client, `ToolRegistry`,
-`Tracer`, the dashboard execution lock and the existing SQLite connection.
+The runtime reuses `run_loop`, provider adapters, `ToolRegistry` and `Tracer`.
+`career_runtime.py` owns settings, a lazy client, a Career SQLite connection and
+an execution lock that also protects provider configuration and replacement.
+`career_dashboard.py` serves the explicit launch without general assistant assembly.
+`provider_services.py` supplies provider-only configuration and masked readiness.
 `career.py` owns profiles and action dispatch, `career_jobs.py` owns extraction,
 matching and scoring, and `career_resumes.py` owns draft generation and exports.
 `waku/tools/career.py` provides stage-scoped tools. `career.js` manages the static
@@ -126,7 +134,8 @@ and submission. The agent can batch synonyms and search again. Application code
 bounds, tokenizes and deduplicates FTS5 results. Career runs bypass ordinary chat,
 conversational memory, consolidation, MCP tools and general-purpose tools.
 
-Career uses six tables in `state.db`: `career_profile`, `career_evidence`, `jobs`,
+Career initializes only its own schema in the existing `state.db`. Legacy tables
+and rows remain untouched. Career uses six tables: `career_profile`, `career_evidence`, `jobs`,
 `job_requirements`, `job_matches` and `resumes`. The external-content FTS5 index
 tracks evidence changes through triggers. The singleton profile keeps raw input,
 normalization and explicit edits separate. Coherent source records receive stable

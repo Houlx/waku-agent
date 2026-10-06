@@ -95,15 +95,36 @@ def _migrate(conn: sqlite3.Connection) -> None:
         conn.commit()
 
 
-def connect(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
+def open_connection(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
     # check_same_thread=False lets the dashboard's threaded HTTP server reuse
     # one agent connection across worker threads (guarded by a lock). busy_timeout
     # avoids "database is locked" when the dashboard reads while a chat writes.
     conn = sqlite3.connect(home / "state.db", check_same_thread=check_same_thread)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA busy_timeout=3000")
-    conn.executescript(SCHEMA)
-    _migrate(conn)
+    return conn
+
+
+def connect(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
+    """Open the general assistant database, including its legacy migrations."""
+    conn = open_connection(home, check_same_thread)
+    try:
+        conn.executescript(SCHEMA)
+        _migrate(conn)
+    except BaseException:
+        conn.close()
+        raise
+    return conn
+
+
+def connect_career(home: Path, check_same_thread: bool = True) -> sqlite3.Connection:
+    """Open Career tables in the same file, leaving any legacy tables untouched."""
+    conn = open_connection(home, check_same_thread)
+    try:
+        initialize_career(conn)
+    except BaseException:
+        conn.close()
+        raise
     return conn
 
 
