@@ -116,20 +116,6 @@ notion = [
 mcp = [
     "mcp>=2.1",
 ]
-# Hosted waku (hosted/): the gateway, the metering proxy and the spawner.
-# The CODE is not on PyPI -- hosted/ ships in neither the wheel nor the sdist,
-# and comes from a git checkout (hosted/README.md). That is now a LICENSING
-# fact as well as a packaging one: hosted/ is Elastic License 2.0
-# (hosted/LICENSE) and everything this project publishes is MIT, so the
-# `license` expression above stays true precisely because hosted/ never ships.
-# test_hosted_and_lab_never_ship_in_the_wheel_or_sdist is what keeps it true. This extra exists so that
-# a checkout can install the two libraries those services need, and so CI can
-# run their evals. `pip install waku-agent[hosted]` from PyPI therefore
-# installs these two libraries and nothing else; that is accepted.
-hosted = [
-    "aiohttp>=3.9",
-    "PyJWT[crypto]>=2.8",
-]
 dev = [
     "pytest>=8.0",
     # Pinned EXACTLY: an unpinned linter means every ruff release can turn CI
@@ -139,7 +125,7 @@ dev = [
     # Already the [build-system] backend below, fetched into an isolated
     # build env on every `pip install` regardless. Declaring it here too
     # makes it importable in THIS venv, so
-    # test_hosted_and_lab_never_ship_in_the_wheel_or_sdist can ask hatchling
+    # test_retired_consumers_never_ship can ask hatchling
     # which files a build would include without running one (offline, no
     # `uv` needed — task-B1-review.md, finding B1-F11).
     # Pinned EXACTLY, same reasoning as ruff above: that test calls
@@ -154,31 +140,15 @@ dev = [
 requires = ["hatchling==1.32.4"]
 build-backend = "hatchling.build"
 
-# An sdist should be what you need to BUILD and TEST waku — source, bundled
-# skills, schema, evals. Left alone it was 2.6 MB, and 2.5 MB of that was a
-# whiteboard PNG and the .excalidraw sources, plus the agent tooling (.claude)
-# and the lab, which only matter inside this repo. All of it stays on GitHub,
-# where people actually read it; none of it belongs in a package download.
+# Source distributions contain the source and offline evals needed to build and test.
 [tool.hatch.version]
 path = "waku/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
-    "docs", "examples",
-    # "/lab/**", not the bare "lab" this used to say: hatchling merges
-    # .gitignore's patterns with this list into one ordered pathspec, and
-    # .gitignore's own negated lines for lab/'s committed board diagrams
-    # (`!lab/kimi-k3/**/*.excalidraw`, `!lab/pi-agent/**/*.excalidraw`)
-    # survived a bare "lab" -- only a pattern naming the directory's
-    # CONTENTS reliably re-excludes what an earlier negation un-ignored.
-    # test_hosted_and_lab_never_ship_in_the_wheel_or_sdist caught this by
-    # building the sdist and looking (task-B1-review.md, finding B1-F1).
-    "/lab/**", "scripts/whiteboard",
-    ".claude", ".deepeval", ".github",
-    # Anchored at the repo root on purpose: an unanchored "hosted" would also
-    # drop evals/deterministic/hosted/, and a test run from the sdist would
-    # then fail on a missing directory instead of skipping it.
-    "/hosted",
+    "docs", ".claude", ".deepeval", ".github",
+    # Keep retired consumers out even if a local checkout restores them.
+    "/hosted/**", "/examples/**", "/lab/**", "/scripts/whiteboard/**",
 ]
 
 [tool.hatch.build.targets.wheel]

@@ -7,7 +7,8 @@ stabilization, evaluation, documentation and demo preparation. V1 feature develo
 here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
 Phase 2 — Career Product Cutover was separately approved and is implemented.
 Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
-product. Backend deletion and Batch B have not started.
+product. Phase 3 Batch B1 consumer closure is implemented. Batch B2 and Batch C
+backend deletion have not started.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -17,7 +18,8 @@ govern runtime separation.
 
 Career code remains MIT.
 
-Hosted policy remains Elastic License 2.0; no code moved across that boundary.
+Batch B1 retires the Elastic License 2.0 hosted implementation; no code moved
+across that boundary. Retained brand assets and fonts keep their separate notices.
 No default dependencies or AI capabilities were added.
 
 ## Product and architecture
@@ -94,7 +96,7 @@ this JD Requirement Coverage and explicitly excludes hiring/interview probabilit
 
 `GET /api/career` returns profile/evidence and saved job/resume artifacts.
 `POST /api/career` accepts `save_onboarding`, `normalize`, `save_profile`,
-`confirm`, `analyze_job` and `generate_resume`. Hosted policy blocks Career access.
+`confirm`, `analyze_job` and `generate_resume`. Batch B1 removes the old hosted policy.
 
 Normalization and extraction expose only `submit_stage_result`. Matching adds
 `search_career_evidence` and `get_evidence`; generation exposes only evidence lookup
@@ -126,7 +128,7 @@ JD to demonstrate MATCH/PARTIAL/GAP, evidence inspection and explicit generation
 uv pip install -e '.[eval]'
 uv run python -m pytest -q evals/deterministic/test_career_*.py
 uv run python -m pytest -q evals/deterministic
-uv run --with ruff ruff check waku evals scripts hosted
+uv run --with ruff ruff check waku evals scripts
 node --check waku/ops/static/career/render.js
 uv run python -m evals.career --live --output /tmp/career-evaluation.json
 uv run python -m evals.career --live --scenario 'AI Engineer' --language Chinese --inject-jd --output /tmp/career-adversarial.json
@@ -396,6 +398,135 @@ pricing, tracing, configuration, loop, registry and database infrastructure stay
 Batch A deletes no backend implementation, assets, skills, hosted, examples or lab
 material. It migrates or deletes no user runtime data and changes no credentials.
 Batch B has not started.
+
+## Phase 3 Batch B1 consumer closure on 2026-10-06
+
+Batch B1 retires hosted and upstream-only teaching consumers. It does not delete
+any general backend implementation or change Career runtime, server, UI, schema,
+pipeline, FTS5, matching, scoring, provenance or resume behavior. Batch B2 and
+Batch C remain unstarted. Pre-B1 HEAD is `2146a06`; reverting this batch restores
+its source consumers without touching runtime data or stored configuration.
+
+### Retired surfaces
+
+- All 93 tracked files under `hosted/` are removed: core policy/quota/provisioning,
+  gateway/auth/control store, proxy/metering, spawner, tenant templates, image
+  builders/Dockerfiles/seccomp, deployment/firewall/network/backup scripts,
+  sign-in assets and the hosted operator guide/license.
+- All 48 tracked hosted eval/helper files under `evals/deterministic/hosted/`
+  and `evals/hosted_docker/` are removed. Their route contract, Docker context,
+  container isolation, disk-limit and deployment checks no longer apply.
+- `examples/` is removed, including the conversational Memory agent and MCP
+  configuration. `lab/` is removed, including Kimi K3, pi-agent/Pokedex,
+  one-memory-every-agent, memory-native, Jev experiments and the topic template.
+- `scripts/whiteboard/`, `docs/whiteboards/`, `docs/architecture.html` and
+  `docs/architecture-whiteboard.png` are removed. The repo-local
+  `.claude/skills/excalidraw/` authoring helper is removed because it requires
+  the deleted board toolkit. It is not a bundled product skill under `skills/`.
+- Upstream-only tour, roadmap, loop-vs-graph, graph design, Memory backend
+  playbook and benchmark/video walkthroughs are removed. Architecture and
+  getting-started now describe retained Career/shared-runtime entrypoints.
+  The integration document records retirement while remaining a valid target
+  for the retained MCP CLI's help text. Evals retain shared tracing instructions.
+
+### CI, packaging and licenses
+
+The hosted Docker workflow is removed. Validate/release install `[dev]` instead
+of `[dev,hosted]`; Make and documentation lint commands omit `hosted`. The
+`[hosted]` extra is removed after checking retained imports for aiohttp, jwt and
+yarl. No other default dependency or extra changes. Lock refresh changes only
+hosted extra metadata and leaves all 304 resolved packages pinned: other extras
+still need transitive aiohttp/PyJWT dependencies.
+
+The old hosted boundary suite is removed; its generally useful build enumeration
+moves to `test_distribution_boundary.py`. The replacement checks wheel/sdist
+members, Career assets, runtime-data exclusion and retained-runtime imports of
+hosted. Rulebook checks no longer require hosted guides, lab topics or teaching
+trees. They still reject product/eval imports from restored teaching trees.
+Source exclusions retain retired-tree guards; obsolete Git-ignore entries vanish.
+Skill validation, bundled-skill packaging, environment generation, provider,
+security, brand/design, version and deterministic checks remain active.
+
+No EL2 implementation remains in the working tree or distributions, and none is
+copied into MIT Career code. Hosted license/distribution references are removed.
+`LICENSE` preserves Sean Chen's upstream MIT copyright. `LICENSE-BRAND` still
+covers the retained Waku design system, mark, names and `docs/brand/`; only removed
+hosted asset entries are dropped. All three retained font OFL notices remain.
+The package expression stays `MIT AND OFL-1.1 AND LicenseRef-Waku-Brand`.
+Removed boards' CC BY-NC-SA material is not republished as Career assets.
+Historical Career plans/audits retain the license decisions they recorded.
+
+The hidden `waku-platform` provider row and its scoped credential/catalog tests
+remain to honor the provider compatibility constraint. Only its dead hosted-guide
+key URL points to retained provider documentation instead; credentials, endpoint,
+model resolution and visibility behavior are unchanged. It supplies no hosting.
+
+### Retained material and remaining consumers
+
+No examples, lab topics or whiteboards remain. The MCP server under
+`evals/fixtures/` remains because retained MCP transport tests execute it; its
+header no longer advertises the removed teaching configuration. Career documents,
+V1 Product Spec/Implementation Plan, refactor plans, inspections and retirement
+audit remain. Provider registry, configuration, runtime and tracing documentation
+remain useful to retained infrastructure. Brand files, fonts/notices and protected
+Waku design copies remain unchanged because the old dashboard assets still exist.
+
+Backend deletion is still blocked by the procedural skill validator's import of
+`waku.memory.procedural.loader._parse`, bundled `skills/` and wheel force-include,
+skill loader/install/export/trigger/packaging tests, environment generator/CI
+imports of `waku.integrations`, the general release gate and judge suite,
+`evals.helpers.make_waku` and general deterministic fixtures, and mixed
+provider/static/tracing tests. Retained general dashboard, tools, MCP, graph,
+gateways, integrations and arenas still consume each other; Batch C must close
+those imports with their removal. Shared provider/catalog/pricing/loop/registry,
+config/database and tracing guarantees must survive that work.
+
+Batch B2 should retire bundled product skills and their force-include coherently,
+resolve validator/CI and packaging contracts that require procedural Memory,
+remove or split skill-only evals and contributor instructions, and preserve
+applicable community attribution. It must not touch user-installed skills.
+General environment-generator/facade and mixed-suite closure still need assigned
+work before Batch C deletes their implementations. B1 does not do that work.
+
+### Verification and audit discrepancies
+
+The full retained deterministic suite with the real scripted Chromium journey
+passes: 1,145 passed, 75 skipped, with no deselections. Twelve Career Make contracts skip when Make is absent;
+a subsequent focused run uses a temporary extracted Make binary and passes all
+158 Career checks with Chromium enabled and no skips. This covers provider/model, runtime ownership/replacement, database
+preservation/FTS5, HTTP/static security, browser routes/state, and applicable
+packaging/import/license/design guards. Ruff passes across `waku evals scripts`;
+all 25 retained JavaScript/ Career fixture files pass Node syntax checks. All six
+bundled skills validate; the generated environment example matches its registry.
+Lock consistency and `git diff --check` pass.
+
+Wheel and sdist builds pass, including wheel rebuild from the extracted sdist.
+Isolated installs of the direct wheel and the sdist-rebuilt wheel pass default
+and explicit Career launch, all nine
+shell/static assets matching repository bytes, state API, static/general-route
+rejection, lazy provider initialization, absence of general app/dashboard imports
+and owned connection shutdown. Both archives omit retired consumers and retain
+MIT/brand/OFL notices and the existing license expression. Every member of the
+sdist-rebuilt wheel matches the direct wheel byte for byte. All current
+documentation file links resolve; historical Career plans remain unchanged.
+
+Temporary-project mutations force-include a retired hosted path and synthetic
+`.env`, and add a runtime import of hosted; the three new guards fail respectively.
+No mutation changes repository implementation or real runtime data. The first
+suite attempt lacked localhost socket permission and was stopped; the complete
+socket-enabled run above passes. Package-harness corrections fixed an assumption
+that a closed runtime retained its connection reference. No live/paid evaluation,
+Docker check, demo reset, schema migration or credential write was performed.
+
+The audit deferred hosted and recommended pinned upstream/teaching archives.
+The new lifecycle approval resolves both in favor of deletion with Git history,
+so B1 removes them instead. The audit grouped backend retirement as Batch B;
+current approved sequencing is B1 consumer closure, B2 skills, then C backend.
+The actual tree also contains a board-toolkit-dependent repo-local Excalidraw
+helper and the hidden provider row's hosted-guide URL; both required closure.
+The MCP test fixture and platform provider contracts remain real test/shared
+consumers, so they are preserved. The status file's old claim that hosted did
+not exist is removed. No repository-wide retirement audit was repeated.
 
 ## Verification on 2026-10-02
 

@@ -34,4 +34,4 @@ gate:           ## the release gate: deterministic must pass, judge must clear t
 	$(PY) -m waku.ops.release_gate
 
 lint:
-	$(PY) -m ruff check waku evals scripts hosted
+	$(PY) -m ruff check waku evals scripts

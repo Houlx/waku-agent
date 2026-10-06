@@ -183,7 +183,7 @@ Install the existing evaluation extra and run the offline checks:
 uv pip install -e '.[eval]'
 uv run python -m pytest -q evals/deterministic/test_career_profile.py evals/deterministic/test_career_jobs.py evals/deterministic/test_career_resumes.py evals/deterministic/test_career_acceptance.py
 uv run python -m pytest -q evals/deterministic
-uv run --with ruff ruff check waku evals scripts hosted
+uv run --with ruff ruff check waku evals scripts
 node --check waku/ops/static/career/render.js
 ```
 

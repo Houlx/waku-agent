@@ -1,5 +1,9 @@
 # Adding a provider: the registry
 
+Batch B1 retires the old hosted deployment. The hidden `waku-platform` registry
+row and its scoped-credential contracts remain for provider compatibility; this
+fork supplies no hosted service or deployment instructions.
+
 **Status:** shipped 2026-09-22. Supersedes the "one `PROVIDERS` row" advice in
 [conventions §3](context/conventions.md#3-where-new-capability-goes-the-footprint-ladder),
 which was true of the code and false of the work.

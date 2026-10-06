@@ -16,7 +16,7 @@ Unsupported commands and extra arguments exit with status 1 before runtime start
 Phase 3 Batch A removes `dashboard`, `chat`, `connections`, `connect`, `voice`,
 `telegram`, `discord`, `whatsapp`, `brief`, `gather`, `mcp` and all `skill`
 installation/export dispatch. Their backend implementations remain for later
-retirement batches, including hosted's direct dashboard consumer.
+retirement batches. Batch B1 closes the former hosted dashboard consumer.
 
 ## make
 
@@ -25,7 +25,7 @@ retirement batches, including hosted's direct dashboard consumer.
 | `make run` | launches Career through the default CLI |
 | `make dashboard` | launches Career explicitly; restart after backend changes |
 | `make eval` | runs deterministic evals offline |
-| `make lint` | runs ruff over runtime, evals, scripts and hosted code |
+| `make lint` | runs ruff over runtime, evals and scripts |
 | `make trace` | opens optional Phoenix trace waterfalls at localhost:6006 |
 | `make eval-judge` | runs the retained general judge evals; requires provider calls |
 | `make gate` | runs the retained release gate, including general judge evals |

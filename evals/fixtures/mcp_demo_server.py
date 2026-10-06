@@ -1,15 +1,7 @@
-"""A tiny, self-contained MCP server — the demo connector for waku-agent.
+"""Self-contained MCP round-trip fixture for retained general-backend evals.
 
-Most MCP examples need Node/npx. This one is pure Python (only the `mcp` extra),
-so the connector story runs with zero extra installs:
-
-    pip install -e '.[mcp]'
-    cp examples/mcp.demo.json .waku/mcp.json
-    make dashboard          # its tools appear under Tools > Available > MCP servers
-
-Its tools register as `demo_word_count` and `demo_reverse_text`. Swap in your own
-@mcp.tool() functions, or point mcp.json at any real MCP server the same way —
-that's the whole point: connectors plug in without changing Waku's code.
+Only offline MCP transport tests consume this server. The upstream teaching
+configuration and walkthrough were retired in Batch B1.
 """
 
 from __future__ import annotations

@@ -19,7 +19,7 @@ decide it.
 |---|---|---|
 | **Direct** | a bug fix, a copy change, a provider row, a skill, a test | Open the PR. The eval and the review are the guardrails. |
 | **Short plan** | a tool behind an extra, a gateway, a dashboard view | Comment a 5–10 line plan on the issue before writing code, so a maintainer can point at the right rung early. |
-| **Proposal** | a new top-level package; a change to the loop, the memory interfaces, the graph engine or the tool-call contract; a new core tool; anything that adds to every prompt | Write a design doc in `docs/` and get a maintainer's yes before any code. [agent-graphs-design.md](../agent-graphs-design.md) is the precedent and shows the bar. |
+| **Proposal** | a new top-level package; a change to the loop, the memory interfaces, the graph engine or the tool-call contract; a new core tool; anything that adds to every prompt | Write a design doc in `docs/` and get a maintainer's yes before any code. [the Career refactor plan](../career-agent/CAREER_ONLY_REFACTOR_PLAN.md) is the precedent and shows the bar. |
 
 If you are unsure which tier you are in, ask on the issue. That conversation
 costs less than a rejected PR.
@@ -47,17 +47,14 @@ the rung above cannot do the job:
    prompt.
 
 The ladder has no rung for a new top-level package (like `waku/graph/`). That
-is an architecture decision and needs a proposal (§2). `hosted/` is a
-deployment of waku, not new capability inside it, so it sits on no rung of
-this ladder either.
+is an architecture decision and needs a proposal (§2). The former hosted
+deployment is retired from this fork.
 
 ## 4. Testing
 
 - `evals/deterministic/` holds 0/1 tests that run offline with no API key.
   `evals/judge/` holds scored LLM-judge evals. The two never mix: one is a unit
-  test, and the other is a scored opinion. `evals/hosted_docker/` is a third
-  tier: 0/1 and offline like the first, but needing a Docker daemon, so
-  `make gate` does not run it and it has its own CI job.
+  test, and the other is a scored opinion. Hosted Docker evals are retired.
 - Every behaviour change gets a deterministic eval. A bug fix adds the case
   that would have caught the bug.
 - **Prove the test can fail.** Break the thing it guards, watch it go red, put
@@ -74,11 +71,8 @@ this ladder either.
   after it is deleted and written again wrong. Import it and call it.
 - Write a guard as a closed set: allow what is named, refuse the rest. A guard
   that enumerates the ways to go wrong is a guess about an open set.
-- A new route in `waku/ops/dashboard.py` needs two things beyond its handler:
-  a pin in `evals/deterministic/test_dashboard_routes.py`, and a decision in
-  `hosted/core/policy.py` about whether the hosted gateway passes, filters or
-  blocks it. `test_route_contract.py` fails until you make that decision, and
-  it does not guess a default for you.
+- Career routes must preserve the explicit HTTP/static allowlist and rejection
+  contracts in `evals/deterministic/test_career_http.py`.
 - Run `make gate` and `make lint` before you push. CI runs the deterministic
   tier. The judge tier needs a key, so only `make gate` runs it.
 - The dashboard's JavaScript has no test runner. Verify a frontend change in a
@@ -98,50 +92,12 @@ this ladder either.
   `pyproject.toml` change.
 - A PR says how it was tested: the commands, and what you saw.
 
-## 6. examples/ and video material
+## 6. Retired teaching material
 
-Two folders hold material that is not the product, and each has one job.
-
-- **`examples/` holds short lessons about Waku itself.** Each one is a file a
-  stranger can run in one command to learn exactly one thing, like
-  `tiny_memory_agent.py`, which shows the loop's three steps with nothing else
-  in frame.
-- **`lab/` holds one folder per outside topic**: another agent, model or
-  memory product, and how Waku's agent, memory and skills connect to it. Video
-  work starts here. Every topic starts from `lab/_template/README.md`, and its
-  README keeps the six playbook headings and a `Verified against:` line.
-
-Five rules apply to both, and `evals/deterministic/test_rulebook.py` enforces
-the first three:
-
-1. **Nothing under `waku/` or `evals/` imports from `examples/` or `lab/`.** The
-   dependency runs one way, always.
-2. **`lab/` never ships.** The wheel packages only `waku/`, and the source
-   distribution excludes `lab/`.
-3. **`make gate` never depends on either folder.** A third-party SDK shipping a
-   breaking release is their problem, not a red CI. A server that a test needs
-   lives in `evals/fixtures/`.
-4. **No new default dependencies.** Use the stdlib or an extra that already
-   exists, or state the `pip install` in the file's own header.
-5. **Anything that uses someone else's SDK carries a dated header** naming the
-   version it was verified against. A silently rotted example is worse than no
-   example.
-
-**Graduation.** Lab code moves into `waku/` only through a normal PR at the
-right tier (§2) and rung (§3). The topic's "Graduation" section then says where
-the code went, and the lab keeps the experiment as the on-its-own-terms
-baseline.
-
-**Whiteboards.** `docs/whiteboards/` holds only boards that explain this
-codebase. A board drawn for a video stays private: its `.excalidraw` source
-and the script that draws it live outside the repo, and the lab topic commits
-PNG screenshots only, in `screenshots/`. `lab/kimi-k3/` and `lab/pi-agent/`
-predate this rule. The drawing toolkit is `scripts/whiteboard/`, and it never
-ships.
-
-**What stays out of the repo:** video scripts, subtitles and shot-by-shot
-filming notes. A topic's "Video angle" section is a brief: the hook, the one
-surprising finding, and which board to film.
+Batch B1 removes upstream examples, lab topics, architecture boards and their
+builders. Git history preserves this material; do not create a legacy archive.
+Product code and evals must never import or read restored `examples/` or `lab/`
+material. Distribution checks exclude those retired consumers.
 
 ## 7. Dependencies and extras
 

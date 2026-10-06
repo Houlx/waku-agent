@@ -27,8 +27,9 @@ test count is historical. Current verification lives in the Career handoff.
 ## Retained general assistant
 
 The retained backend contains the loop, memory, tools and both eval tiers.
-Its general-product CLI commands no longer start. Hosted still consumes the
-general dashboard through its direct module launch.
+Its general-product CLI commands no longer start. Batch B1 retires hosted,
+examples, lab and upstream teaching consumers.
+General backend implementations remain pending Batch C; bundled skills await Batch B2.
 
 **950 deterministic evals pass offline**, with no API key; 60 more are live
 evals that skip without one. CI runs the offline tier on every PR along with
@@ -58,40 +59,12 @@ provider or another, and there is no single place that says which providers
 are known-good today. Until there is, treat the model picker as a list of
 things that *might* work.
 
-## What is deliberately not built
+## Retirement limits
 
-Not a framework, not multi-agent, not production — true of `waku/`, see
-[architecture.md](architecture.md). `hosted/` runs that same code as a
-deployment instead; spec 001 designs it, and none of it exists in this repo
-yet.
+Batch B1 adds no Career feature or hosting replacement. Career keeps its schema,
+pipeline, provider behavior, FTS5, provenance and independent frontend.
+Protected Waku design copies and font notices remain with the old dashboard assets.
+Git history preserves retired teaching and hosted implementation.
 
-Additionally, and worth stating because people ask:
-
-- **No Windows CI.** The Windows bugs so far (#140, #141, both fixed) were
-  found by contributors, not by us. Every Windows claim in this repo is
-  untested.
-- **The judge evals are not in CI.** `make gate` runs deterministic evals at
-  100% plus a judge threshold, and CI runs only the first half. The judge tier
-  needs an API key, which CI does not have.
-- **No provider smoke check.** Nothing verifies that a model in the picker
-  resolves, which is why #137 reached a user.
-
-## Open questions
-
-1. **Where the memory pillar ends and Waku Memory begins.** This repo's memory
-   is local, single-machine, and yours. Waku Memory is the same memory across
-   several agents, and it is a paid hosted service. Both are true and the
-   README does not yet say either plainly, so a reader has to work out the
-   difference alone. Hosted waku (`hosted/`, spec 001) adds a third case: a
-   tenant's memory lives on the operator's VM, not the person's own machine,
-   but it is still that one tenant's own directory, not Waku Memory. What
-   hosted waku keeps there is not written down yet; a later task in spec 001
-   records it once `hosted/` exists.
-
-## Not in the repo
-
-Deliberately absent, so nobody goes looking:
-
-- Filming and demo notes — production material, not product documentation
-- Session handoffs — this file replaces them
-- Plans and specs — they belong with the work, not in `docs/`
+The judge evals remain opt-in and require a key. Chromium is an opt-in test-only
+regression. Windows behavior and OTel exporter shutdown remain unverified here.

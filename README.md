@@ -51,12 +51,12 @@ marks, design files or general dashboard scripts.
 
 Career Agent is the sole supported product. Phase 3 Batch A removes the general
 CLI commands and their Make shortcuts. `waku --help` lists the retained commands.
-General Memory, MCP, gateways, graph, arenas, hosted code and teaching material
-remain in the repository for later retirement batches. Hosted still launches the
-old dashboard directly; Batch A does not change that implementation.
+Batch B1 retires the old hosted deployment, examples, lab and upstream teaching
+boards. General Memory, MCP, gateways, graph, arenas and dashboard implementations
+remain for later backend retirement. Bundled skills remain until Batch B2.
 
 [Architecture](docs/architecture.md), [the documentation index](docs/README.md),
 [contribution rules](CONTRIBUTING.md) and [the handoff](docs/career-agent/HANDOFF.md)
 provide maintenance context. [LICENSE-BRAND](LICENSE-BRAND) governs retained
-Waku brand assets. `hosted/` remains under [Elastic License 2.0](hosted/LICENSE);
-no code moved across that license boundary.
+Waku brand assets; retained fonts carry SIL OFL notices. Batch B1 removes all
+Elastic License 2.0 implementation without copying it into the MIT runtime.
