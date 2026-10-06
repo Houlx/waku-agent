@@ -11,7 +11,7 @@ import tempfile
 from dataclasses import replace
 from pathlib import Path
 
-from waku.db import connect
+from waku.db import connect_career
 from waku.runtime.career import action
 from waku.runtime.career_jobs import object_schema, require_keys, require_text, run_stage
 
@@ -128,7 +128,7 @@ def main():
         # Give each scenario fresh tables without deleting any runtime data.
         scenario_settings = replace(settings, home=settings.home / job['title'].lower().replace(' ', '-'))
         scenario_settings.ensure_home()
-        conn = connect(scenario_settings.home)
+        conn = connect_career(scenario_settings.home)
         result = {'scenario': job['title']}
         try:
             if args.inject_jd:

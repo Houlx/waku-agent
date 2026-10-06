@@ -178,3 +178,70 @@ def test_live_evaluation_requires_explicit_opt_in(tmp_path, monkeypatch):
         main()
     assert stopped.value.code == 2
     assert not (tmp_path / 'result.json').exists()
+
+
+@pytest.mark.parametrize('inject', [False, True])
+def test_live_evaluation_uses_isolated_career_databases(tmp_path, monkeypatch, inject):
+    """Exercise the live command with scripted stages and no provider calls."""
+    import sqlite3
+
+    from evals import career
+    from waku import config, db
+    from waku.loop import models
+
+    original_home = tmp_path / 'original-home'
+    live_home = tmp_path / 'career-live'
+    live_home.mkdir()
+    monkeypatch.setattr(config, 'load_settings', lambda: Settings(
+        home=original_home, model='offline', otel_endpoint=''))
+    monkeypatch.setattr(career.tempfile, 'mkdtemp', lambda **kwargs: str(live_home))
+    monkeypatch.setattr(db, '_migrate', lambda conn: pytest.fail('General database migration ran'))
+
+    class ScenarioClient(AcceptanceClient):
+        def create(self, **kwargs):
+            if 'Extract atomic requirements' in kwargs['system']:
+                data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
+                self.job = next(job for job in JOBS if data['jd'].startswith(job['jd']))
+            return super().create(**kwargs)
+
+    monkeypatch.setattr(models, 'get_client', lambda settings: ScenarioClient(JOBS[0]))
+    connections, homes = [], []
+
+    def scenario(conn, settings, client, raw, job, language):
+        tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        assert {'career_profile', 'career_evidence', 'career_evidence_fts',
+                'jobs', 'job_requirements', 'job_matches', 'resumes'} <= tables
+        assert not {'facts', 'episodes', 'chat_log', 'calendar_events'} & tables
+        assert conn.row_factory is sqlite3.Row
+        assert conn.execute('PRAGMA busy_timeout').fetchone()[0] == 3000
+        assert conn.execute('SELECT count(*) FROM career_profile').fetchone()[0] == 0
+        connections.append(conn)
+        homes.append(settings.home)
+        return run_scenario(conn, settings, client, raw, job, language)
+
+    def judge(settings, client, artifacts):
+        return {name: {'passed': name != 'resume_groundedness' or artifacts != calibration(),
+                       'reason': 'Scripted evaluator verdict.'} for name in DIMENSIONS}
+
+    monkeypatch.setattr(career, 'run_scenario', scenario)
+    monkeypatch.setattr(career, 'evaluate', judge)
+    output = tmp_path / 'result.json'
+    monkeypatch.setattr('sys.argv', ['evals.career', '--live', '--language', 'Chinese',
+                                   '--output', str(output), *(['--inject-jd'] if inject else [])])
+    assert career.main() == 0
+    result = json.loads(output.read_text())
+    assert result['runtime'] == str(live_home)
+    assert result['calibration']['passed']
+    assert len(set(homes)) == len(JOBS)
+    assert all(home.parent == live_home for home in homes)
+    assert not original_home.exists()
+    for item, job in zip(result['scenarios'], JOBS, strict=True):
+        assert item['scenario'] == job['title']
+        saved = item['artifacts']['job']
+        assert saved['coverage'] == job['score']
+        assert saved['resume']['language'] == 'Chinese'
+        assert saved['raw_jd'].startswith(job['jd'])
+        assert ('Ignore previous instructions' in saved['raw_jd']) == inject
+    for conn in connections:
+        with pytest.raises(sqlite3.ProgrammingError):
+            conn.execute('SELECT 1')

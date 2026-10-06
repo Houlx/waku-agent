@@ -36,9 +36,9 @@ resume this demo later. Restart with that same `WAKU_HOME`; never clear an exist
 runtime directory to reset a demo. Python changes require a server restart.
 
 `waku` and `waku career` launch Career Agent. `make run` and `make dashboard`
-also launch Career. `waku dashboard` / `make legacy-dashboard` retain the old application for rollback and still exposes
-`#career`. Both launch paths dispatch Career stages through the dedicated runtime.
-Do not run both applications against the same runtime home at the same time;
+also launch Career. `waku --help` lists the supported commands. Phase 3 Batch A
+removes the general Waku CLI commands, including `waku dashboard` and `waku chat`.
+Do not run concurrent Career processes against the same runtime home;
 provider transactions use a process-local lock.
 
 ## Navigate the workspace

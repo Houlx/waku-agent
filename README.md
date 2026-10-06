@@ -49,12 +49,11 @@ upstream endorsement. [LICENSE](LICENSE) retains the upstream copyright notice.
 The Career frontend uses independent CSS and system fonts. It loads no Waku
 marks, design files or general dashboard scripts.
 
-Phase 2 preserves the old implementation for rollback and development:
-`waku dashboard` / `make legacy-dashboard` launch the old dashboard;
-`waku chat` / `make legacy-chat` launch terminal chat. Run these against a
-separate runtime home from Career to avoid concurrent processes sharing state.
+Career Agent is the sole supported product. Phase 3 Batch A removes the general
+CLI commands and their Make shortcuts. `waku --help` lists the retained commands.
 General Memory, MCP, gateways, graph, arenas, hosted code and teaching material
-remain in the repository pending separately approved Phase 3 work.
+remain in the repository for later retirement batches. Hosted still launches the
+old dashboard directly; Batch A does not change that implementation.
 
 [Architecture](docs/architecture.md), [the documentation index](docs/README.md),
 [contribution rules](CONTRIBUTING.md) and [the handoff](docs/career-agent/HANDOFF.md)

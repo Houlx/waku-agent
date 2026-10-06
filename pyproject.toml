@@ -35,7 +35,7 @@ Issues = "https://github.com/ShenSeanChen/waku-agent/issues"
 Changelog = "https://github.com/ShenSeanChen/waku-agent/releases"
 
 [project.scripts]
-# Branded CLI: `waku dashboard`, `waku voice`, `waku` to chat, etc.
+# Career Agent CLI: `waku` or `waku career`; `waku --help` lists commands.
 waku = "waku.__main__:main"
 
 [project.optional-dependencies]

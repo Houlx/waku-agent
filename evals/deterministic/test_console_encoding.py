@@ -25,4 +25,4 @@ def test_usage_text_survives_a_cp1252_console():
     )
     assert b"UnicodeEncodeError" not in result.stderr
     assert result.returncode == 1  # the usage path's normal exit
-    assert b"waku dashboard" in result.stdout  # usage text actually printed
+    assert b"waku career" in result.stdout  # usage text actually printed

@@ -1,17 +1,13 @@
-"""DETERMINISTIC EVAL — `waku connect waku-memory` sets up Waku Memory safely.
+"""Retained Waku Memory connector checks for the general backend.
 
-Before this command, connecting meant hand-writing .waku/mcp.json from the
-README, and the README showed an address that Waku Memory had retired: anyone
-who followed it got a server that refused them. These tests pin what the
-command does to that file (add, keep what is there, repair the retired
-address, never overwrite a deliberate one) and that both doors reach it. No
-browser opens: the sign-in is replaced by a stub.
+The installed connect command has retired. These checks preserve safe config
+updates, account reporting and the dashboard consumer until backend retirement.
+Sign-in uses a stub and opens no browser.
 """
 
 from __future__ import annotations
 
 import json
-import sys
 
 import pytest
 
@@ -152,16 +148,6 @@ def connector(monkeypatch, tmp_path):
     monkeypatch.setattr(waku_memory, "connect", lambda home: calls.append(home) or "stub: connected")
     monkeypatch.setenv("WAKU_HOME", str(tmp_path / "home"))
     return calls
-
-
-def test_cli_door_reaches_the_connector(connector, monkeypatch, capsys):
-    from waku.__main__ import main
-
-    monkeypatch.setattr(sys, "argv", ["waku", "connect", "waku-memory"])
-    with pytest.raises(SystemExit) as exit_:
-        main()
-    assert exit_.value.code == 0 and connector
-    assert "stub: connected" in capsys.readouterr().out
 
 
 def test_chat_door_reaches_the_connector(connector):

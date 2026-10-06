@@ -6,7 +6,8 @@ Days 1–4 are complete. Day 4 was explicitly approved on 2026-10-02 for
 stabilization, evaluation, documentation and demo preparation. V1 feature development stops
 here. Phase 1 runtime separation was subsequently approved on 2026-10-06;
 Phase 2 — Career Product Cutover was separately approved and is implemented.
-Phase 3 physical retirement remains unauthorized.
+Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
+product. Backend deletion and Batch B have not started.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -311,6 +312,90 @@ Real-provider evaluation was not run. System fonts and browser pagination remain
 platform-dependent. Physical retirement requires separate Phase 3 approval;
 shared modules, the rollback shell and package/configuration cleanup still await
 that phase. Career needs no old frontend script or protected visual asset.
+
+## Phase 3 Batch A on 2026-10-06
+
+Batch A closes the general public CLI surface and the remaining live Career
+evaluation database coupling. Default `waku` and explicit `waku career` still
+launch the unchanged Career server. Help accepts `--help`, `-h` and their
+`career` forms without startup. Every other invocation exits with status 1,
+prints a supported-command hint and imports no product runtime. Extra arguments
+to `career` no longer silently launch Career.
+
+The removed commands are `dashboard`, `chat`, `connections`, `connect`, `voice`,
+`telegram`, `discord`, `whatsapp`, `brief`, `gather`, `mcp` and all `skill`
+installation/export dispatch. Make removes `legacy-dashboard`, `legacy-chat`,
+`voice`, `telegram`, `discord`, `whatsapp`, `brief`, `gather`, `shootout` and
+`shootout-coding`. Make retains `run` and `dashboard` for Career, `trace` for
+optional generic tracing, and `eval`, `lint`, `eval-judge` and `gate` for the
+existing verification infrastructure. The general judge/gate implementation
+awaits later retirement and remains separate from Career live evaluation.
+
+`evals/career.py` now opens each temporary scenario with `connect_career`.
+Its scenarios, client configuration, judge, opt-in gate, injection option,
+language selection, result writing and connection cleanup remain unchanged.
+Two new offline command-runner regressions exercise all four scenarios with
+scripted clients, both plain and injected JDs, Chinese resumes, separate homes,
+Career tables/FTS retrieval, SQLite row/busy-timeout settings and closed connections.
+They forbid general migrations and verify that the configured original home
+remains absent. Production runtime, schema, stages, provider behavior and UI
+remain unchanged.
+
+The positive legacy dispatch tests retire; the retained backend keeps its own
+connector/dashboard tests. The skill export destination guarantee now calls
+the retained exporter directly. Console encoding still exercises real CLI output.
+Negative dispatch checks cover every removed family, malformed arguments, no
+runtime imports and no home creation. Make dry-run regressions verify both Career
+shortcuts and the absence of all ten retired shortcuts.
+
+Modified implementation/configuration files are `waku/__main__.py`,
+`evals/career.py`, `Makefile` and the CLI comment in `pyproject.toml`.
+Modified deterministic evals are `test_career_acceptance.py`,
+`test_career_http.py`, `test_connect_command.py`, `test_console_encoding.py`,
+`test_skill_export.py` and `test_waku_memory_connect.py`.
+Modified documentation is `README.md`, `AGENTS.md`, `docs/architecture.md`,
+`docs/career.md`, `docs/commands.md`, `docs/getting-started.md`, `docs/status.md`
+and this handoff. The old getting-started instructions are explicitly historical;
+full documentation cleanup remains deferred.
+
+Verification passed the full deterministic suite with Chromium enabled:
+2,641 passed and 73 skipped, with no deselections. This run includes all Career,
+provider/model, home/dotenv, HTTP/static security, packaging, hosted boundary,
+route/image and remaining hosted contracts. The known hosted concurrency test
+passed this run. Twelve subsequently added Make dry-run checks also passed with
+a test-only Make binary extracted under `/tmp`. The final focused run passed
+201 Career, command and rulebook checks, including all 158 Career tests with
+Chromium enabled. The final handoff-only rulebook rerun passed 17 checks.
+
+Wheel and source archive builds passed. The wheel installed into an isolated
+`/tmp` target. Both default and explicit Career launches served the shell and
+eight assets with bytes matching the checkout, avoided general app/dashboard
+imports, constructed no provider client and closed owned connections. The
+installed command's help and all removed command families passed negative checks.
+Ruff, all seven Career JavaScript syntax checks and `git diff --check` passed.
+The initial restricted socket checks failed because of sandbox permissions;
+the subsequent socket-enabled suite passed. No real-provider evaluation ran.
+
+Process-local mutations restored the general database connector and permissive
+`career` argument dispatch. The corresponding new regressions failed in both
+cases. No mutation changed repository files or user runtime data.
+
+The audited command inventory and evaluation coupling matched actual code.
+The command reference additionally still described default `waku` as terminal
+chat; Batch A corrects it. The Makefile also had duplicate obsolete PHONY lists;
+Batch A consolidates them. Pre-Batch-A HEAD is `ebe337f`; reverting the Batch A
+changes restores the prior code without a schema/configuration migration.
+
+Batch B must resolve hosted's direct `waku.ops.dashboard` dependency before
+removing general assembly, gateways and static assets. The approved direction
+is eventual general hosted retirement, not Career hosting. General deterministic
+fixtures/helpers, the procedural skill validator and wheel/hosted skill packaging,
+plus teaching references, remain consumers for later closure. Git history is
+sufficient for historical teaching recovery. Stable Career provider/catalog,
+pricing, tracing, configuration, loop, registry and database infrastructure stays.
+Batch A deletes no backend implementation, assets, skills, hosted, examples or lab
+material. It migrates or deletes no user runtime data and changes no credentials.
+Batch B has not started.
 
 ## Verification on 2026-10-02
 

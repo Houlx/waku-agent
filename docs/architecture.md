@@ -3,9 +3,10 @@
 Career Agent is the default product launched by `waku` or `waku career`.
 Its dedicated runtime and HTTP server bypass general assistant assembly.
 `ops/static/career/` owns independent styling, hash routes and separate saved,
-draft and request state. `waku dashboard` and `waku chat` retain the general
-application for rollback; the general architecture below describes that retained
-implementation. Phase 2 changes no Career schema, retrieval or AI pipeline.
+draft and request state. Career Agent is the sole supported product. Phase 3
+Batch A removes the general CLI commands while retaining their implementations.
+The general architecture below describes those retained backend modules, which
+hosted still consumes. Batch A changes no Career schema, retrieval or AI pipeline.
 
 
 The same system as the two whiteboard diagrams from the previous videos

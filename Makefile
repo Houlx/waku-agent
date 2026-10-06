@@ -1,4 +1,4 @@
-# waku-agent — one command per pillar.
+# Career Agent command shortcuts.
 #
 # Make is not a framework — it's a 45-year-old command shortcut tool that
 # ships with every Mac/Linux. Each target below is just the shell command
@@ -12,40 +12,14 @@ PY := $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python)
 # real assistant uses (spec 002). An explicit WAKU_HOME still wins.
 export WAKU_HOME ?= $(CURDIR)/.waku
 
-.PHONY: run voice telegram discord brief dashboard legacy-dashboard legacy-chat trace eval eval-judge gate lint
-.PHONY: run voice telegram whatsapp brief dashboard trace eval eval-judge gate lint
+.PHONY: run dashboard trace eval eval-judge gate lint
 
 run:            ## launch Career Agent at http://localhost:7777/#overview
 	$(PY) -m waku
 
-voice:          ## talk to it — push-to-talk, or always-on with WAKU_WAKE_WORD
-	$(PY) -m waku voice
-
-telegram:       ## phone → laptop (needs TELEGRAM_BOT_TOKEN in .env)
-	$(PY) -m waku telegram
-
-discord:        ## Discord → laptop (needs DISCORD_BOT_TOKEN in .env)
-	$(PY) -m waku discord
-whatsapp:       ## WhatsApp → laptop (needs WHATSAPP_TOKEN in .env, public URL)
-	$(PY) -m waku whatsapp
-
-brief:          ## morning briefing from calendar + mail + memory (as a LOOP)
-	$(PY) -m waku brief
-
-gather:         ## same job as a GRAPH: 4 sources in parallel, then one digest
-	$(PY) -m waku gather
-
-# The server holds dashboard.py in memory: static JS/CSS reload on refresh, but
-# Python routes do NOT. After pulling a change that touches dashboard.py (or any
-# imported module), stop this and re-run it, or the UI shows stale backend data.
+# Restart the Career server after changing Python routes or imported modules.
 dashboard:      ## launch Career Agent (restart after a backend pull)
 	$(PY) -m waku career
-
-legacy-dashboard: ## old Waku dashboard for rollback/development
-	$(PY) -m waku dashboard
-
-legacy-chat:    ## old Waku terminal chat for rollback/development
-	$(PY) -m waku chat
 
 trace:          ## deep trace waterfalls (Phoenix) at http://localhost:6006
 	$(PY) -m phoenix.server.main serve
@@ -58,12 +32,6 @@ eval-judge:     ## LLM-as-judge evals (scored %, needs an API key)
 
 gate:           ## the release gate: deterministic must pass, judge must clear threshold
 	$(PY) -m waku.ops.release_gate
-
-shootout:       ## same tasks, different brains: make shootout RUNS="kimi:kimi-k3 anthropic:claude-opus-4-8"
-	$(PY) scripts/shootout.py $(RUNS)
-
-shootout-coding: ## coding round via pi, scored by tests: make shootout-coding RUNS="kimi:kimi-k3 anthropic:claude-opus-4-8"
-	$(PY) scripts/shootout.py $(RUNS) --coding
 
 lint:
 	$(PY) -m ruff check waku evals scripts hosted

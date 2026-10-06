@@ -2,8 +2,10 @@
 
 Career Agent now launches by default with `waku` or `waku career`.
 [The Career guide](career.md) covers the current product. This page describes the
-retained general Waku assistant, launched explicitly through `waku dashboard`
-or `waku chat` during the Phase 2 rollback period.
+historical general Waku assistant. Phase 3 Batch A removes the general CLI
+commands shown below; these instructions no longer run in this fork. Use the
+Career guide for current setup. The key configuration in section 2 still applies
+to Career. Git history preserves the general-product instructions.
 
 Five steps take you from nothing to a Waku that remembers you. Each step ends
 with a check, so you know it worked before you move on. Everything runs on your

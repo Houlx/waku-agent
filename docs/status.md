@@ -16,19 +16,19 @@ V1, runtime separation and Phase 2 product cutover are implemented. `waku`,
 `waku career`, `make run` and `make dashboard` launch Career Agent. Its independent
 plain JavaScript frontend supports addressable routes, profile review, saved jobs,
 evidence inspection, explicit resume generation and provider Settings.
-The old dashboard remains available through `waku dashboard` and
-`make legacy-dashboard`; terminal chat uses `waku chat`.
+Phase 3 Batch A removes all general-product CLI commands and their Make
+shortcuts. `waku --help` lists the supported Career commands.
 
-Phase 3 retirement has not started. General modules and assets remain in place.
+Phase 3 Batch A closes public CLI entrypoints and moves live Career evaluation
+to Career-only database initialization. General modules and assets remain in place.
 The retained general assistant status below records upstream context; its old
 test count is historical. Current verification lives in the Career handoff.
 
 ## Retained general assistant
 
-The four pillars run: the loop, memory (semantic + episodic + procedural with
-a retrieval gate), tools, and both eval tiers. `waku chat`, `waku dashboard`,
-`waku voice`, `waku telegram`, `waku discord`, `waku brief` and
-`waku connect google` all start.
+The retained backend contains the loop, memory, tools and both eval tiers.
+Its general-product CLI commands no longer start. Hosted still consumes the
+general dashboard through its direct module launch.
 
 **950 deterministic evals pass offline**, with no API key; 60 more are live
 evals that skip without one. CI runs the offline tier on every PR along with

@@ -1,6 +1,7 @@
 """Exercise the transitional Career server and CLI using isolated local sockets."""
 import http.client
 import json
+import shutil
 import sqlite3
 import threading
 
@@ -108,15 +109,78 @@ def test_socket_failure_is_not_masked(monkeypatch):
         career_dashboard.CareerServer(('127.0.0.1', 0))
 
 
-@pytest.mark.parametrize(('command', 'module'), [
-    ('dashboard', 'waku.ops.dashboard'), ('chat', 'waku.gateway.cli')])
-def test_explicit_rollback_dispatch(monkeypatch, command, module):
-    import importlib
+@pytest.mark.parametrize('args', [
+    ['dashboard'], ['chat'], ['connections'], ['connect', 'google'],
+    ['connect', 'waku-memory'], ['voice'], ['telegram'], ['discord'], ['whatsapp'],
+    ['brief'], ['gather'], ['mcp'], ['mcp', 'login', 'server'],
+    ['skill', 'install', 'https://example.com/skill'], ['skill', 'export'],
+    ['skill'], ['unknown'], ['career', 'unexpected'], ['career', '--help', 'extra'],
+    ['--help', 'extra'],
+])
+def test_unsupported_cli_never_starts_a_product(tmp_path, monkeypatch, capsys, args):
+    import builtins
 
     from waku import __main__
 
-    calls = []
-    monkeypatch.setattr(importlib.import_module(module), 'main', lambda: calls.append(command))
-    monkeypatch.setattr('sys.argv', ['waku', command])
+    original_import = builtins.__import__
+
+    def guard(name, *positional, **kwargs):
+        if name.startswith('waku.'):
+            pytest.fail('Unsupported invocation imported a runtime: ' + name)
+        return original_import(name, *positional, **kwargs)
+
+    home = tmp_path / 'unused-home'
+    monkeypatch.setenv('WAKU_HOME', str(home))
+    monkeypatch.setattr(builtins, '__import__', guard)
+    monkeypatch.setattr('sys.argv', ['waku', *args])
+    with pytest.raises(SystemExit) as stopped:
+        __main__.main()
+    assert stopped.value.code == 1
+    output = capsys.readouterr()
+    assert 'Unsupported command or arguments' in output.err
+    assert 'waku career' in output.out
+    assert not home.exists()
+
+
+@pytest.mark.parametrize('args', [['--help'], ['-h'], ['career', '--help'], ['career', '-h']])
+def test_cli_help_lists_only_career(monkeypatch, capsys, args):
+    from waku import __main__
+
+    monkeypatch.setattr(career_dashboard, 'main', lambda: pytest.fail('Help started Career'))
+    monkeypatch.setattr('sys.argv', ['waku', *args])
     __main__.main()
-    assert calls == [command]
+    output = capsys.readouterr()
+    commands = [line.split()[1] for line in output.out.splitlines() if line.startswith('  waku ')]
+    assert commands == ['Career', 'career', '--help']
+    assert output.err == ''
+
+
+@pytest.mark.skipif(shutil.which('make') is None, reason='Make is not installed')
+@pytest.mark.parametrize('target', [
+    'legacy-dashboard', 'legacy-chat', 'voice', 'telegram', 'discord', 'whatsapp',
+    'brief', 'gather', 'shootout', 'shootout-coding',
+])
+def test_retired_make_shortcuts_are_absent(target):
+    import subprocess
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    result = subprocess.run(['make', '-n', target], cwd=root, capture_output=True,
+                            text=True, timeout=10, check=False)
+    assert result.returncode != 0
+    assert 'No rule to make target' in result.stderr
+
+
+@pytest.mark.skipif(shutil.which('make') is None, reason='Make is not installed')
+@pytest.mark.parametrize(('target', 'command'), [
+    ('run', 'python -m waku'), ('dashboard', 'python -m waku career'),
+])
+def test_make_career_launches(target, command):
+    import subprocess
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    result = subprocess.run(['make', '-n', target, 'PY=python'], cwd=root, capture_output=True,
+                            text=True, timeout=10, check=False)
+    assert result.returncode == 0
+    assert result.stdout.strip() == command

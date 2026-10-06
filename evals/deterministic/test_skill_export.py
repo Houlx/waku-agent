@@ -1,4 +1,4 @@
-"""DETERMINISTIC EVAL — `waku skill export` copies skills without clobbering.
+"""DETERMINISTIC EVAL — the retained exporter copies skills without clobbering.
 
 Claude Code, Codex and Muse Code read the same SKILL.md folders Waku does, so
 exporting is a copy. The one way a copy hurts is overwriting a skill someone
@@ -6,8 +6,6 @@ edited in the other agent, so a copy that differs is kept unless --force.
 """
 
 from __future__ import annotations
-
-import sys
 
 import pytest
 
@@ -88,13 +86,8 @@ def test_unknown_target_is_refused(capsys):
     assert "Choose from: claude, codex" in capsys.readouterr().out
 
 
-def test_cli_door(home, tmp_path, monkeypatch, capsys):
-    from waku.__main__ import main
-
+def test_exporter_project_destination(home, tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("WAKU_HOME", str(home))
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["waku", "skill", "export", "--project"])
-    with pytest.raises(SystemExit) as exit_:
-        main()
-    assert exit_.value.code == 0
+    assert exporter.cli_main(["--project"]) == 0
     assert (tmp_path / ".claude" / "skills" / "tidy-inbox" / "SKILL.md").exists()

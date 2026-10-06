@@ -86,7 +86,7 @@ rules that make them safe: `firewall.sh` is still spec 001's group C.
 
 ## Commands
 
-`make run` · `make dashboard` (localhost:7777) · `make voice` · `make trace` (Phoenix, 6006)
+`make run` · `make dashboard` (localhost:7777) · `make trace` (Phoenix, 6006)
 `make eval` · `make gate` (deterministic + judge) · `make lint` · tests live in `evals/`, not `tests/`
 
 ## Maintainers
