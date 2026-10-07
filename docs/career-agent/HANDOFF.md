@@ -51,6 +51,7 @@ Profile, JD, report and evidence remain untrusted data.
 | `waku/ops/provider_services.py` | Provider-only configuration, rollback and masked readiness |
 | `waku/runtime/career.py` | Profile storage, normalization, confirmation and action dispatch |
 | `waku/runtime/career_jobs.py` | Extraction, matching, scoring, activity and saved jobs |
+| `waku/runtime/career_requirements.py` | Canonical groups, eligibility, stable identity and exact-JD/policy extraction reuse |
 | `waku/runtime/career_matching.py` | Evidence snapshots, matching input budgets and server-owned delivery coverage |
 | `waku/runtime/career_resumes.py` | Generation gates, claim validation, current drafts and Markdown |
 | `waku/tools/career.py` | Scoped submission, FTS5 search and evidence lookup |
@@ -72,9 +73,10 @@ Career tables share the existing `state.db`:
   update and delete triggers.
 - `jobs`: raw JD, extracted title/summary/responsibilities, status, outdated flag,
   coverage, report/evidence snapshots, activity and timestamps.
-- `job_requirements`: job-owned atomic requirements, category, importance,
-  keywords and verbatim JD excerpts.
-- `job_matches`: one assessment per requirement, status, evidence IDs and reason.
+- `career_requirement_sets`: validated canonical extraction keyed by exact JD and policy.
+- `job_requirements`: job-owned scoring groups, category, importance, keywords and JD excerpts;
+  complete constraint/provenance/eligibility metadata lives in the saved report.
+- `job_matches`: one assessment per SCORED group, status, evidence IDs and reason.
 - `resumes`: ID, unique job ID, language, structured content/evidence snapshots,
   outdated flag, activity and timestamps. Successful regeneration replaces one
   current draft; no version history exists.
@@ -91,9 +93,10 @@ rejects unknown/inactive IDs, extra heading-field proposals and new numeric valu
 Python supplies contact details, canonical titles and raw structured heading fields.
 Evidence IDs establish traceability, not semantic proof.
 
-Coverage uses required weight 2, preferred weight 1, MATCH 1, PARTIAL 0.5 and GAP 0:
+Coverage includes only SCORED groups, using required weight 2, preferred weight 1,
+MATCH 1, PARTIAL 0.5 and GAP 0:
 `100 × sum(weight × value) / sum(weight)`, rounded to one decimal. Empty
-requirements yield insufficient information and block generation. The UI calls
+scored groups yield insufficient scoreable information and block generation. The UI calls
 this JD Requirement Coverage and explicitly excludes hiring/interview probability.
 
 ## APIs, tools and tracing
@@ -1475,3 +1478,97 @@ extraction. Delivery coverage proves that facts were available, not that a model
 understood or correctly judged every record. Major equivalence, compound clauses
 and extraction consistency remain separate follow-up work. No extraction work
 or general retrieval redesign begins in this fix.
+
+## Canonical requirement groups and eligibility on 2026-10-07
+
+The approved first Coverage stabilization stage implements the
+[canonical requirement contract](REQUIREMENT_GROUPS.md). `career_requirements.py`
+owns the closed extraction schema, shallow ALL/ANY constraints, optional education
+alternative, source offsets, semantic identity, eligibility guards and reuse policy.
+Degree and major share one education group. The bachelor's relaxation remains a
+conditional route inside that group. Recognized technology alternatives require
+one ANY group. Duplicate normalized subjects and overlapping material source spans
+cannot create separate scoring opportunities, including category relabeling of the
+same qualification. The validator preserves recognized policy-sensitive JD clauses.
+
+The extraction schema closes category to education, experience, skill, certification,
+language, demonstrated_capability, logistics, personal_trait and other. Every group
+requires SCORED, NEEDS_CONFIRMATION or NON_SCORABLE before matching. Objective
+qualifications and observable behavior/output criteria can be scored. Declarative
+logistics and driver's-license requirements need confirmation. Generic health,
+diligence, dedication, responsibility, moral character and undefined personality
+wording remain non-scorable. A bare writing-ability label or generic teamwork spirit
+remains excluded; observable writing outputs and collaboration tasks can be scored.
+Domain terms such as travel software, dedicated GPU, character encoding and high
+availability do not become personality or logistics claims.
+
+An additive `career_requirement_sets` table stores the first validated extraction
+for exact JD content and policy version `groups-v1`. Atomic first-writer publication
+prevents candidate replacement. Matching failure retains the accepted set. Identical
+new jobs, reanalysis, process restart, profile edits and provider/model changes reuse
+that set. A changed JD or policy needs a new extraction. This stage exposes no explicit
+re-extraction action or requirement-history UI. Old-policy reports retain their saved
+scores and artifacts, appear outdated and block generation until reanalysis.
+Job deletion prunes unreferenced cached JD versions within its existing transaction;
+other jobs and reports retain their shared sets.
+
+The matching request and validator accept only SCORED groups. The saved report retains
+all groups and metadata; the existing requirement table columns remain compatible.
+LEFT JOIN reads preserve excluded rows without assessments. English and Chinese
+reports separate confirmation and non-scorable clauses from scored required/preferred
+groups. Excluded clauses show source wording and reasons without match badges or
+invented GAP. Zero scored groups produce insufficient scoreable information and
+disable resume generation. Required/preferred weights, MATCH/PARTIAL/GAP values,
+one-decimal arithmetic, evidence delivery, FTS, matching definitions and the matching
+prompt remain unchanged. The resume addition only gates old-policy analyses.
+
+### Stabilization evaluation
+
+Reviewed synthetic fixtures cover degree/major, conditional fallback, technology OR,
+health/attitudes, responsibility/morality, observable collaboration and writing,
+undefined initiative, logistics, explicit importance and duplicate paraphrases.
+The diagnosed Chinese JD equivalent contains invented Northstar Instruments/Cedar Labs
+facts rather than private runtime profile data.
+
+Six analyses of that equivalent reuse seven canonical groups, four SCORED groups,
+three NON_SCORABLE groups and denominator 7. The previous 7/8/9 extraction-count
+instability does not recur on reanalysis. Health/diligence/dedication never reaches
+matching or arithmetic, and the education fallback never adds a preferred weight.
+Six broader gold analyses reuse ten groups, six SCORED groups, one confirmation group,
+three non-scorable groups and denominator 10. Both runs report 100% identity, source
+coverage, importance, category and eligibility agreement, with zero changed-identity
+merge/split and normalized-subject duplicate rates. The eval compares gold source
+spans independently of matching and saves metrics under pytest's temporary directory.
+
+These are offline real-coordinator/cache evaluations with scripted extraction and
+assessment proposals. They prove reuse and structural enforcement, not fresh model
+extraction accuracy or deterministic semantic grading. Unknown subject synonyms can
+still require additional reviewed alias/gold coverage. Conservative provenance guards
+can reject a broad excerpt rather than guess its grouping. Related-major equivalence,
+threshold interpretation and evidence sufficiency remain semantic follow-up work.
+
+### Stabilization verification
+
+The full retained offline gate passes **562 tests with 13 skips**, including both
+Chromium journeys. Twelve skips require unavailable Make; the last skip disables the
+live-provider probe. The equivalent Python gate and lint commands ran directly.
+The 35 focused canonical-group regressions pass. Chromium verifies the existing
+Career journey and new scored/excluded/confirmation reports in both locales,
+zero-score display and disabled generation. No live provider evaluation ran.
+
+Ruff, environment-template validation, JavaScript syntax and `git diff --check` pass.
+Temporary in-process mutations bypass eligibility filtering or disable extraction
+reuse; each relevant regression fails. Neither mutation edits production files.
+Wheel and source archives build and install offline into separate `/tmp` targets.
+Both installed products pass default/explicit startup, static/API checks, lazy-client
+shutdown, canonical schema/eligibility, three diagnosed-equivalent analyses with
+one extraction, stable identities, and source-byte comparisons for changed runtime
+and frontend files. Distribution/license checks pass in the retained gate.
+
+The first sandboxed full run could not create localhost sockets. Reviewed runs use
+socket access and synthetic data only. An initial Chromium retry used the wrong
+library path; the successful runs use the existing libraries under `/tmp`.
+All diagnostic artifacts, package targets, traces and usage remain under `/tmp`.
+This stage does not modify the user's live database, dotenv, credentials,
+profile, evidence, traces or spend ledger. No dependency, provider/model setting,
+version or lock file changes. The matching-rubric stage has not begun.

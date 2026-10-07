@@ -48,8 +48,8 @@ class JobClient:
 
     def create(self, **kwargs):
         self.calls.append(copy.deepcopy(kwargs))
-        stage = 'extract' if 'Extract atomic requirements' in kwargs['system'] else 'match'
-        turn = sum(('Extract atomic requirements' in c['system']) == (stage == 'extract') for c in self.calls)
+        stage = 'extract' if 'Extract canonical requirement groups' in kwargs['system'] else 'match'
+        turn = sum(('Extract canonical requirement groups' in c['system']) == (stage == 'extract') for c in self.calls)
         if self.failure == (stage, turn):
             raise RuntimeError('offline provider unavailable')
         if stage == 'extract':
@@ -110,7 +110,7 @@ def test_four_jobs_persist_explainable_reports(world, fixture):
     reopened.close()
     for call in client.calls:
         exposed = {t['name'] for t in call['tools']}
-        assert exposed == ({'submit_stage_result'} if 'Extract atomic' in call['system']
+        assert exposed == ({'submit_stage_result'} if 'Extract canonical' in call['system']
                            else {'submit_stage_result', 'search_career_evidence', 'get_evidence'})
         assert call['max_tokens'] == 4096
     traces = ''.join(p.read_text() for p in (world[1].home / 'traces').glob('*.jsonl'))
@@ -184,8 +184,11 @@ def test_unchanged_confirmation_does_not_mark_analysis_outdated(world):
 @pytest.mark.parametrize('failure', [('extract', 1), ('extract', 2), ('match', 1), ('match', 4)])
 def test_failed_reanalysis_retains_previous_artifacts(world, failure):
     old = analyze(world)['jobs'][0]
+    fixture = copy.deepcopy(FIXTURES[0])
+    if failure[0] == 'extract':
+        fixture['jd'] += '\nNew immutable JD version.'
     with pytest.raises(RuntimeError, match='provider unavailable'):
-        analyze(world, JobClient(failure=failure), job_id=old['id'])
+        analyze(world, JobClient(fixture, failure=failure), fixture, job_id=old['id'])
     job = state(world[0])['jobs'][0]
     assert job['status'] == 'failed' and job['outdated']
     assert job['report'] == old['report'] and job['requirements'] == old['requirements']
@@ -237,7 +240,8 @@ def test_extraction_rejects_invented_excerpt_and_duplicate_requirements():
 
 
 def test_score_literals_and_complete_coverage():
-    requirements = [{'id': 'a', 'importance': 'required'}, {'id': 'b', 'importance': 'preferred'}]
+    requirements = [{'id': 'a', 'importance': 'required', 'eligibility': 'SCORED'},
+                    {'id': 'b', 'importance': 'preferred', 'eligibility': 'SCORED'}]
     assert calculate_match_score(requirements, [{'requirement_id': 'a', 'status': 'PARTIAL'},
                                                {'requirement_id': 'b', 'status': 'MATCH'}]) == 66.7
     assert calculate_match_score([], []) is None
@@ -255,7 +259,7 @@ def test_matching_can_search_again_and_batch_synonyms(world):
 
 
 def test_uninspected_citations_and_skipped_search_are_rejected(world):
-    requirements = [{'id': 'one'}]
+    requirements = [{'id': 'one', 'eligibility': 'SCORED'}]
     report = {'assessments': [{'requirement_id': 'one', 'status': 'MATCH',
                               'evidence_ids': ['career-software'], 'reason': 'Supported.'}],
               'strengths': [], 'gaps': [], 'recommended_focus': []}
@@ -268,7 +272,7 @@ def test_uninspected_citations_and_skipped_search_are_rejected(world):
 def test_matching_limit_is_capped_at_ten(world):
     class SearchingClient(JobClient):
         def create(self, **kwargs):
-            if 'Extract atomic' in kwargs['system']:
+            if 'Extract canonical' in kwargs['system']:
                 return super().create(**kwargs)
             self.calls.append(copy.deepcopy(kwargs))
             return response([tool_block('search_career_evidence', {'queries': ['React']})], 'tool_use')

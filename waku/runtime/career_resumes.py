@@ -13,6 +13,7 @@ from waku.runtime.career_jobs import (
     require_text,
     run_stage,
 )
+from waku.runtime.career_requirements import policy_current
 from waku.tools.career import confirmed_profile, get_evidence, make_evidence_tool
 
 LANGUAGES = ('English', 'Chinese', 'Japanese')
@@ -84,6 +85,8 @@ def generate_resume(conn, job_id, language, settings, client):
     job = conn.execute('SELECT * FROM jobs WHERE id=?', (job_id,)).fetchone()
     if not job or job['status'] != 'complete':
         raise ValueError('Complete job analysis before generating a resume.')
+    if not policy_current(json.loads(job['report_json'] or '{}')):
+        raise ValueError('Requirement policy has changed. Re-run job analysis before generating a resume.')
     if job['outdated']:
         raise ValueError('Your Career Profile has changed. Re-run job analysis before generating a resume.')
     requirements = [dict(r) for r in conn.execute('SELECT * FROM job_requirements WHERE job_id=?', (job_id,))]

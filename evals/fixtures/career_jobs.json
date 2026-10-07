@@ -1,6 +1,279 @@
 [
-  {"title":"AI Engineer","jd":"AI Engineer. Required: Build retrieval augmented generation applications. Required: Production PyTorch training. Preferred: Python.","requirements":[{"text":"Build retrieval augmented generation applications","category":"technical","importance":"required","keywords":["RAG","retrieval augmented generation"],"source_excerpt":"Build retrieval augmented generation applications"},{"text":"Production PyTorch training","category":"technical","importance":"required","keywords":["PyTorch"],"source_excerpt":"Production PyTorch training"},{"text":"Python","category":"technical","importance":"preferred","keywords":["Python"],"source_excerpt":"Python"}],"statuses":["MATCH","GAP","PARTIAL"],"score":50.0},
-  {"title":"Frontend Engineer","jd":"Frontend Engineer. Required: React migration. Preferred: Python.","requirements":[{"text":"React migration","category":"technical","importance":"required","keywords":["React"],"source_excerpt":"React migration"},{"text":"Python","category":"technical","importance":"preferred","keywords":["Python"],"source_excerpt":"Python"}],"statuses":["MATCH","PARTIAL"],"score":83.3},
-  {"title":"Full Stack Engineer","jd":"Full Stack Engineer. Required: Node.js. Required: React. Preferred: Kubernetes.","requirements":[{"text":"Node.js","category":"technical","importance":"required","keywords":["Node.js"],"source_excerpt":"Node.js"},{"text":"React","category":"technical","importance":"required","keywords":["React"],"source_excerpt":"React"},{"text":"Kubernetes","category":"technical","importance":"preferred","keywords":["Kubernetes"],"source_excerpt":"Kubernetes"}],"statuses":["MATCH","MATCH","GAP"],"score":80.0},
-  {"title":"Technical Support Engineer","jd":"Technical Support Engineer. Required: Customer support. Preferred: Python.","requirements":[{"text":"Customer support","category":"experience","importance":"required","keywords":["customer support"],"source_excerpt":"Customer support"},{"text":"Python","category":"technical","importance":"preferred","keywords":["Python"],"source_excerpt":"Python"}],"statuses":["GAP","PARTIAL"],"score":16.7}
+  {
+    "title": "AI Engineer",
+    "jd": "AI Engineer. Required: Build retrieval augmented generation applications. Required: Production PyTorch training. Preferred: Python.",
+    "requirements": [
+      {
+        "text": "Build retrieval augmented generation applications",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [
+          "RAG",
+          "retrieval augmented generation"
+        ],
+        "source_excerpt": "Build retrieval augmented generation applications",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Build retrieval augmented generation applications",
+              "text": "Build retrieval augmented generation applications",
+              "source_excerpt": "Build retrieval augmented generation applications"
+            }
+          ]
+        }
+      },
+      {
+        "text": "Production PyTorch training",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [
+          "PyTorch"
+        ],
+        "source_excerpt": "Production PyTorch training",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Production PyTorch training",
+              "text": "Production PyTorch training",
+              "source_excerpt": "Production PyTorch training"
+            }
+          ]
+        }
+      },
+      {
+        "text": "Python",
+        "category": "skill",
+        "importance": "preferred",
+        "keywords": [
+          "Python"
+        ],
+        "source_excerpt": "Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Python",
+              "text": "Python",
+              "source_excerpt": "Python"
+            }
+          ]
+        }
+      }
+    ],
+    "statuses": [
+      "MATCH",
+      "GAP",
+      "PARTIAL"
+    ],
+    "score": 50.0
+  },
+  {
+    "title": "Frontend Engineer",
+    "jd": "Frontend Engineer. Required: React migration. Preferred: Python.",
+    "requirements": [
+      {
+        "text": "React migration",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [
+          "React"
+        ],
+        "source_excerpt": "React migration",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "React migration",
+              "text": "React migration",
+              "source_excerpt": "React migration"
+            }
+          ]
+        }
+      },
+      {
+        "text": "Python",
+        "category": "skill",
+        "importance": "preferred",
+        "keywords": [
+          "Python"
+        ],
+        "source_excerpt": "Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Python",
+              "text": "Python",
+              "source_excerpt": "Python"
+            }
+          ]
+        }
+      }
+    ],
+    "statuses": [
+      "MATCH",
+      "PARTIAL"
+    ],
+    "score": 83.3
+  },
+  {
+    "title": "Full Stack Engineer",
+    "jd": "Full Stack Engineer. Required: Node.js. Required: React. Preferred: Kubernetes.",
+    "requirements": [
+      {
+        "text": "Node.js",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [
+          "Node.js"
+        ],
+        "source_excerpt": "Node.js",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Node.js",
+              "text": "Node.js",
+              "source_excerpt": "Node.js"
+            }
+          ]
+        }
+      },
+      {
+        "text": "React",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [
+          "React"
+        ],
+        "source_excerpt": "React",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "React",
+              "text": "React",
+              "source_excerpt": "React"
+            }
+          ]
+        }
+      },
+      {
+        "text": "Kubernetes",
+        "category": "skill",
+        "importance": "preferred",
+        "keywords": [
+          "Kubernetes"
+        ],
+        "source_excerpt": "Kubernetes",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Kubernetes",
+              "text": "Kubernetes",
+              "source_excerpt": "Kubernetes"
+            }
+          ]
+        }
+      }
+    ],
+    "statuses": [
+      "MATCH",
+      "MATCH",
+      "GAP"
+    ],
+    "score": 80.0
+  },
+  {
+    "title": "Technical Support Engineer",
+    "jd": "Technical Support Engineer. Required: Customer support. Preferred: Python.",
+    "requirements": [
+      {
+        "text": "Customer support",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [
+          "customer support"
+        ],
+        "source_excerpt": "Customer support",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Customer support",
+              "text": "Customer support",
+              "source_excerpt": "Customer support"
+            }
+          ]
+        }
+      },
+      {
+        "text": "Python",
+        "category": "skill",
+        "importance": "preferred",
+        "keywords": [
+          "Python"
+        ],
+        "source_excerpt": "Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD states an objective qualification.",
+        "alternative_route": null,
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Python",
+              "text": "Python",
+              "source_excerpt": "Python"
+            }
+          ]
+        }
+      }
+    ],
+    "statuses": [
+      "GAP",
+      "PARTIAL"
+    ],
+    "score": 16.7
+  }
 ]

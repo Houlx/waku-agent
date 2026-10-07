@@ -8,6 +8,16 @@ import uuid
 from waku.loop.agent import run_loop
 from waku.ops.tracing import Tracer
 from waku.runtime.career_matching import MatchingCoverage, pure_education_requirement
+from waku.runtime.career_requirements import (
+    EXTRACTION_PROMPT,
+    EXTRACTION_SCHEMA,
+    cache_extraction,
+    cached_extraction,
+    policy_current,
+    prune_extractions,
+    scored_groups,
+    validate_extraction,
+)
 from waku.tools.career import (
     confirmed_profile,
     get_evidence,
@@ -25,12 +35,6 @@ def object_schema(properties):
 
 TEXT = {'type': 'string'}
 TEXTS = {'type': 'array', 'items': TEXT}
-EXTRACTION_SCHEMA = object_schema({
-    'title': TEXT, 'summary': TEXT, 'responsibilities': TEXTS,
-    'requirements': {'type': 'array', 'maxItems': 60, 'items': object_schema({
-        'text': TEXT, 'category': TEXT,
-        'importance': {'type': 'string', 'enum': ['required', 'preferred']},
-        'keywords': TEXTS, 'source_excerpt': TEXT})}})
 MATCH_SCHEMA = object_schema({
     'assessments': {'type': 'array', 'items': object_schema({
         'requirement_id': TEXT, 'status': {'type': 'string', 'enum': ['MATCH', 'PARTIAL', 'GAP']},
@@ -57,33 +61,8 @@ def require_texts(value, label):
         require_text(item, label)
 
 
-def validate_extraction(result, jd):
-    require_keys(result, EXTRACTION_SCHEMA['properties'], 'Job analysis')
-    require_text(result['title'], 'Job title', nonempty=False)
-    require_text(result['summary'], 'Job summary', nonempty=False)
-    require_texts(result['responsibilities'], 'Responsibilities')
-    requirements = result['requirements']
-    if not isinstance(requirements, list) or len(requirements) > 60:
-        raise ValueError('Extract at most 60 atomic requirements.')
-    seen = set()
-    keys = EXTRACTION_SCHEMA['properties']['requirements']['items']['properties']
-    for requirement in requirements:
-        require_keys(requirement, keys, 'Requirement')
-        for key in ('text', 'category', 'source_excerpt'):
-            require_text(requirement[key], key)
-        if not isinstance(requirement['importance'], str) or requirement['importance'] not in WEIGHTS:
-            raise ValueError('Importance must be required or preferred.')
-        require_texts(requirement['keywords'], 'Keywords')
-        if requirement['source_excerpt'] not in jd:
-            raise ValueError('Requirement excerpts must occur in the pasted JD.')
-        text = requirement['text'].strip().casefold()
-        if text in seen:
-            raise ValueError('Duplicate requirements are not allowed.')
-        seen.add(text)
-    return result
-
-
 def validate_match(result, requirements, conn, collected, searches, coverage=None):
+    requirements = scored_groups(requirements)
     if coverage is not None:
         coverage.assert_current()
     elif not searches:
@@ -132,6 +111,7 @@ def validate_match(result, requirements, conn, collected, searches, coverage=Non
 
 def calculate_match_score(requirements, assessments):
     """Return requirement coverage, never an interview or hiring probability."""
+    requirements = scored_groups(requirements)
     expected = {r['id'] for r in requirements}
     if (len(expected) != len(requirements) or len(assessments) != len(requirements)
             or {a['requirement_id'] for a in assessments} != expected):
@@ -240,6 +220,7 @@ def delete_job(conn, job_id):
         conn.execute('DELETE FROM job_requirements WHERE job_id=?', (job_id,))
         conn.execute('DELETE FROM resumes WHERE job_id=?', (job_id,))
         conn.execute('DELETE FROM jobs WHERE id=?', (job_id,))
+        prune_extractions(conn)
 
 
 def saved_jobs(conn):
@@ -249,6 +230,9 @@ def saved_jobs(conn):
         job['outdated'] = bool(job['outdated'])
         job['responsibilities'] = json.loads(job.pop('responsibilities_json'))
         job['report'] = json.loads(job.pop('report_json') or 'null')
+        job['requirement_policy_current'] = policy_current(job['report'])
+        if job['report'] and not job['requirement_policy_current']:
+            job['outdated'] = True
         job['activity'] = json.loads(job.pop('activity_json'))
         from waku.runtime.career_resumes import saved_resume
 
@@ -257,10 +241,13 @@ def saved_jobs(conn):
         job['requirements'] = []
         for req in conn.execute(
                 'SELECT r.*,m.status,m.evidence_ids_json,m.reason FROM job_requirements r '
-                'JOIN job_matches m ON m.requirement_id=r.id WHERE r.job_id=? ORDER BY r.rowid', (job['id'],)):
+                'LEFT JOIN job_matches m ON m.requirement_id=r.id WHERE r.job_id=? ORDER BY r.rowid', (job['id'],)):
             requirement = dict(req)
             requirement['keywords'] = json.loads(requirement.pop('keywords_json'))
-            requirement['evidence_ids'] = json.loads(requirement.pop('evidence_ids_json'))
+            requirement['evidence_ids'] = json.loads(requirement.pop('evidence_ids_json') or '[]')
+            metadata = next((g for g in (job['report'] or {}).get('requirement_groups', [])
+                             if g['id'] == requirement['id']), None)
+            requirement.update(metadata or {'eligibility': 'SCORED', 'legacy': True})
             job['requirements'].append(requirement)
         jobs.append(job)
     return jobs
@@ -281,14 +268,20 @@ def analyze_job(conn, jd, settings, client, job_id=None):
                      'raw_jd=excluded.raw_jd,status=\'pending\',outdated=1,updated_at=CURRENT_TIMESTAMP', (job_id, jd))
     activity = []
     try:
-        extracted = run_stage(settings, client, 'job extraction',
-                              'Extract atomic requirements from the pasted JD only. Classify importance as '
-                              'required or preferred; do not convert responsibilities into invented qualifications. '
-                              'Retain a verbatim source_excerpt for every requirement. Omit requirements unsupported '
-                              'by the JD. Use an empty requirements list when no usable requirements exist. '
-                              'Do not assign IDs or calculate a score.', {'jd': jd, 'job_id': job_id}, EXTRACTION_SCHEMA,
-                              lambda value: validate_extraction(value, jd), activity=activity)
-        requirements = [dict(r, id=uuid.uuid4().hex) for r in extracted['requirements']]
+        extracted = cached_extraction(conn, jd)
+        if extracted is None:
+            candidate = run_stage(settings, client, 'job extraction', EXTRACTION_PROMPT,
+                                  {'jd': jd, 'job_id': job_id}, EXTRACTION_SCHEMA,
+                                  lambda value: validate_extraction(value, jd), activity=activity)
+            extracted = cache_extraction(conn, jd, candidate)
+            reuse = 'Validated and saved canonical requirement groups.'
+        else:
+            reuse = 'Reused canonical requirement groups for unchanged JD and policy.'
+        activity.append({'stage': 'canonical requirements', 'status': 'complete',
+                         'result': reuse, 'jd_key': extracted['jd_key'],
+                         'policy_version': extracted['policy_version']})
+        groups = [dict(r, id=uuid.uuid4().hex) for r in extracted['requirements']]
+        requirements = scored_groups(groups)
         collected = {}
         searches = []
         if requirements:
@@ -305,7 +298,7 @@ def analyze_job(conn, jd, settings, client, job_id=None):
                                'user edits. Explain partial support and gaps honestly. Absence of evidence means '
                                'unsupported in this profile, not proof the person lacks a skill. Summarize supported '
                                'strengths, gaps, and recommended resume focus. Do not calculate an overall score.',
-                               {'job': extracted, 'requirements': requirements, 'job_id': job_id}, MATCH_SCHEMA,
+                               {'job': dict(extracted, requirements=requirements), 'requirements': requirements, 'job_id': job_id}, MATCH_SCHEMA,
                                lambda value: validate_match(value, requirements, conn, collected, searches, matching_coverage),
                                (make_search_tool(conn, searches), make_evidence_tool(conn, collected)),
                                activity=activity, coverage=matching_coverage)
@@ -318,6 +311,9 @@ def analyze_job(conn, jd, settings, client, job_id=None):
                          'result': f'{len(collected)} available records; '
                                    f"{sum(a['status'] == 'GAP' for a in report['assessments'])} unsupported requirements."})
         cited = {eid for a in report['assessments'] for eid in a['evidence_ids']}
+        report['requirement_groups'] = groups
+        report['extraction_policy_version'] = extracted['policy_version']
+        report['jd_key'] = extracted['jd_key']
         report['evidence'] = {eid: collected[eid] for eid in sorted(cited)}
         with conn:
             conn.execute('UPDATE resumes SET outdated=1 WHERE job_id=?', (job_id,))
@@ -327,7 +323,7 @@ def analyze_job(conn, jd, settings, client, job_id=None):
             conn.execute('DELETE FROM job_matches WHERE requirement_id IN '
                          '(SELECT id FROM job_requirements WHERE job_id=?)', (job_id,))
             conn.execute('DELETE FROM job_requirements WHERE job_id=?', (job_id,))
-            for r in requirements:
+            for r in groups:
                 conn.execute('INSERT INTO job_requirements VALUES(?,?,?,?,?,?,?)',
                              (r['id'], job_id, r['text'], r['category'], r['importance'],
                               json.dumps(r['keywords'], ensure_ascii=False), r['source_excerpt']))

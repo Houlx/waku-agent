@@ -12,21 +12,23 @@ function careerDelete(job){return uiButton(CA.t('delete'),{level:'tertiary destr
 function careerReport(job){
   const list=values=>'<ul>'+values.map(v=>`<li>${esc(v)}</li>`).join('')+'</ul>';
   const disabled=CA.state.request.busy || CA.state.provider.busy;
+  const scored=job.requirements.filter(r=>!r.eligibility || r.eligibility==='SCORED');
   let body=careerActions(`<label>${esc(CA.t('resumeLanguage'))}<select aria-label="${esc(CA.t('resumeLanguage'))}" onchange="CA.state.drafts.languages[CA.state.route.id]=this.value" ${disabled?'disabled':''}>`+
     ['English','Chinese','Japanese'].map(l=>`<option value="${l}" ${l===CA.language(job)?'selected':''}>${esc(CA.t(l))}</option>`).join('')+'</select></label>'+
-    uiButton(CA.t('generate'),{onclick:"CA.run('generate_resume')",attrs:disabled || !CA.state.snapshot.profile?.confirmed || job.outdated || job.status!=='complete' || !job.requirements.length?'disabled':''})+
+    uiButton(CA.t('generate'),{onclick:"CA.run('generate_resume')",attrs:disabled || !CA.state.snapshot.profile?.confirmed || job.outdated || job.status!=='complete' || job.coverage===null?'disabled':''})+
     (job.resume?uiButton(CA.t('viewResume'),{level:'secondary',onclick:`CA.navigate(${JSON.stringify(CA.jobURL(job.id,true))})`}):''));
+  if(job.report && job.requirement_policy_current===false)body+=uiNotice('warn',esc(CA.t('requirementPolicy')));
   if(job.outdated)body+=uiNotice('warn',esc(CA.t('staleJob')));
   if(job.status!=='complete')body+=uiNotice('warn',esc(CA.t('incomplete')));
   body+=uiCard(`<p>${esc(job.summary)}</p><p>${esc(CA.t('coverage'))}: <strong>${esc(CA.coverage(job.coverage))}</strong></p>`+
-    `<p>${esc(CA.t('weights',{number:CA.number(job.requirements.length)}))}</p><p>${esc(CA.t('coverageHelp'))}</p>`,{title:esc(job.title || CA.t('report'))});
+    `<p>${esc(CA.t('weights',{number:CA.number(scored.length)}))}</p><p>${esc(CA.t('coverageHelp'))}</p>`,{title:esc(job.title || CA.t('report'))});
   body+=`<details><summary>${esc(CA.t('pastedJD'))}</summary><p class="career-source">${esc(job.raw_jd)}</p></details>`;
   if(job.responsibilities?.length)body+=uiCard(list(job.responsibilities),{title:esc(CA.t('responsibilities'))});
   if(!job.report && job.requirements.length)body+=uiCard(job.requirements.map(r=>
     `<h3>${esc(r.text)}</h3><p>${esc(CA.t(r.importance))} · ${esc(CA.t('assessmentMissing'))}</p><details><summary>${esc(CA.t('jdSource'))}</summary><p class="career-source">${esc(r.source_excerpt)}</p></details>`).join(''),{title:esc(CA.t('extracted'))});
   if(job.report){
     for(const importance of ['required','preferred']){
-      const rows=job.requirements.filter(r=>r.importance===importance);
+      const rows=scored.filter(r=>r.importance===importance);
       body+=uiCard(rows.map(r=>{
         const evidence=r.evidence_ids.map(eid=>{
           const record=job.report.evidence[eid];
@@ -39,6 +41,13 @@ function careerReport(job){
         return uiCard(uiBadge(CA.t(r.status),{MATCH:'ok',PARTIAL:'warn',GAP:'bad'}[r.status])+
           `<p>${esc(r.reason)}</p><details><summary>${esc(CA.t('jdSource'))}</summary><p class="career-source">${esc(r.source_excerpt)}</p></details>`+evidence,{title:esc(r.text)});
       }).join('') || `<p>${esc(CA.t('noRequirements'))}</p>`,{title:esc(CA.t(importance==='required'?'requiredHeading':'preferredHeading'))});
+    }
+    for(const eligibility of ['NEEDS_CONFIRMATION','NON_SCORABLE']){
+      const rows=job.requirements.filter(r=>r.eligibility===eligibility);
+      if(rows.length)body+=uiCard(rows.map(r=>uiCard(
+        `<p>${esc(r.eligibility_reason)}</p><p>${esc(CA.t('excludedCoverage'))}</p>`+
+        `<details><summary>${esc(CA.t('jdSource'))}</summary><p class="career-source">${esc(r.source_excerpt)}</p></details>`,
+        {title:esc(r.text)})).join(''),{title:esc(CA.t(eligibility))});
     }
     for(const [key,title] of [['strengths','strengths'],['gaps','gaps'],['recommended_focus','focus']])body+=uiCard(job.report[key].length?list(job.report[key]):`<p>${esc(CA.t('noItems'))}</p>`,{title:esc(CA.t(title))});
   }

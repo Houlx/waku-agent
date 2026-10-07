@@ -1,0 +1,210 @@
+{
+  "jd": "Northstar Instruments 测试/软件工程师\n岗位职责：负责测试软件开发和测试设备安装调试。\n任职要求：\n硕士及以上学历，电气、自动化、机电一体化、仪器仪表、计算机、通信等相关专业。工作经验对口且能力突出者可放宽学历至本科。\n熟练使用1abview、C++任意一种编程开发软件\n具有较强的组织协调沟通能力\n具备一定的文字表达能力\n身体健康，吃苦耐劳，爱岗敬业\n有较强的进取意识和团队合作精神\n具有发动机试验平台建设与运行经验者优先",
+  "extraction": {
+    "title": "测试/软件工程师",
+    "summary": "Synthetic Northstar Instruments testing role.",
+    "responsibilities": [
+      "负责测试软件开发和测试设备安装调试。"
+    ],
+    "requirements": [
+      {
+        "text": "硕士及以上学历，电气、自动化、机电一体化、仪器仪表、计算机、通信等相关专业。工作经验对口且能力突出者可放宽学历至本科。",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "硕士及以上学历，电气、自动化、机电一体化、仪器仪表、计算机、通信等相关专业。工作经验对口且能力突出者可放宽学历至本科。",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD supplies a qualification criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "硕士",
+              "text": "硕士及以上学历",
+              "source_excerpt": "硕士及以上学历"
+            },
+            {
+              "kind": "major",
+              "subject": "计算机",
+              "text": "电气、自动化、机电一体化、仪器仪表、计算机、通信等相关专业",
+              "source_excerpt": "电气、自动化、机电一体化、仪器仪表、计算机、通信等相关专业"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "工作经验对口且能力突出者",
+          "source_excerpt": "工作经验对口且能力突出者可放宽学历至本科",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "本科",
+                "text": "本科",
+                "source_excerpt": "本科"
+              },
+              {
+                "kind": "experience",
+                "subject": "工作经验对口",
+                "text": "工作经验对口",
+                "source_excerpt": "工作经验对口"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "text": "熟练使用1abview、C++任意一种编程开发软件",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "熟练使用1abview、C++任意一种编程开发软件",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD supplies a qualification criterion.",
+        "constraints": {
+          "operator": "ANY",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "1abview",
+              "text": "1abview",
+              "source_excerpt": "1abview"
+            },
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "C++"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "具有较强的组织协调沟通能力",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "具有较强的组织协调沟通能力",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD supplies a qualification criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "组织协调沟通",
+              "text": "具有较强的组织协调沟通能力",
+              "source_excerpt": "具有较强的组织协调沟通能力"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "具备一定的文字表达能力",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "具备一定的文字表达能力",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "This generic phrase supplies no observable criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "文字表达能力",
+              "text": "具备一定的文字表达能力",
+              "source_excerpt": "具备一定的文字表达能力"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "身体健康，吃苦耐劳，爱岗敬业",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "身体健康，吃苦耐劳，爱岗敬业",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "This generic phrase supplies no observable criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "身体健康",
+              "text": "身体健康，吃苦耐劳，爱岗敬业",
+              "source_excerpt": "身体健康，吃苦耐劳，爱岗敬业"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "有较强的进取意识和团队合作精神",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "有较强的进取意识和团队合作精神",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "This generic phrase supplies no observable criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "进取意识",
+              "text": "有较强的进取意识和团队合作精神",
+              "source_excerpt": "有较强的进取意识和团队合作精神"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "具有发动机试验平台建设与运行经验者优先",
+        "category": "experience",
+        "importance": "preferred",
+        "keywords": [],
+        "source_excerpt": "具有发动机试验平台建设与运行经验者优先",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD supplies a qualification criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "发动机试验平台",
+              "text": "具有发动机试验平台建设与运行经验者优先",
+              "source_excerpt": "具有发动机试验平台建设与运行经验者优先"
+            }
+          ]
+        },
+        "alternative_route": null
+      }
+    ]
+  },
+  "expected": {
+    "groups": 7,
+    "scored": 4,
+    "confirmation": 0,
+    "non_scorable": 3,
+    "denominator": 7
+  },
+  "profile": {
+    "basic": {
+      "Name": "Morgan Example"
+    },
+    "records": [
+      {
+        "source_id": "synthetic",
+        "type": "project",
+        "text": "Coordinated releases at Cedar Labs."
+      }
+    ]
+  }
+}

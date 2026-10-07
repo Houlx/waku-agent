@@ -50,7 +50,7 @@ class DiagnosticClient:
 
     def create(self, **kwargs):
         self.calls.append(copy.deepcopy(kwargs))
-        stage = 'extract' if 'Extract atomic requirements' in kwargs['system'] else 'match'
+        stage = 'extract' if 'Extract canonical requirement groups' in kwargs['system'] else 'match'
         self.turns[stage] += 1
         turn = self.turns[stage]
         data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
@@ -189,7 +189,7 @@ def test_matching_validator_rejects_unrelated_project_as_education_support(diagn
                              'evidence_ids': ['career-react'], 'reason': 'Incorrect education support.'}],
               'strengths': [], 'gaps': [], 'recommended_focus': []}
     with pytest.raises(ValueError, match='require education evidence'):
-        career_jobs.validate_match(result, [{'id': 'education', 'category': 'education'}], conn,
+        career_jobs.validate_match(result, [{'id': 'education', 'eligibility': 'SCORED', 'category': 'education'}], conn,
                                    {'career-react': get_evidence(conn, 'career-react')}, [['React']])
 
 
@@ -217,7 +217,7 @@ def test_education_gap_requires_complete_education_coverage(diagnostic_world):
               'strengths': [], 'gaps': [], 'recommended_focus': []}
     # No inspected education records means the coordinator must reject this claim.
     with pytest.raises(ValueError, match='server-owned Career evidence coverage'):
-        career_jobs.validate_match(result, [{'id': 'education', 'category': 'education'}], conn,
+        career_jobs.validate_match(result, [{'id': 'education', 'eligibility': 'SCORED', 'category': 'education'}], conn,
                                    {}, [["Master's degree required"]])
 
 
@@ -270,25 +270,27 @@ def test_complete_delivery_permits_genuine_gap_without_search(diagnostic_world):
 ])
 def test_inventory_requires_all_candidates_for_unknown_and_mixed_requirements(
         diagnostic_world, monkeypatch, category, text):
-    conn, settings = diagnostic_world
+    conn, _ = diagnostic_world
     enlarge_profile(conn)
     monkeypatch.setitem(FIXTURE, 'jd', text)
     monkeypatch.setitem(FIXTURE['requirement'], 'text', text)
     monkeypatch.setitem(FIXTURE['requirement'], 'source_excerpt', text)
     monkeypatch.setitem(FIXTURE['requirement'], 'category', category)
     before = snapshot(conn)
-    client = DiagnosticClient(gap_route(['career-bachelor']))
-    with pytest.raises(ValueError, match='did not finish with a valid result'):
-        action(conn, {'action': 'analyze_job', 'jd': text}, settings, client)
-    initial = next(c for c in client.calls if 'Assess each supplied' in c['system'])
-    data = json.loads(initial['messages'][0]['content'].split('\n', 1)[1])
+    collected = {}
+    coverage = MatchingCoverage(conn, collected)
+    requirement = {'id': 'education', 'text': text, 'category': category, 'eligibility': 'SCORED'}
+    messages = coverage.prepare('Match diagnostic', {'requirements': [requirement]}, [])
+    data = json.loads(messages[0]['content'].split('\n', 1)[1])
     assert data['matching_coverage'] == {
         'mode': 'inventory', 'required_coverage_ids': ['career-bachelor', 'career-master', 'career-react']}
     assert 'evidence' not in data
     assert [r['evidence_id'] for r in data['evidence_inventory']] == ['career-bachelor', 'career-master', 'career-react']
-    outputs = [b['content'] for c in client.calls for m in c['messages']
-               if m['role'] == 'user' and isinstance(m['content'], list) for b in m['content']]
-    assert any('GAP requires complete Career evidence coverage' in output for output in outputs)
+    coverage.delivered_ids.add('career-bachelor')
+    with pytest.raises(ValueError, match='GAP requires complete Career evidence coverage'):
+        career_jobs.validate_match({'assessments': [{'requirement_id': 'education', 'status': 'GAP',
+            'evidence_ids': [], 'reason': 'No relevant support.'}], 'strengths': [], 'gaps': [],
+            'recommended_focus': []}, [requirement], conn, collected, [], coverage)
     assert snapshot(conn) == before
 
 
@@ -474,7 +476,7 @@ def test_same_response_inspection_cannot_approve_unseen_inventory_gap(diagnostic
 
     class SameResponseClient(DiagnosticClient):
         def create(self, **kwargs):
-            if 'Extract atomic requirements' in kwargs['system']:
+            if 'Extract canonical requirement groups' in kwargs['system']:
                 return super().create(**kwargs)
             self.calls.append(copy.deepcopy(kwargs))
             self.turns['match'] += 1

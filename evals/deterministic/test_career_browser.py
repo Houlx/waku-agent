@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class BrowserClient(AcceptanceClient):
     def create(self, **kwargs):
-        if ('Extract atomic requirements' in kwargs['system']
+        if ('Extract canonical requirement groups' in kwargs['system']
                 and 'Synthetic failure' in kwargs['messages'][0]['content']):
             raise ValueError('Synthetic extraction failure.')
         return super().create(**kwargs)
@@ -63,3 +63,39 @@ def test_career_browser_journey(tmp_path, monkeypatch):
         runtime.close()
         after = hashlib.sha256(checkout_env.read_bytes()).digest() if checkout_env.exists() else None
         assert after == before, "Browser harness changed the checkout dotenv file."
+
+
+@pytest.mark.skipif(os.getenv('WAKU_CAREER_BROWSER') != '1', reason='Explicit browser opt-in')
+def test_canonical_report_browser(tmp_path):
+    import copy
+
+    from evals.deterministic.test_career_requirement_groups import GOLD, GroupClient
+    from waku.runtime.career import action, save_profile
+
+    settings = Settings(home=tmp_path, model='offline', otel_endpoint='')
+    runtime = CareerRuntime(settings, client=GroupClient())
+    action(runtime.conn, {'action': 'save_onboarding', 'raw': GOLD['profile']})
+    save_profile(runtime.conn, {'basic': GOLD['profile']['basic'], 'records': [
+        {'source_id': 'synthetic', 'title': 'Cedar Labs project',
+         'description': GOLD['profile']['records'][0]['text'], 'skills': []}]})
+    action(runtime.conn, {'action': 'confirm'})
+    first = runtime.action({'action': 'analyze_job', 'jd': GOLD['jd']})['job_id']
+    excluded = copy.deepcopy(GOLD['extraction'])
+    excluded['requirements'] = excluded['requirements'][4:8]
+    runtime.client = GroupClient(excluded)
+    second = runtime.action({'action': 'analyze_job', 'jd': '\n'.join(
+        g['source_excerpt'] for g in excluded['requirements'])})['job_id']
+    server = CareerServer(('127.0.0.1', 0), runtime=runtime)
+    worker = threading.Thread(target=server.serve_forever)
+    worker.start()
+    try:
+        result = subprocess.run(['node', str(ROOT / 'evals/fixtures/career_groups_browser.cjs')],
+            env={**os.environ, 'CAREER_BROWSER_URL': f'http://127.0.0.1:{server.server_port}',
+                 'CAREER_GROUP_JOB': first, 'CAREER_EXCLUDED_JOB': second},
+            text=True, timeout=90, check=False)
+        assert result.returncode == 0
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(5)
+        runtime.close()

@@ -59,6 +59,10 @@ CREATE TABLE IF NOT EXISTS jobs (
  coverage REAL, report_json TEXT, activity_json TEXT NOT NULL DEFAULT '[]',
  created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS career_requirement_sets (
+ jd_key TEXT PRIMARY KEY, raw_jd TEXT NOT NULL, policy_version TEXT NOT NULL,
+ extraction_json TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS job_requirements (
  id TEXT PRIMARY KEY, job_id TEXT NOT NULL REFERENCES jobs(id), text TEXT NOT NULL,
  category TEXT NOT NULL, importance TEXT NOT NULL, keywords_json TEXT NOT NULL,

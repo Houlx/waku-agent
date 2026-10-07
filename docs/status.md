@@ -3,7 +3,7 @@
 Career Agent is the sole supported product. This file describes the current code;
 the [handoff](career-agent/HANDOFF.md) records verification and historical stages.
 
-**Last updated:** 2026-10-06
+**Last updated:** 2026-10-07
 
 ## Current Career product
 
@@ -15,13 +15,15 @@ post-v1 UI iteration adds English/Simplified Chinese UI preferences, responsive 
 navigation with Recent Jobs, permanent saved-Job deletion and contextual sticky actions.
 This iteration is separate from the completed retirement project.
 
-Career retains its runtime lifecycle, schema, FTS5, provenance, fixed coordinators,
+Career retains its runtime lifecycle, FTS5, provenance, fixed coordinators,
 MATCH/PARTIAL/GAP, deterministic coverage and resume grounding. Provider configuration,
 model adapters/catalogs, the loop, ToolRegistry and tracing remain shared infrastructure.
 Matching supplies all active evidence within a checked input budget. Larger profiles
 receive a stable inventory and require complete inspection before GAP can validate.
-Budget or incomplete-coverage failures preserve any previous report. Requirement
-extraction and semantic judgments can still vary across model calls.
+Budget or incomplete-coverage failures preserve any previous report. Canonical
+requirement groups and eligibility are cached by exact JD and extraction-policy version.
+Only SCORED groups affect Coverage; confirmation and excluded clauses stay visible.
+Old-policy reports require reanalysis. Semantic judgments can still vary across calls.
 
 ## Completed retirement
 

@@ -1,0 +1,283 @@
+{
+  "jd": "Northstar Instruments — Test Software Engineer\nRequired qualifications:\nMaster's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.\nProficient with LabVIEW or C++\nCoordinate releases with product and QA teams\nProduce technical reports\n身体健康，吃苦耐劳，爱岗敬业\n责任心强，良好的职业道德\nStrong initiative and teamwork spirit\nWilling to travel, work shifts and relocate\nPython preferred\nEngine test platform experience preferred",
+  "extraction": {
+    "title": "Test Software Engineer",
+    "summary": "Synthetic role at Northstar Instruments.",
+    "responsibilities": [],
+    "requirements": [
+      {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "text": "Proficient with LabVIEW or C++",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Proficient with LabVIEW or C++",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ANY",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "LabVIEW",
+              "text": "LabVIEW",
+              "source_excerpt": "LabVIEW"
+            },
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "C++"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "Coordinate releases with product and QA teams",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Coordinate releases with product and QA teams",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "Coordinate releases",
+              "text": "Coordinate releases with product and QA teams",
+              "source_excerpt": "Coordinate releases with product and QA teams"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "Produce technical reports",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Produce technical reports",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "technical reports",
+              "text": "Produce technical reports",
+              "source_excerpt": "Produce technical reports"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "身体健康，吃苦耐劳，爱岗敬业",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "身体健康，吃苦耐劳，爱岗敬业",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "The JD states a vague trait without observable criteria.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "身体健康",
+              "text": "身体健康，吃苦耐劳，爱岗敬业",
+              "source_excerpt": "身体健康，吃苦耐劳，爱岗敬业"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "责任心强，良好的职业道德",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "责任心强，良好的职业道德",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "The JD states a vague trait without observable criteria.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "责任心",
+              "text": "责任心强，良好的职业道德",
+              "source_excerpt": "责任心强，良好的职业道德"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "Strong initiative and teamwork spirit",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Strong initiative and teamwork spirit",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "The JD states a vague trait without observable criteria.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "initiative",
+              "text": "Strong initiative and teamwork spirit",
+              "source_excerpt": "Strong initiative and teamwork spirit"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "Willing to travel, work shifts and relocate",
+        "category": "logistics",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Willing to travel, work shifts and relocate",
+        "eligibility": "NEEDS_CONFIRMATION",
+        "eligibility_reason": "The JD requires a user declaration.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "logistics",
+              "subject": "travel",
+              "text": "travel",
+              "source_excerpt": "travel"
+            },
+            {
+              "kind": "logistics",
+              "subject": "shifts",
+              "text": "shifts",
+              "source_excerpt": "shifts"
+            },
+            {
+              "kind": "logistics",
+              "subject": "relocate",
+              "text": "relocate",
+              "source_excerpt": "relocate"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "Python preferred",
+        "category": "skill",
+        "importance": "preferred",
+        "keywords": [],
+        "source_excerpt": "Python preferred",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "Python",
+              "text": "Python",
+              "source_excerpt": "Python"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "Engine test platform experience preferred",
+        "category": "experience",
+        "importance": "preferred",
+        "keywords": [],
+        "source_excerpt": "Engine test platform experience preferred",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Engine test platform experience",
+              "text": "Engine test platform experience",
+              "source_excerpt": "Engine test platform experience"
+            }
+          ]
+        },
+        "alternative_route": null
+      }
+    ]
+  },
+  "expected": {
+    "groups": 10,
+    "scored": 6,
+    "confirmation": 1,
+    "non_scorable": 3,
+    "denominator": 10
+  },
+  "profile": {
+    "basic": {
+      "Name": "Morgan Example"
+    },
+    "records": [
+      {
+        "source_id": "synthetic",
+        "type": "project",
+        "text": "Coordinated releases at Cedar Labs."
+      }
+    ]
+  }
+}

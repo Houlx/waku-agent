@@ -71,8 +71,13 @@ navigation within the page, but they do not survive reload.
 
 ## Analyze a job
 
-Paste a job description and select **Analyze Job**. The agent extracts required
-and preferred requirements and assesses each requirement as MATCH, PARTIAL or GAP.
+Paste a job description and select **Analyze Job**. The agent extracts canonical
+requirement groups and decides their score eligibility before matching. It assesses
+only SCORED groups as MATCH, PARTIAL or GAP. Needs confirmation and Not scoreable
+clauses remain visible with sources and reasons but do not affect Coverage.
+Degree/major constraints and conditional education alternatives share one group;
+LabVIEW OR C++ shares one ANY group. An unchanged JD and policy reuse the saved
+canonical set across jobs and reanalysis.
 Matching receives all active evidence when the profile fits its checked input budget.
 Larger profiles receive an evidence inventory and require complete inspection before
 GAP can validate. Optional searches help locate details; an empty search cannot hide
@@ -91,9 +96,10 @@ coverage = 100 × sum(weight × value) / sum(weight)
 
 Python rounds coverage to one decimal. For one required MATCH, one required GAP
 and one preferred PARTIAL, coverage is `100 × (2 + 0 + 0.5) / 5 = 50.0%`.
-This score shows how much of the extracted job requirements your confirmed Career
-Profile supports. It is not a hiring or interview probability. Empty requirement
-sets display **Insufficient information** and block resume generation.
+This score shows how much of the scored job requirement groups your confirmed Career
+Profile supports. It is not a hiring or interview probability. Jobs with zero SCORED
+groups display **Insufficient scoreable information** and block resume generation.
+Old-policy reports remain inspectable but require reanalysis before new generation.
 
 Profile changes mark reports outdated. Confirm your edits and re-run job analysis
 before generating another resume. Failed reanalysis preserves earlier reports and
@@ -145,6 +151,8 @@ an execution lock that also protects provider configuration and replacement.
 `career.py` owns profiles and action dispatch, `career_jobs.py` owns extraction,
 matching and scoring, and `career_resumes.py` owns draft generation and exports.
 `career_matching.py` owns evidence snapshots, matching input checks and delivery coverage.
+`career_requirements.py` owns [canonical groups and eligibility](career-agent/REQUIREMENT_GROUPS.md),
+source provenance, stable identity and extraction reuse.
 `waku/tools/career.py` provides stage-scoped tools. `static/career/` contains independent plain JavaScript modules for saved state,
 drafts, requests, hash routing, actions, Settings and screen rendering.
 Phase 3 retirement removes the old dashboard and all its assets.
@@ -157,8 +165,8 @@ bounds, tokenizes and deduplicates FTS5 results. Career runs bypass ordinary cha
 conversational memory, consolidation, MCP tools and general-purpose tools.
 
 Career initializes only its own schema in the existing `state.db`. Legacy tables
-and rows remain untouched. Career uses six tables: `career_profile`, `career_evidence`, `jobs`,
-`job_requirements`, `job_matches` and `resumes`. The external-content FTS5 index
+and rows remain untouched. Career uses seven tables: `career_profile`, `career_evidence`, `jobs`,
+`job_requirements`, `job_matches`, `resumes` and `career_requirement_sets`. The external-content FTS5 index
 tracks evidence changes through triggers. The singleton profile keeps raw input,
 normalization and explicit edits separate. Coherent source records receive stable
 `career-<source_id>` evidence IDs; removed records become inactive. Reports and

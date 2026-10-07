@@ -53,7 +53,7 @@ class AcceptanceClient:
                      'title': next(iter(r.get('fields', {}).values()), r['source_id']),
                      'description': r['text'], 'skills': []} for r in data['records']]}
                 return response([tool_block('submit_stage_result', {'profile': profile})], 'tool_use')
-        elif 'Extract atomic requirements' in system:
+        elif 'Extract canonical requirement groups' in system:
             if turn == 1:
                 return response([tool_block('submit_stage_result', {'result': {
                     'title': self.job['title'], 'summary': 'Offline fixture.', 'responsibilities': [],
@@ -198,7 +198,7 @@ def test_live_evaluation_uses_isolated_career_databases(tmp_path, monkeypatch, i
 
     class ScenarioClient(AcceptanceClient):
         def create(self, **kwargs):
-            if 'Extract atomic requirements' in kwargs['system']:
+            if 'Extract canonical requirement groups' in kwargs['system']:
                 data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
                 self.job = next(job for job in JOBS if data['jd'].startswith(job['jd']))
             return super().create(**kwargs)

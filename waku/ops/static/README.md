@@ -45,6 +45,10 @@ render existing state without requests or AI calls. Stored field keys, generated
 resume language and diagnostic activity remain unchanged. Expected errors have translated
 messages; unknown safe error details remain in their original language.
 
+Job reports show scored groups separately from confirmation and non-scorable clauses.
+Excluded clauses retain sources and reasons without match statuses. Coverage counts
+only scored groups, and zero scored groups disable resume generation.
+
 ## Verification
 
 Run the scripted [Chromium journey](../../../docs/career.md#run-the-browser-regression)

@@ -15,6 +15,11 @@ controls belong in these bars. Delete, record removal, evidence and back links s
 contextual. A native confirmation dialog explains permanent Job deletion. Print
 media hides the sidebar, dialog and application controls for native and explicit printing.
 
+Job reports separate scored required/preferred groups from Needs confirmation and
+Not scoreable clauses. Excluded clauses show their source and eligibility reason
+without MATCH/PARTIAL/GAP badges. Null Coverage reports insufficient scoreable
+information and disables resume generation.
+
 The interface supports English and Simplified Chinese. UI language controls never
 change stored artifacts or the selected resume language. System fonts supply CJK glyphs.
 

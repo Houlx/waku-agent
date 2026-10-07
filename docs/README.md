@@ -52,6 +52,12 @@ into four groups.
 - [career-agent/MATCHING_CORRECTNESS_DIAGNOSIS.md](career-agent/MATCHING_CORRECTNESS_DIAGNOSIS.md)
   diagnoses false GAP submissions caused by incomplete evidence retrieval.
 
+- [career-agent/COVERAGE_STABILITY_DIAGNOSIS.md](career-agent/COVERAGE_STABILITY_DIAGNOSIS.md)
+  quantifies extraction, eligibility and semantic judgment effects on repeated Coverage.
+
+- [career-agent/REQUIREMENT_GROUPS.md](career-agent/REQUIREMENT_GROUPS.md)
+  describes canonical scoring groups, eligibility, extraction reuse and stability metrics.
+
 ## Retired upstream material
 
 Batch B1 removes the former hosted deployment, examples, lab topics, teaching
