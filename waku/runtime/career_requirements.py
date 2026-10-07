@@ -262,19 +262,24 @@ def _group_policy(group, field='requirements'):
         raise ValueError('Logistics require user confirmation.')
 
 
-def _importance(group, jd):
+def importance_for(source_excerpt, jd):
+    """Derive the existing groups-v1 required/preferred scope from source wording."""
     excerpts = []
-    for span in source_spans(jd, group['source_excerpt']):
+    for span in source_spans(jd, source_excerpt):
         prefix = re.split(r'[.。;；\n]', jd[max(0, span['start'] - 80):span['start']])[-1]
         suffix = re.split(r'[.。;；\n]', jd[span['end']:span['end'] + 32])[0]
-        excerpts.append(prefix + group['source_excerpt'] + suffix)
+        excerpts.append(prefix + source_excerpt + suffix)
     if any(re.search(r'\brequired\b|必须|必需|必备', text, re.IGNORECASE) for text in excerpts):
         expected = 'required'
     elif any(re.search(r'\bpreferred\b|优先', text, re.IGNORECASE) for text in excerpts):
         expected = 'preferred'
     else:
         expected = 'required'
-    if group['importance'] != expected:
+    return expected
+
+
+def _importance(group, jd):
+    if group['importance'] != importance_for(group['source_excerpt'], jd):
         raise ValueError('Importance must follow explicit source wording; default is required.')
 
 

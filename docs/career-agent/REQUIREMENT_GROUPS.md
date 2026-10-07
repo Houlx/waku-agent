@@ -1,5 +1,9 @@
 # Canonical requirement groups
 
+Phase B's [source-addressed compiler](EXTRACTION_COMPILER.md) is available as a pure,
+tested core checkpoint. Fresh extraction still uses the Phase A submission contract;
+coordinator integration and before/after semantic benchmarking remain pending.
+
 Career reuses one validated scoring structure for an exact JD and extraction-policy
 version. The `groups-v1` policy stabilizes scoring opportunities and eligibility;
 it leaves MATCH/PARTIAL/GAP definitions, evidence delivery and score weights unchanged.

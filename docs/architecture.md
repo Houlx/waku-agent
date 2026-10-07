@@ -12,6 +12,7 @@ HTTP server without assembling the general Waku assistant. The
 | `waku/ops/provider_services.py` | Provider configuration, masked readiness, replacement and rollback |
 | `waku/runtime/career.py`, `career_jobs.py`, `career_resumes.py` | Profile, evidence, requirements, coverage, provenance and resumes |
 | `waku/runtime/career_requirements.py` | Canonical scoring groups, eligibility guards, provenance, stable identity and extraction reuse |
+| `waku/runtime/career_extraction_compiler.py` | Pure source catalog and semantic IR compiler checkpoint; fresh coordinator integration remains pending |
 | `waku/runtime/career_rubric.py` | Matching-only constraint support, route algebra, reviewed semantic rules and rubric version |
 | `waku/runtime/career_submission.py` | Extraction and matching submission protocols with one bounded missing-submit recovery |
 | `waku/runtime/career_matching.py` | Checked matching context, confirmed evidence snapshots and server-owned delivery coverage |

@@ -1,0 +1,100 @@
+{
+  "baseline_commit": "3d6d4fe",
+  "mode": "scripted synthetic; no live reliability claim",
+  "trials": [
+    {
+      "accepted": true,
+      "cache_rows_before": 0,
+      "cache_rows_after": 1,
+      "attempts": 1,
+      "attempts_until_acceptance": 1,
+      "validation_errors": [],
+      "case": "direct",
+      "terminations": [
+        "valid",
+        "stop"
+      ],
+      "output_tokens": null
+    },
+    {
+      "accepted": true,
+      "cache_rows_before": 0,
+      "cache_rows_after": 1,
+      "attempts": 2,
+      "attempts_until_acceptance": 2,
+      "validation_errors": [
+        "Error running submit_stage_result: Technology alternatives require one ANY scoring group."
+      ],
+      "case": "semantic_repair",
+      "terminations": [
+        "invalid",
+        "valid",
+        "stop"
+      ],
+      "output_tokens": null
+    },
+    {
+      "accepted": true,
+      "cache_rows_before": 0,
+      "cache_rows_after": 1,
+      "attempts": 1,
+      "attempts_until_acceptance": 1,
+      "validation_errors": [],
+      "case": "normal_recovery",
+      "terminations": [
+        "stop",
+        "valid",
+        "stop"
+      ],
+      "output_tokens": null
+    },
+    {
+      "accepted": true,
+      "cache_rows_before": 0,
+      "cache_rows_after": 1,
+      "attempts": 1,
+      "attempts_until_acceptance": 1,
+      "validation_errors": [],
+      "case": "truncation_recovery",
+      "terminations": [
+        "length",
+        "valid",
+        "stop"
+      ],
+      "output_tokens": null
+    },
+    {
+      "accepted": false,
+      "cache_rows_before": 0,
+      "cache_rows_after": 0,
+      "attempts": 0,
+      "attempts_until_acceptance": null,
+      "validation_errors": [],
+      "case": "missing_submit",
+      "terminations": [
+        "stop",
+        "stop"
+      ],
+      "output_tokens": null
+    },
+    {
+      "accepted": false,
+      "cache_rows_before": 0,
+      "cache_rows_after": 0,
+      "attempts": 0,
+      "attempts_until_acceptance": null,
+      "validation_errors": [],
+      "case": "truncated",
+      "terminations": [
+        "length",
+        "length"
+      ],
+      "output_tokens": null
+    }
+  ],
+  "fresh_completion_rate": 0.6666666666666666,
+  "no_submit_rate": 0.3333333333333333,
+  "truncation_rate": 0.3333333333333333,
+  "canonical_validator_rejection_rate": 0.16666666666666666,
+  "output_tokens": null
+}

@@ -1917,10 +1917,53 @@ documentation. groups-v1, matching-v1, Coverage, downstream consumers, exact-JD 
 identity, deletion/pruning semantics, provider defaults and dependencies retain their
 contracts. Historical diagnosis sections remain unchanged.
 
-This session stops at the requested Phase A checkpoint because its implementation and
+The Phase A session stopped at the requested checkpoint because its implementation and
 verification context is materially crowded. Phase B has not started. The next session
 must implement the immutable source catalog, compact semantic IR and deterministic
 compiler for fresh extraction, then extend fresh-trial metrics and run the requested
 synthetic benchmark. Canonical model-owned mechanics remain a known failure mode until
 that work lands. No live extraction benchmark ran during Phase A; deterministic
 submission recovery does not establish live semantic accuracy.
+
+## Phase B compiler core checkpoint on 2026-10-07
+
+The authorized intermediate checkpoint adds an immutable source catalog, strict semantic
+IR, pure groups-v1 compiler and deterministic synthetic coverage. The
+[compiler contract](EXTRACTION_COMPILER.md) records ownership, boundaries, baseline and
+remaining integration. Production fresh extraction still asks for canonical groups-v1;
+Phase B is not complete. Phase A recovery and accepted-cache behavior remain intact.
+
+The frozen `career_phase_a_baseline.json` records six isolated scripted fresh trials
+against `3d6d4fe`. Four complete; two never submit; two encounter truncation; one requires
+canonical repair. Accepted trials need 1, 2, 1 and 1 submissions. Scripted token usage
+is unavailable. These cases preserve known behavior rather than estimate live reliability.
+No live provider call or post-integration semantic comparison ran at this checkpoint.
+
+The 55 new checks cover catalog immutability, occurrence identity, punctuation and typo
+preservation, source references, schema rejection, degree and alternative majors, higher
+degree wording, fallback with and without explicit inheritance, technology alternatives,
+duties versus qualifications, repeated occurrences, different experience thresholds,
+general versus skill tenure, mixed required/preferred scope, logistics, license, health,
+traits, coordination, writing and broad mixed dispositions. A failing broad-excerpt test
+showed that existing eligibility derivation could silently exclude an objective skill;
+the compiler now rejects that input and requires separate source support.
+
+The next session must integrate the IR into fresh extraction, update affected scripted
+clients, extend reliability and gold semantic metrics, and compare isolated fresh trials.
+It must preserve groups-v1 cache identity, old accepted rows, Phase A submission behavior,
+matching-v1 and downstream contracts. The core currently uses conservative lexical
+support and repetition checks. Unusual headings, contiguous provenance envelopes and
+multi-sentence fallback conditions retain documented limitations. Matching-semantic
+tuning and cache-lifecycle redesign remain outside this work.
+
+The retained offline gate passes 743 checks with 13 skips, including both Chromium
+journeys and existing Career, groups-v1, matching correctness, matching-v1 and Phase A
+regressions. Twelve skips require unavailable Make; one disables live-provider probing.
+The Python release-gate command provides the offline gate in this environment. The
+initial sandbox run blocked localhost sockets; the reviewed rerun passes with synthetic
+temporary homes. Ruff, environment-template validation and `git diff --check` pass.
+An in-memory mutation disabling typo normalization makes the source/canonical distinction
+test fail. A final group-text deduplication passes all 55 compiler tests after the gate.
+Wheel and source archives build and install offline into separate temporary targets.
+Both installed runtimes match repository bytes and run the focused compiler, canonical,
+extraction submission and extraction diagnosis regressions. No runtime data was cleared.
