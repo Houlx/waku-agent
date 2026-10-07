@@ -158,9 +158,10 @@ drafts, requests, hash routing, actions, Settings and screen rendering.
 Phase 3 retirement removes the old dashboard and all its assets.
 
 Every stage receives fresh messages and at most ten loop iterations. Normalization
-and extraction expose only `submit_stage_result`; matching adds
-`search_career_evidence` and `get_evidence`; generation exposes only evidence lookup
-and submission. The agent can batch synonyms and search again. Application code
+and extraction expose only `submit_stage_result`. Full-evidence matching also exposes
+only submission; inventory matching adds `search_career_evidence` and `get_evidence`.
+Generation exposes evidence lookup and submission. Inventory matching can batch
+synonyms and search again. Application code
 bounds, tokenizes and deduplicates FTS5 results. Career runs bypass ordinary chat,
 conversational memory, consolidation, MCP tools and general-purpose tools.
 

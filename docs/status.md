@@ -20,10 +20,15 @@ MATCH/PARTIAL/GAP, deterministic coverage and resume grounding. Provider configu
 model adapters/catalogs, the loop, ToolRegistry and tracing remain shared infrastructure.
 Matching supplies all active evidence within a checked input budget. Larger profiles
 receive a stable inventory and require complete inspection before GAP can validate.
+Full-evidence matching exposes only submission and requests named tool choice; inventory matching retains retrieval.
+Matching permits one bounded correction for an unsubmitted completion within ten turns,
+retains raw termination reasons and distinguishes output truncation from missing submission.
 Budget or incomplete-coverage failures preserve any previous report. Canonical
 requirement groups and eligibility are cached by exact JD and extraction-policy version.
 Only SCORED groups affect Coverage; confirmation and excluded clauses stay visible.
-Old-policy reports require reanalysis. Semantic judgments can still vary across calls.
+Old extraction-policy reports require reanalysis. Matching-v1 records material support
+and validates complete satisfaction routes before group statuses. Semantic judgments
+can still vary across calls; scripted frozen-input trials do not establish live stability.
 
 ## Completed retirement
 

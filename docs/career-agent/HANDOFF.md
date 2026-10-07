@@ -105,9 +105,9 @@ this JD Requirement Coverage and explicitly excludes hiring/interview probabilit
 `POST /api/career` accepts `save_onboarding`, `normalize`, `save_profile`,
 `confirm`, `analyze_job`, `generate_resume` and `delete_job`. Batch B1 removes the old hosted policy.
 
-Normalization and extraction expose only `submit_stage_result`. Matching adds
-`search_career_evidence` and `get_evidence`; generation exposes only evidence lookup
-and submission. Search accepts bounded agent-authored query batches, safely
+Normalization, extraction and full-evidence matching expose only `submit_stage_result`.
+Inventory matching adds `search_career_evidence` and `get_evidence`; generation exposes
+evidence lookup and submission. Search accepts bounded agent-authored query batches, safely
 quotes literal tokens and deduplicates results. Resume generation requires an
 explicit action, confirmed profile, completed current analysis and usable requirements.
 
@@ -1397,7 +1397,8 @@ receives every active Career Evidence record before judgment when its initial
 request fits 48,000 serialized UTF-8 bytes. Each record supplies evidence ID,
 source type, raw content and normalized content. The payload omits database row
 IDs, active flags, duplicate search text and redundant source IDs outside the
-normalized content. FTS and get_evidence remain available as supplemental tools.
+normalized content. The later context-budget fix removes supplemental retrieval from
+full mode; inventory mode retains FTS and get_evidence.
 Full records already supplied in context can support citations without another
 search or redundant inspection.
 
@@ -1572,3 +1573,300 @@ All diagnostic artifacts, package targets, traces and usage remain under `/tmp`.
 This stage does not modify the user's live database, dotenv, credentials,
 profile, evidence, traces or spend ledger. No dependency, provider/model setting,
 version or lock file changes. The matching-rubric stage has not begun.
+
+## Matching Rubric Stabilization on 2026-10-07
+
+The approved [matching-v1 rubric](MATCHING_RUBRIC.md) evaluates material constraints
+before assigning one MATCH/PARTIAL/GAP result per SCORED group. A matching-only overlay
+adds local constraint IDs and existing primary/alternative routes to copied groups.
+Alternative conditions receive explicit assessments, including conditions stronger
+than abbreviated route items. Cached groups-v1 extraction, provenance, semantic identity,
+eligibility, denominator membership, evidence delivery, FTS and Coverage arithmetic
+remain unchanged. No extraction prompt, provider/model, dependency or UI changed.
+
+Every constraint result records SATISFIED/PARTIALLY_SUPPORTED/UNSUPPORTED, delivered
+supporting evidence IDs and a factual reason. Group assessments retain their existing
+fields and add `constraint_results` and `satisfied_routes`. MATCH requires a complete
+ALL/ANY route. An alternative must also satisfy its condition. PARTIAL requires genuine
+positive material support without a complete route and must explain weaker/unmet
+material. GAP requires no positive support and complete applicable evidence delivery.
+Python rejects inconsistent statuses, route mixing, duplicate/foreign/missing constraint
+IDs, invalid citations and citation-union mismatches. Degree/major constraints require
+education evidence individually; the existing group-level education guard remains.
+Saved reports record `matching_policy_version: matching-v1`. Historical reports remain
+inspectable, and failed reanalysis retains its previous report and Coverage.
+
+The semantic policy separates degree level from major, permits only exact/confirmed
+field mappings and the reviewed computing-to-computer-science/software-engineering
+related-field set, and disallows arbitrary academic equivalence. Higher degrees cannot
+substitute for unmet field constraints. Relevant evidence below explicit thresholds
+supplies partial support; unrelated tenure and overlapping intervals cannot manufacture
+skill years. Named technologies need actual support, with no approved adjacent-stack
+relationships. Observable coordination, communication, reviews and writing outputs
+can support demonstrated capabilities without literal personality slogans. Project
+success cannot prove a broad trait, and matching cannot strengthen writing criteria.
+Existing NON_SCORABLE clauses remain outside matching.
+
+### Frozen-input evaluation
+
+The new fixture freezes 25 reviewed synthetic canonical group/evidence pairs with
+invented identities. Education cases cover exact/related/unsupported majors, lower and
+higher degrees, valid/incomplete alternatives and cross-route mixing. Skill cases cover
+exact technology, either OR side and an unrelated stack. Threshold cases cover exact,
+above, below, absent, ambiguous and overlapping experience. Collaboration and writing
+each cover explicit, limited/indirect and absent support. Matching tests invoke no
+extraction. Six fresh scripted stages per pair produce 150 accepted reports.
+
+`evals.career_matching` freezes one confirmed evidence snapshot and group set, stamps
+policy, records a requirement fingerprint and measures per-group pairwise agreement,
+full-vector pairwise agreement, status frequencies, reviewed unsupported-inference rate
+and Coverage spread separately. The gold oracle measures material/status/citation
+overclaims; it does not judge arbitrary explanation prose. Without gold, inference
+rate remains null. These six-trial scripted experiments report 100% group/vector
+agreement, zero gold overclaims and zero Coverage spread. A deliberately stronger,
+varying proposal produces disagreement, overclaims and score spread in the metric test.
+These results prove deterministic enforcement and experiment wiring, not real-model
+semantic stability. No paid/live provider evaluation ran.
+
+### Verification and limits
+
+The 45 focused rubric tests pass. All Career deterministic checks pass with both
+Chromium journeys: **279 passed, 12 skipped**. The skips require unavailable Make.
+The final retained offline gate passes **607 tests with 13 skips**, including both
+Chromium journeys; the additional skip disables the live-provider probe. This environment
+uses the equivalent Python gate/lint commands because Make is unavailable.
+The gate includes prior matching-correctness, canonical-group, distribution and
+rulebook regressions. Ruff, environment-template validation and `git diff --check` pass.
+An in-process mutation bypassing material validation makes the new report-preservation
+regression fail; it edits no production file.
+
+Wheel and source builds install offline into separate temporary targets. Both installed
+products pass default/explicit startup, HTTP/static boundaries, lazy-client shutdown,
+all 25 gold structural checks, report policy/constraint persistence and three analyses
+with one reused extraction. Changed runtime files match repository bytes in both
+installs. Sandbox socket restrictions required reviewed localhost access for synthetic
+HTTP/browser/package checks. All experiment artifacts, homes, traces and usage remain
+under `/tmp`; the user's runtime, dotenv, credentials and evidence were not changed.
+
+Structural validation cannot decide whether a model's SATISFIED claim is semantically
+true. Related-major boundaries outside the reviewed set, exceptional alternative
+conditions, ambiguous skill durations and indirect behavior/writing support still need
+semantic review and optional live repeated trials. This stage stops at Matching Rubric
+Stabilization and does not begin fresh-extraction accuracy work.
+
+## Fresh Extraction Executability Fix on 2026-10-07
+
+The accepted fresh-extraction diagnosis remains historical evidence: 53 submissions
+failed across six sessions before matching. The local diagnosis and structured trace
+audit remain outside repository fixtures. This implementation fixes qualification
+coverage and explains existing groups-v1 rules without changing matching-v1, evidence
+delivery, eligibility policy, Coverage arithmetic, HTTP status handling or cache identity.
+
+Python now derives candidate qualification clauses from recognized English/Chinese
+sections and conservative unheaded-clause prefixes. Every recognized sensitive occurrence
+in qualification clauses still needs group provenance, including repeated genuine
+qualifications. Responsibility and descriptive occurrences create no obligation or
+additional scoring opportunity. Constraint provenance cannot come exclusively from duties.
+Technology-alternative detection uses qualification occurrences too. The
+[requirement contract](REQUIREMENT_GROUPS.md#qualification-coverage-invariant) records
+the exact invariant and lexical-parser limits.
+
+The extraction prompt and schema descriptions explain nested group/route containment,
+degree AND major, one ANY technology group, conditional education routes and independent
+scoring opportunities. Canonical wording uses the existing `text` field; literal subjects
+and verbatim excerpts preserve typos, punctuation and spacing. A bachelor's exception
+cannot become independent preferred credit or jointly required primary/fallback degrees.
+Recognized alternative majors cannot become multiple jointly required ALL constraints.
+Broad coordination excerpts cannot promote a bare writing label into SCORED material.
+Existing duplicate, overlap, enum and eligibility guards remain active.
+
+Scoped validator messages identify fields, stable error identifiers and repair guidance.
+The unchanged loop/tool registry returns those messages to the next attempt. Python
+retains offset derivation, semantic identity, policy checks and first-accepted-set storage.
+The iteration cap and `groups-v1` exact-JD key remain unchanged; no reports are backfilled.
+
+The 13 diagnosis cases now cover the corrected acceptance boundary and preserved
+rejections. Additional synthetic cases cover responsibility-only mentions, omitted and
+repeated qualifications, original numbered formatting, typo-preserving source identity,
+semantic ALL/ANY errors, strict health/writing eligibility, actionable repair and fresh
+cache publication. Restoring the old occurrence-coverage function in memory makes the
+acceptance regression fail. No runtime file was changed for that mutation check.
+
+Five independent extraction-only GLM/glm-5.2 trials started with empty temporary canonical
+caches and all validated. Submissions until acceptance were 1, 4, 1, 1 and 2; total loop
+iterations were 2, 5, 2, 2 and 3, including final confirmation. All accepted sets revalidated
+unchanged with the final Python guards. Every trial retained four SCORED groups and
+denominator 7. Reference material-source coverage and source eligibility agreement were
+100%, and normalized-subject duplicate rates were zero. Total groups varied from six
+to seven. Exact semantic-ID agreement against the reference was 16.7–18.2%, and changed
+identity rates were 81.8–83.3%. Exact-ID eligibility agreement was 28.6%; source-aligned
+eligibility agreement was 100%. Different literal subjects and excluded-clause groupings
+remain observable. These results show executability for one synthetic JD, not stable
+fresh canonical semantics or general extraction accuracy. No matching ran in the experiment.
+
+The focused extraction/canonical checks passed 72 tests. The retained offline gate passed
+642 tests with 15 skips. Both opt-in Chromium journeys passed. Ruff and environment-template
+checks passed. Wheel and source builds installed offline into separate temporary targets;
+installed extraction validation and exact runtime-byte comparisons passed. `git diff --check`
+passed. All provider trials, caches, usage and build/install artifacts remain under `/tmp`.
+
+Remaining failures can include unrecognized section headings, ambiguous mixed prose,
+unsupported semantic inheritance, subject/category variation, malformed submissions and
+iteration exhaustion. The lexical guards cannot prove arbitrary textual entailment.
+The implementation stops at extraction executability and begins no matching or score work.
+
+## Full-evidence matching context-budget fix on 2026-10-07
+
+Full-evidence matching now exposes only `submit_stage_result`. The coordinator keeps
+its existing conservative mode selection, then removes search and inspection from
+that stage's registry after selecting full mode. Every active compact evidence record
+remains in the initial context. Inventory mode retains its existing retrieval tools.
+The underlying search and evidence functions remain available to inventory matching,
+resume generation and internal validation.
+
+Delivery accounting remains unchanged. A successful provider response establishes
+availability of preloaded records, so their stable IDs can support direct citations.
+Failed provider calls establish no coverage. Snapshot continuity, active/delivered
+citation checks, education guards, complete GAP coverage and matching-v1 route algebra
+remain enforced. Extraction, Coverage arithmetic, evidence persistence and both copies
+of matching groups remain unchanged. Initial selection still uses 48,000 bytes and
+every provider request still uses the 64,000-byte cap. The generic budget error now
+says analysis could not complete, rather than attributing every failure to inspection.
+
+### Accepted diagnosis and replay
+
+The two diagnosed live failures used full mode with eight active evidence records.
+Both fetched all eight preloaded records again and submitted reports that validated.
+The first failed before provider request three; the second made an empty search and
+failed before request four. The failure prevented final loop confirmation and saving.
+Recorded lookup results contain 16,934 raw bytes, including 16,542 bytes of already
+preloaded record content. Matching-v1 added 7,646 initial bytes against the preceding
+contract, but redundant lookup history caused the demonstrated avoidable overflow.
+
+The original offline reconstruction measured 39,015 initial bytes and 68,122/68,123
+bytes before rejected confirmation requests. Traces do not retain complete assistant
+messages or tool-call IDs, so these values describe the reconstruction rather than
+exact historical wire payloads. The diagnostic script and original audit remain at
+`/tmp/career_budget_diagnosis.py` and `/tmp/career-budget-diagnosis/audit.json`.
+The fixed offline replay skips retrieval, retains original submitted reports and
+completes at 47,834/47,412 bytes, starting at 38,289 bytes with submission-only schemas.
+Its separate audit is `/tmp/career-budget-fixed-replay/audit.json`. No live provider
+call or hidden reasoning collection occurred during this fix.
+
+### Regression coverage and inventory limitation
+
+A synthetic eight-record regression uses four SCORED groups and a substantial
+matching-v1 report. It completes submission and final confirmation at 38,563 and
+49,157 bytes. Restoring full-mode retrieval in memory makes this regression fail
+after successful report validation, reproducing the diagnosed failure without editing
+production files. Additional checks reject unregistered retrieval without returning
+records, preserve a previous report after an oversized validated submission, verify
+direct preloaded citations and retain inventory inspection and incomplete-GAP guards.
+
+Inventory inspection remains functionally unchanged. Repeated lookups can still append
+duplicate full records until the request budget or iteration cap stops the stage.
+Deduplicating its tool results safely must retain successful-delivery accounting and
+complete grounding; this fix introduces no inventory context compaction. Arbitrarily
+large profiles can still fail explicitly without truncation or report replacement.
+
+### Verification
+
+The matching, rubric, canonical, job and acceptance checks passed 168 tests before
+the additional report-preservation case; all three context-budget regressions passed.
+All Career deterministic checks passed 319 tests with 12 Make-dependent skips,
+including both scripted Chromium journeys. The full retained offline gate passed
+647 tests with 13 skips; the additional skip disables the live-provider probe.
+Ruff, environment-template validation and `git diff --check` passed.
+
+Wheel and source builds installed offline into separate temporary targets. Both
+installed products passed default/explicit startup, HTTP/static boundaries, lazy-client
+shutdown, 25 rubric gold cases, cached extraction reuse and all three budget regressions.
+Installed matching runtime files matched repository bytes. Sandboxed HTTP tests required
+reviewed localhost socket access; synthetic homes, gate reports, builds and replay
+artifacts remain under `/tmp`. No user runtime data, credentials, provider settings,
+dependencies or limits changed. This stage stops at the full-mode context-budget fix.
+
+## Matching Submission Reliability Fix on 2026-10-07
+
+Matching now distinguishes an unsubmitted normal completion from output truncation.
+The OpenAI-compatible adapter retains the original `finish_reason` as `raw_stop_reason`
+for ordinary and streamed responses. Length termination without tool calls normalizes
+to `max_tokens`; normal completion and tool use retain their existing normalized forms.
+Unknown raw reasons remain observable. Native Anthropic reasons already arrive through
+`stop_reason`. Loop traces record both reasons without collecting assistant prose or
+hidden reasoning. Generic loop response text and completion behavior remain unchanged.
+
+### Accepted intermittent diagnosis
+
+The historical successful matching stage ran from 15:34:55 to 15:37:09 Asia/Shanghai.
+The following failed stages started at 15:40:16 and 15:41:34. All three used the same
+exact-JD/groups-v1 key, matching-v1 policy and evidence snapshot, full mode and eight
+active/delivered records through OpenRouter's `nvidia/nemotron-3-super-120b-a12b:free`.
+Each failure made one provider call, zero submit calls and reported 8192 output tokens.
+Neither failure reached validation or exhausted ten iterations. Raw termination reasons
+were not retained, so output exhaustion remains a hypothesis for those historical calls.
+The adapter previously mapped a synthetic raw `length` response to `end_turn`.
+
+The successful stage received four rejections: two string-valued result arguments,
+one education-only report and one report using bare source UUIDs as citations. It then
+submitted a valid object with exact evidence IDs and confirmed completion in five turns.
+No rejection came solely from satisfied routes or group statuses. Its accepted major
+judgment also missed a confirmed user edit; structural acceptance did not prove semantic
+accuracy. The original audit remains at `/tmp/career-live-matching-diagnosis/REPORT.md`
+and `audit.json`. The preceding context-budget diagnosis remains a separate incident.
+
+### Submission protocol and repair feedback
+
+`career_submission.py` owns one matching-only correction after a no-tool completion
+without captured valid state. The optional loop continuation stays within the existing
+ten-iteration cap. Recovery removes only that invalid assistant response, adds a concise
+submit-only instruction and preserves initial canonical/evidence inputs, prior tool
+calls/results, server-owned coverage and snapshot checks. Recovery also checks its input
+budget before another provider request. Repeated no-submit responses return an explicit
+submission error. Length termination, repeated truncation or an unsafe truncation recovery
+returns an actionable output-truncation error. Missing reports never become GAP.
+
+Full mode requests named `submit_stage_result` through OpenAI-compatible or Anthropic SDK
+clients until a valid report is captured. Final confirmation releases forced choice.
+Inventory mode retains retrieval autonomy. Explicit unsupported tool-choice HTTP 400/422
+responses disable enforcement for that stage and retry without the option; unrelated
+provider errors propagate. Injected clients retain their existing signature. Silently
+ignored choices still reach the bounded corrective fallback. Provider/model restrictions
+remain endpoint-specific, as the [adapter contract](../providers-registry.md#termination-and-stage-scoped-tool-choice)
+records. Rejected capability requests add an HTTP request without raising the loop cap.
+
+Validator feedback now names the received result type, missing requirement IDs and an
+invalid evidence ID, including guidance to use exact delivered `career-` IDs. Constraint
+validation, education/citation guards, complete GAP delivery, snapshot continuity,
+route algebra, matching-v1, groups-v1 and Coverage arithmetic retain their contracts.
+The fix performs no route/status derivation or semantic-equivalence change.
+
+### Verification and pending live trials
+
+The final offline gate passed 670 checks with 13 skips, including both opt-in scripted
+Chromium journeys. Twelve skips require unavailable Make; the other disables live-provider
+probing. Ruff, environment-template validation and whitespace checks passed. The new
+23-case deterministic suite covers adapter reasons and streaming, normal/truncated
+recovery, repeated failure, unchanged iteration limits, report preservation, forced
+choice and unsupported-choice fallback, native Anthropic scope, generic-loop behavior,
+the historical repair shapes, inventory delivery, snapshot mutation and unsafe recovery.
+Existing failure tests now assert the specific missing-submission error and preserve
+inspection-result assertions across the additional corrective request.
+
+In-memory mutations that disable recovery or restore old length normalization make the
+new regressions fail. No production files were edited for those mutations. Wheel and
+source archives build and install offline into temporary targets. Runtime byte checks
+verify the packaged adapter, loop, coordinator, evidence, rubric and submission files.
+Both installed products pass the same 75 submission, budget, rubric and loop regressions.
+The final documentation/distribution checks pass 17 tests.
+All local artifacts remain under `/tmp`; this fix deletes or replaces no runtime data,
+credentials, provider settings, dependencies or reports.
+
+Five matching-only live trials are prepared with the same fixed profile, JD, canonical
+groups, evidence digest, matching-v1 policy and configured OpenRouter model. Automatic
+approval review rejected execution because it would send private profile/JD/evidence to
+OpenRouter and requires explicit confirmation of that payload and destination in chat.
+No trial executed and no user evidence was transmitted. Live structured-submission rate,
+provider turns, validator repairs, raw reasons, output tokens and semantic agreement
+remain unmeasured pending that confirmation. The prepared runner is
+`/tmp/career_submission_live.py`; its results and traces will stay under `/tmp`.

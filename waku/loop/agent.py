@@ -63,10 +63,15 @@ def run_loop(
     max_tokens: int = 2048,
     observer: Observer | None = None,
     stream: bool = False,
+    on_no_tools: Callable[[Any, list[dict], int], bool] | None = None,
 ) -> LoopResult:
     """Run one agent turn. `messages` is mutated in place — after the call it
     contains the full working memory of the turn (assistant thoughts, tool
     calls, tool results), which is exactly what gets traced.
+
+    on_no_tools optionally continues a stage protocol inside the same iteration
+    budget. It receives the response, mutable messages and remaining iterations.
+    Ordinary callers omit it and still return immediately without tool calls.
 
     stream=True emits the assistant's text as it's generated (notify("text",
     {"delta": ...})) for compatible streaming observers. Falls back to a single call for clients without streaming."""
@@ -105,6 +110,7 @@ def run_loop(
                 max_tokens=max_tokens,
             )
         notify("llm", {"iteration": iteration, "stop_reason": response.stop_reason,
+                       "raw_stop_reason": getattr(response, "raw_stop_reason", response.stop_reason),
                        "usage": {"in": response.usage.input_tokens, "out": response.usage.output_tokens}})
 
         # the assistant's turn (text and/or tool requests) joins working memory
@@ -114,6 +120,9 @@ def run_loop(
 
         # ---- guardrail 1: no tool calls → the model is talking to the human
         if not tool_uses:
+            # Optional stage protocol; ordinary callers still finish on prose.
+            if on_no_tools is not None and on_no_tools(response, messages, max_iterations - iteration):
+                continue
             result.reply = "".join(b.text for b in response.content if b.type == "text")
             return result
 

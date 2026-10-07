@@ -38,8 +38,55 @@ recognized technology alternatives outside one ANY group, duplicate normalized
 subjects and overlapping material provenance across groups. Case normalization,
 a small reviewed alias map and modifier removal detect paraphrases around the same
 qualification, such as Python proficiency versus Python programming experience.
-Recognizable education, technology-alternative, trait and logistics clauses must
-retain group provenance. Excerpts with more than 100 occurrences must be narrowed.
+Recognizable education, technology-alternative, trait and logistics qualification clauses
+must retain group provenance. Excerpts with more than 100 occurrences must be narrowed.
+
+### Qualification coverage invariant
+
+Python requires group provenance for every recognized sensitive occurrence inside a
+qualification clause, including repeated genuine qualifications. A responsibility or
+company-description mention creates no qualification obligation. A technology repeated
+in duties and qualifications needs the qualification occurrence only; extraction must
+not create another scoring opportunity for the duty. Material constraints cannot use
+exclusively responsibility or descriptive provenance.
+
+The bounded lexical parser recognizes English and Chinese qualification, responsibility
+and company/benefits section headings. Qualification sections retain all clauses;
+responsibility and descriptive sections retain none. Without a recognized heading,
+clauses remain candidates unless an explicit duty or description prefix identifies them.
+English clauses such as “We require” remain qualifications. Python derives these ranges
+from the original string without changing whitespace, spelling or the exact-JD key.
+Technology-alternative checks also use qualification occurrences rather than the first
+mention anywhere in the JD. Unrecognized headings and unusual mixed prose still need
+semantic evaluation; these guards do not recognize every natural-language qualification.
+
+### Source containment and repair
+
+Every primary constraint excerpt lies inside its group excerpt. An education alternative's
+excerpt lies inside the enclosing education excerpt, and contains every alternative
+constraint excerpt and its verbatim condition. Inherited major wording requires textual
+support and route provenance that includes that wording. A sentence naming only a
+bachelor's degree cannot supply major provenance from a different sentence.
+
+The prompt and schema explain degree AND major, one ANY technology group, and a primary
+route versus a conditional fallback. A list of acceptable majors remains one major
+constraint with the alternatives retained in its text. Python rejects recognized
+alternative majors expressed as jointly required ALL constraints, and primary/fallback
+degrees incorrectly combined as ALL. These checks enforce the existing route semantics.
+
+The existing `text` field supplies canonical wording; no `canonical_text` field exists.
+For original `1abview`, canonical text may say LabVIEW while the literal subject retains
+`1abview` and the excerpt preserves original spacing and punctuation. Python never
+repairs source wording before validation. Bare writing remains NON_SCORABLE even when
+a broad excerpt also contains observable coordination wording.
+
+Extraction errors identify a field and provide concise repair guidance. Stable identifiers
+include `ALT_ROUTE_OUTSIDE_SOURCE`, `GROUP_PROVENANCE_CONTAINMENT`,
+`NON_VERBATIM_EXCERPT`, `LITERAL_SUBJECT_MISMATCH`, `INVALID_ELIGIBILITY`,
+`OVERLAPPING_SCORING_GROUP`, `INVALID_ALTERNATIVE_ROUTE` and `MISSING_QUALIFICATION`.
+The existing tool registry returns these errors to the next extraction attempt.
+Python still owns offsets, identities, policy validation and accepted-set persistence.
+The iteration cap, groups-v1 cache identity and HTTP business-error behavior stay unchanged.
 
 These guards are conservative structural checks, not a universal natural-language
 paraphrase recognizer. Different subjects with unknown synonyms can still escape
@@ -126,7 +173,37 @@ All identity, source coverage and policy-field agreements are 100%; changed-iden
 and duplicate rates are zero. These results measure deterministic accepted-set reuse,
 not independent live-extraction accuracy or semantic matching stability.
 
-The matching rubric remains unchanged. Degree equivalence, thresholds, related skills,
-weak evidence and behavioral support can still produce different MATCH/PARTIAL/GAP
-judgments. This stage guarantees stable scoring questions and denominator membership
+The subsequent [matching rubric](MATCHING_RUBRIC.md) adds explicit constraint support,
+route validation and reviewed semantic rules. Semantic interpretation can still produce
+different MATCH/PARTIAL/GAP judgments. This stage guarantees stable scoring questions and denominator membership
 for a reused set, rather than promising identical Coverage after every matching call.
+
+### Independent fresh extraction
+
+`career_extraction_executability.json` retains synthetic degree/major, conditional
+bachelor's relaxation, typo-preserving technology alternatives, mixed nearby capabilities,
+excluded traits and preferred experience. Its compressed numbered JD repeats technologies
+in responsibilities. The failure regressions cover acceptance, structural repair, omitted
+qualifications, strict semantic guards and exhaustion without cache publication.
+
+Run extraction without matching in a new temporary database for every trial:
+
+```bash
+python -m evals.career_extraction --live --trials 5 --output /tmp/career-fresh-extraction-results.json
+```
+
+The runner refuses to reuse a trial directory and never clears an existing cache. It records
+success, submissions, iterations, group counts, canonical identity/eligibility agreement,
+changed identities, duplicate rates and denominator agreement against the synthetic reference.
+Source qualification coverage and source eligibility agreement compare reference material
+spans with group provenance, ignoring only boundary punctuation and whitespace for these
+metrics. This comparison changes no stored excerpt, offset or JD hash. Exact source-span
+and semantic-ID agreement remain separate metrics; neither proves semantic equivalence.
+
+Five configured GLM/glm-5.2 trials validated extraction with 1, 4, 1, 1 and 2 submissions.
+Each began with zero cached sets and ended with one. All retained four SCORED groups,
+denominator 7, 100% reference material-source coverage and source eligibility agreement,
+and zero normalized-subject duplicates. Total groups varied between six and seven.
+Exact identity agreement against the reference ranged from 16.7% to 18.2%; changed-identity
+rates ranged from 81.8% to 83.3%. Literal-subject choices and excluded-clause grouping still
+vary. These five trials establish executability on this case, not general extraction accuracy.

@@ -1,0 +1,2165 @@
+{
+  "matching_policy_version": "matching-v1",
+  "cases": [
+    {
+      "name": "masters-related-major",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a master's in software engineering from Cedar Institute.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a master's in software engineering from Cedar Institute.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "The master level and reviewed computing-related software engineering major are supported.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Master's degree."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "masters-exact-major",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a master's in computing from Cedar Institute.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a master's in computing from Cedar Institute.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Both required education constraints are documented.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Master's degree."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "masters-unsupported-major",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a master's in music from Cedar Institute.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a master's in music from Cedar Institute.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "The master level is supported; computing or an accepted related major is not established.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Master's degree."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "bachelors-required-masters",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a bachelor's in computing from Cedar Institute.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a bachelor's in computing from Cedar Institute.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Computing is supported; the bachelor level is below the required master level.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Computing is supported; the bachelor level is below the required master level."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "higher-degree-unrelated-major",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a doctorate in music from Cedar Institute.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a doctorate in music from Cedar Institute.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "The higher degree satisfies level only; the computing field is unsupported.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Master's degree."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "no-education",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan built React interfaces at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan built React interfaces at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "GAP",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "GAP",
+        "evidence_ids": [],
+        "reason": "Confirmed evidence does not establish degree level or computing education.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Master's degree."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "valid-alternative",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a bachelor's in computing. Cedar Labs explicitly confirmed exceptional relevant test-platform experience.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a bachelor's in computing. Cedar Labs explicitly confirmed exceptional relevant test-platform experience.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "The bachelor and confirmed exceptional relevant experience satisfy every alternative condition.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "The bachelor and confirmed exceptional relevant experience satisfy every alternative condition."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": [
+          "alternative"
+        ]
+      }
+    },
+    {
+      "name": "incomplete-alternative",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan earned a bachelor's in computing and briefly observed a test-platform project.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan earned a bachelor's in computing and briefly observed a test-platform project.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Degree and field have support; exceptional relevant experience remains unestablished.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Degree and field have support; exceptional relevant experience remains unestablished."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Degree and field have support; exceptional relevant experience remains unestablished."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "cross-route-mixing",
+      "group": {
+        "text": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Master's degree in computing or related field; exceptional relevant experience may relax the degree to Bachelor's.",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "Master's degree",
+              "text": "Master's degree",
+              "source_excerpt": "Master's degree"
+            },
+            {
+              "kind": "major",
+              "subject": "computing",
+              "text": "computing or related field",
+              "source_excerpt": "computing or related field"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "exceptional relevant experience",
+          "source_excerpt": "exceptional relevant experience may relax the degree to Bachelor's",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Bachelor's",
+                "text": "Bachelor's",
+                "source_excerpt": "Bachelor's"
+              },
+              {
+                "kind": "experience",
+                "subject": "relevant experience",
+                "text": "relevant experience",
+                "source_excerpt": "relevant experience"
+              }
+            ]
+          }
+        },
+        "id": "education",
+        "semantic_id": "261dee88fea0751859662f67ddf856622b5670177d42d93c7c789a247f69ddb8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 114
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "education",
+          "raw_text": "Morgan has a bachelor's in music. Cedar Labs confirmed relevant experience but did not establish exceptional ability.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan has a bachelor's in music. Cedar Labs confirmed relevant experience but did not establish exceptional ability.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "education",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Lower degree and relevant experience have support; neither complete route nor its exceptional condition is established.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Lower degree and relevant experience have support; neither complete route nor its exceptional condition is established."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: computing or related field."
+          },
+          {
+            "constraint_id": "alternative:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Bachelor's."
+          },
+          {
+            "constraint_id": "alternative:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: relevant experience."
+          },
+          {
+            "constraint_id": "alternative:condition",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: exceptional relevant experience."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "exact-technology",
+      "group": {
+        "text": "C++",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "C++",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "C++"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "exact-cpp",
+        "semantic_id": "59b455eb763fa433bec76fa55587838b804e91f45d7caf58be609cdf8976c8cb",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 3
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan implemented C++ device tests at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan implemented C++ device tests at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "exact-cpp",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "C++ implementation directly supports the named technology.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: C++."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "or-right-side",
+      "group": {
+        "text": "Proficient with LabVIEW or C++",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Proficient with LabVIEW or C++",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ANY",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "LabVIEW",
+              "text": "LabVIEW",
+              "source_excerpt": "LabVIEW"
+            },
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "C++"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "technology-or",
+        "semantic_id": "753233f238a3328a1e9ebee7f97bf980b3c2fd9e4f9f420a2d769862f437ba8a",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 30
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan implemented C++ device tests at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan implemented C++ device tests at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "technology-or",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "C++ satisfies one valid side of the ANY route; LabVIEW is not established.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: LabVIEW."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: C++."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "or-left-side",
+      "group": {
+        "text": "Proficient with LabVIEW or C++",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Proficient with LabVIEW or C++",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ANY",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "LabVIEW",
+              "text": "LabVIEW",
+              "source_excerpt": "LabVIEW"
+            },
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "C++"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "technology-or",
+        "semantic_id": "753233f238a3328a1e9ebee7f97bf980b3c2fd9e4f9f420a2d769862f437ba8a",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 30
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan implemented LabVIEW device tests at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan implemented LabVIEW device tests at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "technology-or",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "LabVIEW satisfies one valid side of the ANY route.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: LabVIEW."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: C++."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "unrelated-stack",
+      "group": {
+        "text": "Proficient with LabVIEW or C++",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Proficient with LabVIEW or C++",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ANY",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "LabVIEW",
+              "text": "LabVIEW",
+              "source_excerpt": "LabVIEW"
+            },
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "C++"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "technology-or",
+        "semantic_id": "753233f238a3328a1e9ebee7f97bf980b3c2fd9e4f9f420a2d769862f437ba8a",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 30
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan built React and JavaScript interfaces and Java services at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan built React and JavaScript interfaces and Java services at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "GAP",
+      "assessment": {
+        "requirement_id": "technology-or",
+        "status": "GAP",
+        "evidence_ids": [],
+        "reason": "Confirmed evidence establishes neither LabVIEW nor C++.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: LabVIEW."
+          },
+          {
+            "constraint_id": "primary:1",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: C++."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "threshold-exact",
+      "group": {
+        "text": "At least 3 years using Python",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "At least 3 years using Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Python",
+              "text": "At least 3 years using Python",
+              "source_excerpt": "At least 3 years using Python"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "python-years",
+        "semantic_id": "47d193ca84df245d8b1fc09a44486a05a0b3d3b0ae5289432efd3a0ac3c35da2",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 29
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan used Python throughout 3 years at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan used Python throughout 3 years at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "python-years",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Three years of Python meets the threshold.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: At least 3 years using Python."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "threshold-above",
+      "group": {
+        "text": "At least 3 years using Python",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "At least 3 years using Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Python",
+              "text": "At least 3 years using Python",
+              "source_excerpt": "At least 3 years using Python"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "python-years",
+        "semantic_id": "47d193ca84df245d8b1fc09a44486a05a0b3d3b0ae5289432efd3a0ac3c35da2",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 29
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan used Python throughout 4 years at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan used Python throughout 4 years at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "python-years",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Four years of Python exceeds the threshold.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: At least 3 years using Python."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "threshold-below",
+      "group": {
+        "text": "At least 3 years using Python",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "At least 3 years using Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Python",
+              "text": "At least 3 years using Python",
+              "source_excerpt": "At least 3 years using Python"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "python-years",
+        "semantic_id": "47d193ca84df245d8b1fc09a44486a05a0b3d3b0ae5289432efd3a0ac3c35da2",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 29
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan used Python throughout 2 years at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan used Python throughout 2 years at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "python-years",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Two years of Python is relevant but below three years.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Two years of Python is relevant but below three years."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "threshold-absent",
+      "group": {
+        "text": "At least 3 years using Python",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "At least 3 years using Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Python",
+              "text": "At least 3 years using Python",
+              "source_excerpt": "At least 3 years using Python"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "python-years",
+        "semantic_id": "47d193ca84df245d8b1fc09a44486a05a0b3d3b0ae5289432efd3a0ac3c35da2",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 29
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan used React for 4 years at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan used React for 4 years at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "GAP",
+      "assessment": {
+        "requirement_id": "python-years",
+        "status": "GAP",
+        "evidence_ids": [],
+        "reason": "Confirmed evidence does not establish Python experience.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: At least 3 years using Python."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "threshold-ambiguous",
+      "group": {
+        "text": "At least 3 years using Python",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "At least 3 years using Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Python",
+              "text": "At least 3 years using Python",
+              "source_excerpt": "At least 3 years using Python"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "python-years",
+        "semantic_id": "47d193ca84df245d8b1fc09a44486a05a0b3d3b0ae5289432efd3a0ac3c35da2",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 29
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan worked at Cedar Labs for 5 years and used Python in one undated prototype.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan worked at Cedar Labs for 5 years and used Python in one undated prototype.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "python-years",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Python use is supported; five years of employment does not establish three years of Python.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Python use is supported; five years of employment does not establish three years of Python."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "threshold-overlap",
+      "group": {
+        "text": "At least 3 years using Python",
+        "category": "experience",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "At least 3 years using Python",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "Python",
+              "text": "At least 3 years using Python",
+              "source_excerpt": "At least 3 years using Python"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "python-years",
+        "semantic_id": "47d193ca84df245d8b1fc09a44486a05a0b3d3b0ae5289432efd3a0ac3c35da2",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 29
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan used Python on two simultaneous one-year projects at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan used Python on two simultaneous one-year projects at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "python-years",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "One calendar year of Python is supported; simultaneous projects do not establish three years.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "One calendar year of Python is supported; simultaneous projects do not establish three years."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "collaboration-documented",
+      "group": {
+        "text": "Coordinate releases with product and QA teams",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Coordinate releases with product and QA teams",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "Coordinate releases",
+              "text": "Coordinate releases with product and QA teams",
+              "source_excerpt": "Coordinate releases with product and QA teams"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "collaboration",
+        "semantic_id": "f7dfd4e1ca7794a949694d330cff3efdefbaf86319e2fc6a2d0aac3e1a3615b8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 45
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan coordinated a release with product and QA teams at Cedar Labs, resolving review feedback.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan coordinated a release with product and QA teams at Cedar Labs, resolving review feedback.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "collaboration",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Release coordination with both teams directly establishes the observable capability.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Coordinate releases with product and QA teams."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "collaboration-limited",
+      "group": {
+        "text": "Coordinate releases with product and QA teams",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Coordinate releases with product and QA teams",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "Coordinate releases",
+              "text": "Coordinate releases with product and QA teams",
+              "source_excerpt": "Coordinate releases with product and QA teams"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "collaboration",
+        "semantic_id": "f7dfd4e1ca7794a949694d330cff3efdefbaf86319e2fc6a2d0aac3e1a3615b8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 45
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan joined one QA review and relayed a release issue to a colleague at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan joined one QA review and relayed a release issue to a colleague at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "collaboration",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Limited review communication is relevant; ownership of coordination across both teams is not established.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Limited review communication is relevant; ownership of coordination across both teams is not established."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "collaboration-absent",
+      "group": {
+        "text": "Coordinate releases with product and QA teams",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Coordinate releases with product and QA teams",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "Coordinate releases",
+              "text": "Coordinate releases with product and QA teams",
+              "source_excerpt": "Coordinate releases with product and QA teams"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "collaboration",
+        "semantic_id": "f7dfd4e1ca7794a949694d330cff3efdefbaf86319e2fc6a2d0aac3e1a3615b8",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 45
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan independently optimized a React page at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan independently optimized a React page at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "GAP",
+      "assessment": {
+        "requirement_id": "collaboration",
+        "status": "GAP",
+        "evidence_ids": [],
+        "reason": "Project delivery alone does not establish cross-team release coordination.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Coordinate releases with product and QA teams."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "writing-explicit",
+      "group": {
+        "text": "Produce technical reports",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Produce technical reports",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "technical reports",
+              "text": "Produce technical reports",
+              "source_excerpt": "Produce technical reports"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "writing",
+        "semantic_id": "56fbefd5c06714394ff950ec04d927813911272c660c5efe0d0447b4f2571bdd",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 25
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan wrote technical test reports at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan wrote technical test reports at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "MATCH",
+      "assessment": {
+        "requirement_id": "writing",
+        "status": "MATCH",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Technical test reports directly establish the requested writing output.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "SATISFIED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Confirmed record supports the criterion: Produce technical reports."
+          }
+        ],
+        "satisfied_routes": [
+          "primary"
+        ]
+      }
+    },
+    {
+      "name": "writing-indirect",
+      "group": {
+        "text": "Produce technical reports",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Produce technical reports",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "technical reports",
+              "text": "Produce technical reports",
+              "source_excerpt": "Produce technical reports"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "writing",
+        "semantic_id": "56fbefd5c06714394ff950ec04d927813911272c660c5efe0d0447b4f2571bdd",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 25
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan wrote brief review summaries at Cedar Labs.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan wrote brief review summaries at Cedar Labs.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "PARTIAL",
+      "assessment": {
+        "requirement_id": "writing",
+        "status": "PARTIAL",
+        "evidence_ids": [
+          "career-gold"
+        ],
+        "reason": "Written review summaries are relevant; technical report output remains unestablished.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence_ids": [
+              "career-gold"
+            ],
+            "reason": "Written review summaries are relevant; technical report output remains unestablished."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    },
+    {
+      "name": "writing-absent",
+      "group": {
+        "text": "Produce technical reports",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "Produce technical reports",
+        "eligibility": "SCORED",
+        "eligibility_reason": "The JD provides an objective criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "technical reports",
+              "text": "Produce technical reports",
+              "source_excerpt": "Produce technical reports"
+            }
+          ]
+        },
+        "alternative_route": null,
+        "id": "writing",
+        "semantic_id": "56fbefd5c06714394ff950ec04d927813911272c660c5efe0d0447b4f2571bdd",
+        "source_spans": [
+          {
+            "start": 0,
+            "end": 25
+          }
+        ]
+      },
+      "evidence": [
+        {
+          "evidence_id": "career-gold",
+          "source_id": "gold",
+          "source_type": "project",
+          "raw_text": "Morgan implemented C++ tests at Cedar Labs with no documented writing output.",
+          "normalized": {
+            "source_id": "gold",
+            "title": "Morgan Vale at Cedar Labs",
+            "description": "Morgan implemented C++ tests at Cedar Labs with no documented writing output.",
+            "skills": []
+          }
+        }
+      ],
+      "expected_status": "GAP",
+      "assessment": {
+        "requirement_id": "writing",
+        "status": "GAP",
+        "evidence_ids": [],
+        "reason": "Confirmed evidence does not establish writing outputs; technical work alone is insufficient.",
+        "constraint_results": [
+          {
+            "constraint_id": "primary:0",
+            "status": "UNSUPPORTED",
+            "evidence_ids": [],
+            "reason": "Confirmed record does not establish: Produce technical reports."
+          }
+        ],
+        "satisfied_routes": []
+      }
+    }
+  ]
+}

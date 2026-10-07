@@ -58,6 +58,9 @@ into four groups.
 - [career-agent/REQUIREMENT_GROUPS.md](career-agent/REQUIREMENT_GROUPS.md)
   describes canonical scoring groups, eligibility, extraction reuse and stability metrics.
 
+- [career-agent/MATCHING_RUBRIC.md](career-agent/MATCHING_RUBRIC.md)
+  defines constraint support, route validation, matching policy and frozen-input metrics.
+
 ## Retired upstream material
 
 Batch B1 removes the former hosted deployment, examples, lab topics, teaching

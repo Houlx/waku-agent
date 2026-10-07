@@ -1,0 +1,183 @@
+{
+  "jd": "Cedar Instruments 合成测试岗位\n1.负责维护1abview、C++等软件。2.负责传感器测试设备安装。\n\n1.硕士及以上学历 ，控制、计算机等相关专业。相关项目经验充分者可放宽学历至本科 。\n熟练使用1abview、C++任意一种编程开发软件具有较强的组织协调沟通能力 ，具备一定的文字表达能力 。\n身体健康，吃苦耐劳，爱岗敬业，有较强的进取意识和团队合作精神 。\n具有传感器试验平台建设与运行经验者优先 。",
+  "extraction": {
+    "title": "Synthetic testing role",
+    "summary": "",
+    "responsibilities": [],
+    "requirements": [
+      {
+        "text": "硕士及以上学历 ，控制、计算机等相关专业。相关项目经验充分者可放宽学历至本科 。",
+        "category": "education",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "硕士及以上学历 ，控制、计算机等相关专业。相关项目经验充分者可放宽学历至本科 。",
+        "eligibility": "SCORED",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "degree",
+              "subject": "硕士",
+              "text": "硕士及以上学历",
+              "source_excerpt": "硕士"
+            },
+            {
+              "kind": "major",
+              "subject": "计算机",
+              "text": "控制、计算机等相关专业",
+              "source_excerpt": "控制、计算机等相关专业"
+            }
+          ]
+        },
+        "alternative_route": {
+          "condition": "相关项目经验充分者",
+          "source_excerpt": "相关项目经验充分者可放宽学历至本科",
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "本科",
+                "text": "本科",
+                "source_excerpt": "本科"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "text": "熟练使用1abview、C++任意一种编程开发软件",
+        "category": "skill",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "熟练使用1abview、C++任意一种编程开发软件",
+        "eligibility": "SCORED",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ANY",
+          "items": [
+            {
+              "kind": "technology",
+              "subject": "1abview",
+              "text": "LabVIEW proficiency",
+              "source_excerpt": "熟练使用1abview、C++任意一种编程开发软件"
+            },
+            {
+              "kind": "technology",
+              "subject": "C++",
+              "text": "C++",
+              "source_excerpt": "熟练使用1abview、C++任意一种编程开发软件"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "具有较强的组织协调沟通能力",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "具有较强的组织协调沟通能力",
+        "eligibility": "SCORED",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "组织协调沟通能力",
+              "text": "组织协调沟通能力",
+              "source_excerpt": "具有较强的组织协调沟通能力"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "具备一定的文字表达能力",
+        "category": "demonstrated_capability",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "具备一定的文字表达能力",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "behavior",
+              "subject": "文字表达能力",
+              "text": "文字表达能力",
+              "source_excerpt": "具备一定的文字表达能力"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "身体健康，吃苦耐劳，爱岗敬业",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "身体健康，吃苦耐劳，爱岗敬业",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "身体健康",
+              "text": "身体健康",
+              "source_excerpt": "身体健康，吃苦耐劳，爱岗敬业"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "有较强的进取意识和团队合作精神",
+        "category": "personal_trait",
+        "importance": "required",
+        "keywords": [],
+        "source_excerpt": "有较强的进取意识和团队合作精神",
+        "eligibility": "NON_SCORABLE",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "trait",
+              "subject": "进取意识",
+              "text": "进取意识",
+              "source_excerpt": "有较强的进取意识和团队合作精神"
+            }
+          ]
+        },
+        "alternative_route": null
+      },
+      {
+        "text": "具有传感器试验平台建设与运行经验者优先 。",
+        "category": "experience",
+        "importance": "preferred",
+        "keywords": [],
+        "source_excerpt": "具有传感器试验平台建设与运行经验者优先 。",
+        "eligibility": "SCORED",
+        "eligibility_reason": "Synthetic source criterion.",
+        "constraints": {
+          "operator": "ALL",
+          "items": [
+            {
+              "kind": "experience",
+              "subject": "传感器试验平台",
+              "text": "传感器试验平台",
+              "source_excerpt": "具有传感器试验平台建设与运行经验者优先 。"
+            }
+          ]
+        },
+        "alternative_route": null
+      }
+    ]
+  }
+}

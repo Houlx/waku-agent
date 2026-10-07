@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from evals.helpers import response, text_block, tool_block
+from evals.matching_helpers import scripted_assessment
 from waku.config import Settings
 from waku.db import connect_career as connect
 from waku.runtime.career import action, save_profile, state
@@ -58,9 +59,13 @@ class JobClient:
                             'responsibilities': [], 'requirements': copy.deepcopy(self.fixture['requirements'])}
                 return response([tool_block('submit_stage_result', {'result': proposal})], 'tool_use')
             return response([text_block('Extracted.')])
-        if self.extra_search and turn == 2:
+        data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
+        full = data['matching_coverage']['mode'] == 'full'
+        if full:
+            turn += 2
+        if self.extra_search and not full and turn == 2:
             return response([tool_block('search_career_evidence', {'queries': ['Node.js', 'React migration']})], 'tool_use')
-        if self.extra_search and turn > 2:
+        if self.extra_search and not full and turn > 2:
             turn -= 1
         if turn == 1:
             return response([tool_block('search_career_evidence',
@@ -70,11 +75,11 @@ class JobClient:
             return response([tool_block('get_evidence', {'evidence_id': 'career-software'})], 'tool_use')
         if turn == 3:
             data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
-            assessments = [{'requirement_id': r['id'], 'status': status,
-                            'evidence_ids': [] if status == 'GAP' else ['career-software'],
-                            'reason': 'No supporting evidence in this profile.' if status == 'GAP'
-                                      else 'Supported by the assistant project.'}
-                           for r, status in zip(data['requirements'], self.fixture['statuses'], strict=True)]
+            assessments = [scripted_assessment(
+                r, status, [] if status == 'GAP' else ['career-software'],
+                'No supporting evidence in this profile.' if status == 'GAP'
+                else 'Supported by the assistant project; proficiency remains limited.')
+                for r, status in zip(data['requirements'], self.fixture['statuses'], strict=True)]
             proposal = {'assessments': assessments, 'strengths': ['Application development'],
                         'gaps': ['Some requirements lack support.'], 'recommended_focus': ['Knowledge assistant']}
             if self.mutate:
@@ -110,12 +115,11 @@ def test_four_jobs_persist_explainable_reports(world, fixture):
     reopened.close()
     for call in client.calls:
         exposed = {t['name'] for t in call['tools']}
-        assert exposed == ({'submit_stage_result'} if 'Extract canonical' in call['system']
-                           else {'submit_stage_result', 'search_career_evidence', 'get_evidence'})
+        assert exposed == {'submit_stage_result'}
         assert call['max_tokens'] == 4096
     traces = ''.join(p.read_text() for p in (world[1].home / 'traces').glob('*.jsonl'))
     assert 'Career job extraction' in traces and 'Career evidence matching' in traces
-    assert 'search_career_evidence' in traces and 'get_evidence' in traces
+    assert 'search_career_evidence' not in traces and 'get_evidence' not in traces
 
 
 def test_synonyms_bounded_literal_queries_and_inactive_filter(world):
@@ -150,7 +154,7 @@ def test_invalid_search_inputs(world, queries, limit):
     lambda p: p['assessments'][0].update(evidence_ids=['career-software', 'career-software']),
 ])
 def test_invalid_match_never_publishes(world, mutation):
-    with pytest.raises(ValueError, match='valid result'):
+    with pytest.raises(ValueError, match='ended without a structured submission'):
         analyze(world, JobClient(mutate=mutation))
     job = state(world[0])['jobs'][0]
     assert job['raw_jd'] == FIXTURES[0]['jd'] and job['status'] == 'failed'
@@ -181,7 +185,7 @@ def test_unchanged_confirmation_does_not_mark_analysis_outdated(world):
     assert not state(world[0])['jobs'][0]['outdated']
 
 
-@pytest.mark.parametrize('failure', [('extract', 1), ('extract', 2), ('match', 1), ('match', 4)])
+@pytest.mark.parametrize('failure', [('extract', 1), ('extract', 2), ('match', 1), ('match', 2)])
 def test_failed_reanalysis_retains_previous_artifacts(world, failure):
     old = analyze(world)['jobs'][0]
     fixture = copy.deepcopy(FIXTURES[0])
@@ -250,9 +254,12 @@ def test_score_literals_and_complete_coverage():
 
 
 def test_matching_can_search_again_and_batch_synonyms(world):
+    with world[0]:
+        world[0].execute("UPDATE career_evidence SET raw_text=raw_text || ?", ('x' * 45000,))
     client = JobClient(extra_search=True)
     assert analyze(world, client)['jobs'][0]['coverage'] == 50.0
     match_calls = [c for c in client.calls if 'Assess each supplied' in c['system']]
+    assert json.loads(match_calls[0]['messages'][0]['content'].split('\n', 1)[1])['matching_coverage']['mode'] == 'inventory'
     assert len(match_calls) == 5
     results = match_calls[1]['messages'][-1]['content']
     assert json.loads(results[0]['content'])[0]['evidence_id'] == 'career-software'
@@ -261,7 +268,8 @@ def test_matching_can_search_again_and_batch_synonyms(world):
 def test_uninspected_citations_and_skipped_search_are_rejected(world):
     requirements = [{'id': 'one', 'eligibility': 'SCORED'}]
     report = {'assessments': [{'requirement_id': 'one', 'status': 'MATCH',
-                              'evidence_ids': ['career-software'], 'reason': 'Supported.'}],
+                              'evidence_ids': ['career-software'], 'reason': 'Supported.',
+                              'constraint_results': [], 'satisfied_routes': []}],
               'strengths': [], 'gaps': [], 'recommended_focus': []}
     with pytest.raises(ValueError, match='Search Career'):
         validate_match(report, requirements, world[0], {}, [])

@@ -333,6 +333,13 @@ def get_client(settings: Settings):
     return OpenAICompatClient(api_key=api_key, base_url=base_url, timeout=timeout)
 
 
+def completion_stop_reason(raw_reason, has_tools):
+    """Keep the Messages dialect while retaining the raw reason separately."""
+    if has_tools:
+        return 'tool_use'
+    return 'max_tokens' if raw_reason in {'length', 'max_tokens'} else 'end_turn'
+
+
 class OpenAICompatClient:
     """Speaks the Anthropic Messages shape the loop expects, backed by an
     OpenAI-style chat.completions API. ~60 lines is the entire difference
@@ -412,9 +419,12 @@ class OpenAICompatClient:
             k["max_tokens"] = k.pop("max_completion_tokens", None)
             return self._client.chat.completions.create(**k, **extra)
 
-    def _create(self, *, model, messages, max_tokens, system=None, tools=None):
-        response = self._call(self._to_openai(
-            model=model, messages=messages, max_tokens=max_tokens, system=system, tools=tools))
+    def _create(self, *, model, messages, max_tokens, system=None, tools=None, tool_choice=None):
+        kwargs = self._to_openai(
+            model=model, messages=messages, max_tokens=max_tokens, system=system, tools=tools)
+        if tool_choice is not None:
+            kwargs['tool_choice'] = tool_choice
+        response = self._call(kwargs)
         if not getattr(response, "choices", None):
             # some OpenAI-compatible endpoints (e.g. OpenRouter on a rate
             # limit) return 200 with an error body and no choices: surface
@@ -437,7 +447,9 @@ class OpenAICompatClient:
             ))
         usage = getattr(response, "usage", None)
         return SimpleNamespace(
-            stop_reason="tool_use" if choice.tool_calls else "end_turn",
+            stop_reason=completion_stop_reason(getattr(response.choices[0], 'finish_reason', None),
+                                               bool(choice.tool_calls)),
+            raw_stop_reason=getattr(response.choices[0], 'finish_reason', None),
             usage=SimpleNamespace(
                 input_tokens=getattr(usage, "prompt_tokens", 0),
                 output_tokens=getattr(usage, "completion_tokens", 0),
@@ -465,6 +477,7 @@ class _OpenAIStream:
         self._text: list[str] = []
         self._tools: dict[int, dict] = {}   # index → {id, name, args}
         self._usage = None
+        self._finish_reason = None
 
     def __enter__(self):
         return self
@@ -481,6 +494,9 @@ class _OpenAIStream:
                 self._usage = chunk.usage
             if not chunk.choices:
                 continue
+            reason = getattr(chunk.choices[0], 'finish_reason', None)
+            if reason is not None:
+                self._finish_reason = reason
             delta = chunk.choices[0].delta
             if getattr(delta, "content", None):
                 self._text.append(delta.content)
@@ -505,7 +521,8 @@ class _OpenAIStream:
                 input=json.loads(slot["args"] or "{}")))
         usage = self._usage
         return SimpleNamespace(
-            stop_reason="tool_use" if self._tools else "end_turn",
+            stop_reason=completion_stop_reason(self._finish_reason, bool(self._tools)),
+            raw_stop_reason=self._finish_reason,
             usage=SimpleNamespace(
                 input_tokens=getattr(usage, "prompt_tokens", 0),
                 output_tokens=getattr(usage, "completion_tokens", 0)),

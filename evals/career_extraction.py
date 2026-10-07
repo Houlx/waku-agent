@@ -5,7 +5,21 @@ not establish the accuracy or repeatability of independent live model extraction
 """
 from __future__ import annotations
 
-from waku.runtime.career_requirements import normalized_subject, scored_groups
+import json
+from dataclasses import replace
+from pathlib import Path
+
+from waku.db import connect_career
+from waku.runtime.career_jobs import run_stage
+from waku.runtime.career_requirements import (
+    EXTRACTION_PROMPT,
+    EXTRACTION_SCHEMA,
+    cache_extraction,
+    normalized_subject,
+    scored_groups,
+    source_spans,
+    validate_extraction,
+)
 
 
 def extraction_stability(sets, reference=None):
@@ -43,3 +57,120 @@ def extraction_stability(sets, reference=None):
                          for run in groups],
         'coverage_reference': 'Reviewed gold source spans.' if reference else 'First accepted extraction source spans.',
     }
+
+
+def fresh_extraction_trials(settings, client, fixture, trials, root, progress=None):
+    """Run extraction only, in a new empty database per trial; never clear an existing cache."""
+    if not 1 <= trials <= 20:
+        raise ValueError('Use 1 to 20 independent trials.')
+    jd = fixture['jd']
+    reference = validate_extraction(fixture['extraction'], jd)
+    result = {'kind': 'independent fresh extraction', 'provider': settings.provider,
+              'model': settings.model, 'jd_key': reference['jd_key'], 'trials': [],
+              'reference': reference, 'accepted': []}
+    expected_denominator = sum(2 if g['importance'] == 'required' else 1
+                               for g in scored_groups(reference['requirements']))
+    for index in range(trials):
+        home = Path(root) / f'trial-{index + 1}'
+        home.mkdir(parents=True, exist_ok=False)
+        trial_settings = replace(settings, home=home, otel_endpoint='')
+        trial_settings.ensure_home()
+        conn = connect_career(home)
+        activity = []
+        trial = {'trial': index + 1, 'home': str(home), 'accepted': False, 'cache_rows_before': 0}
+        try:
+            trial['cache_rows_before'] = conn.execute('SELECT count(*) FROM career_requirement_sets').fetchone()[0]
+            assert trial['cache_rows_before'] == 0
+            extracted = run_stage(trial_settings, client, 'job extraction', EXTRACTION_PROMPT,
+                                  {'jd': jd}, EXTRACTION_SCHEMA, lambda value: validate_extraction(value, jd),
+                                  activity=activity)
+            cache_extraction(conn, jd, extracted)
+            trial.update(accepted=True, group_count=len(extracted['requirements']),
+                         scored_group_count=len(scored_groups(extracted['requirements'])))
+            result['accepted'].append(extracted)
+            trial.update(qualification_agreement(extracted, reference, jd))
+        except Exception as exc:
+            # Provider exceptions can contain request/credential details; record only the class.
+            trial['error'] = type(exc).__name__
+        finally:
+            events = [json.loads(line) for path in sorted((home / 'traces').glob('*.jsonl'))
+                      for line in path.read_text().splitlines()]
+            submissions = [e for e in events if e['type'] == 'tool' and e['tool'] == 'submit_stage_result']
+            trial['attempts'] = len(submissions)
+            trial['iterations'] = sum(e['type'] == 'llm' for e in events)
+            trial['attempts_until_acceptance'] = next((i for i, e in enumerate(submissions, 1)
+                                                      if not e['output'].startswith('Error')), None)
+            trial['validation_errors'] = [e['output'] for e in submissions if e['output'].startswith('Error')]
+            trial['cache_rows_after'] = conn.execute('SELECT count(*) FROM career_requirement_sets').fetchone()[0]
+            assert conn.execute('SELECT count(*) FROM job_matches').fetchone()[0] == 0
+            conn.close()
+        result['trials'].append(trial)
+        if progress:
+            progress(trial)
+    result['successful_extraction_rate'] = sum(t['accepted'] for t in result['trials']) / trials
+    if result['accepted']:
+        result['stability'] = extraction_stability(result['accepted'], reference=reference)
+        result['denominator_agreement'] = [d == expected_denominator for d in result['stability']['denominators']]
+    else:
+        result['stability'] = None
+        result['denominator_agreement'] = []
+    return result
+
+
+def qualification_agreement(extracted, reference, jd):
+    """Compare gold material spans and dispositions, tolerating excerpt-edge punctuation.
+
+    This metric trims only gold span boundaries; it never rewrites the JD, submitted
+    provenance, canonical spans or cache identity. It does not judge semantic entailment.
+    """
+    actual = [(s, g['eligibility']) for g in extracted['requirements']
+              for s in source_spans(jd, g['source_excerpt'])]
+    covered, agreed, total = 0, 0, 0
+    for group in reference['requirements']:
+        for span in group['source_spans']:
+            start, end = span['start'], span['end']
+            while start < end and (jd[start].isspace() or jd[start] in '.,;。；，'):
+                start += 1
+            while end > start and (jd[end - 1].isspace() or jd[end - 1] in '.,;。；，'):
+                end -= 1
+            dispositions = [eligibility for s, eligibility in actual
+                            if s['start'] <= start and s['end'] >= end]
+            covered += bool(dispositions)
+            agreed += bool(dispositions) and all(e == group['eligibility'] for e in dispositions)
+            total += 1
+    return {'source_qualification_coverage': covered / max(total, 1),
+            'source_eligibility_agreement': agreed / max(total, 1)}
+
+
+def main():
+    import argparse
+    import tempfile
+
+    parser = argparse.ArgumentParser(description='Opt-in independent fresh extraction, without matching.')
+    parser.add_argument('--live', action='store_true')
+    parser.add_argument('--trials', type=int, default=5)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    if not args.live:
+        parser.error('Use --live to explicitly allow configured provider calls.')
+    from waku.config import load_settings
+    from waku.loop.models import get_client
+
+    fixture = json.loads((Path(__file__).parent / 'fixtures/career_extraction_executability.json').read_text())
+    settings = load_settings()
+    client = get_client(settings)
+    try:
+        result = fresh_extraction_trials(settings, client, fixture, args.trials,
+                                        Path(tempfile.mkdtemp(prefix='career-fresh-extraction-')),
+                                        lambda t: print(f'Trial {t["trial"]}: accepted={t["accepted"]}; '
+                                                        f'attempts={t["attempts"]}', flush=True))
+        args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+        print(f'Successful extraction rate: {result["successful_extraction_rate"]:.0%}', flush=True)
+    finally:
+        close = getattr(client, 'close', None)
+        if callable(close):
+            close()
+
+
+if __name__ == '__main__':
+    main()

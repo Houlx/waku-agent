@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from evals.matching_helpers import scripted_assessment
 from waku.config import Settings
 from waku.db import connect_career
 from waku.runtime import career_jobs
@@ -60,7 +61,9 @@ class DiagnosticClient:
                 'title': 'Education diagnostic', 'summary': '', 'responsibilities': [],
                 'requirements': [copy.deepcopy(FIXTURE['requirement'])]}}
         elif stage == 'match':
-            if self.route.get('skip_search'):
+            if data['matching_coverage']['mode'] == 'full':
+                turn += 1 + len(self.route['inspect'])
+            elif self.route.get('skip_search'):
                 turn += 1
             if turn == 1:
                 name, args = 'search_career_evidence', {'queries': self.route['queries']}
@@ -73,8 +76,7 @@ class DiagnosticClient:
                 if self.judge_delivered and supporting:
                     status, cite, reason = 'MATCH', supporting, 'The supplied education record confirms a master degree.'
                 name, args = 'submit_stage_result', {'result': {
-                    'assessments': [{'requirement_id': data['requirements'][0]['id'],
-                                     'status': status, 'evidence_ids': cite, 'reason': reason}],
+                    'assessments': [scripted_assessment(data['requirements'][0], status, cite, reason)],
                     'strengths': [], 'gaps': [], 'recommended_focus': []}}
         block = (SimpleNamespace(type='tool_use', id=f'{stage}-{turn}', name=name, input=args)
                  if name else SimpleNamespace(type='text', text='Completed.'))
@@ -186,7 +188,8 @@ def test_matching_validator_rejects_unrelated_project_as_education_support(diagn
     with conn:
         conn.execute("UPDATE career_evidence SET source_type=? WHERE evidence_id='career-react'", (source_type,))
     result = {'assessments': [{'requirement_id': 'education', 'status': status,
-                             'evidence_ids': ['career-react'], 'reason': 'Incorrect education support.'}],
+                             'evidence_ids': ['career-react'], 'reason': 'Incorrect education support.',
+                             'constraint_results': [], 'satisfied_routes': []}],
               'strengths': [], 'gaps': [], 'recommended_focus': []}
     with pytest.raises(ValueError, match='require education evidence'):
         career_jobs.validate_match(result, [{'id': 'education', 'eligibility': 'SCORED', 'category': 'education'}], conn,
@@ -213,7 +216,8 @@ def test_rank_ties_and_default_top_k_are_stable(diagnostic_world):
 def test_education_gap_requires_complete_education_coverage(diagnostic_world):
     conn, _ = diagnostic_world
     result = {'assessments': [{'requirement_id': 'education', 'status': 'GAP',
-                             'evidence_ids': [], 'reason': 'The search returned nothing.'}],
+                             'evidence_ids': [], 'reason': 'The search returned nothing.',
+                             'constraint_results': [], 'satisfied_routes': []}],
               'strengths': [], 'gaps': [], 'recommended_focus': []}
     # No inspected education records means the coordinator must reject this claim.
     with pytest.raises(ValueError, match='server-owned Career evidence coverage'):
@@ -248,6 +252,7 @@ def test_full_evidence_can_be_cited_without_search_or_duplicate_inspection(diagn
     assert job['report']['evidence']['career-master'] == get_evidence(conn, 'career-master')
     calls = [c for c in client.calls if 'Assess each supplied' in c['system']]
     assert len(calls) == 2
+    assert all({t['name'] for t in c['tools']} == {'submit_stage_result'} for c in calls)
     assert all(len(c['messages']) in (1, 3) for c in calls)
     assert not any(a.get('tool') in {'get_evidence', 'search_career_evidence'} for a in job['activity'])
 
@@ -289,7 +294,7 @@ def test_inventory_requires_all_candidates_for_unknown_and_mixed_requirements(
     coverage.delivered_ids.add('career-bachelor')
     with pytest.raises(ValueError, match='GAP requires complete Career evidence coverage'):
         career_jobs.validate_match({'assessments': [{'requirement_id': 'education', 'status': 'GAP',
-            'evidence_ids': [], 'reason': 'No relevant support.'}], 'strengths': [], 'gaps': [],
+            'evidence_ids': [], 'reason': 'No relevant support.', 'constraint_results': [], 'satisfied_routes': []}], 'strengths': [], 'gaps': [],
             'recommended_focus': []}, [requirement], conn, collected, [], coverage)
     assert snapshot(conn) == before
 
@@ -298,7 +303,10 @@ def test_inventory_can_complete_inspection_and_accept_genuine_gap(diagnostic_wor
     conn, settings = diagnostic_world
     enlarge_profile(conn, masters=False)
     before = snapshot(conn)
-    job, _ = run_diagnostic(conn, settings, gap_route(['career-bachelor', 'career-master', 'career-react']))
+    job, client = run_diagnostic(conn, settings, gap_route(['career-bachelor', 'career-master', 'career-react']))
+    calls = [c for c in client.calls if 'Assess each supplied' in c['system']]
+    assert all({t['name'] for t in c['tools']} == {
+        'search_career_evidence', 'get_evidence', 'submit_stage_result'} for c in calls)
     coverage = next(a for a in job['activity'] if a['stage'] == 'matching coverage')
     assert coverage['mode'] == 'inventory'
     assert coverage['active_evidence_count'] == coverage['delivered_evidence_count'] == 3
@@ -313,7 +321,7 @@ def test_input_budget_never_truncates_or_overwrites_previous_report(diagnostic_w
     job, _ = run_diagnostic(conn, settings, FIXTURE['routes'][3])
     enlarge_profile(conn, padding=70000)
     before = snapshot(conn)
-    with pytest.raises(ValueError, match='input budget exceeded during evidence inspection'):
+    with pytest.raises(ValueError, match='input budget was exceeded before analysis could complete'):
         run_diagnostic(conn, settings, gap_route(['career-master']), job['id'])
     saved = career_jobs.saved_jobs(conn)[0]
     assert saved['report'] == job['report'] and saved['requirements'] == job['requirements']
@@ -346,7 +354,7 @@ def test_coverage_activity_and_trace_metadata_do_not_duplicate_profile(diagnosti
     assert coverage['delivered_evidence_count'] == 3
     citations = next(a for a in job['activity'] if a['stage'] == 'matching citations')
     assert citations['evidence_ids'] == ['career-master']
-    assert any(a.get('tool') == 'search_career_evidence' and 'React' in a['result'] for a in job['activity'])
+    assert not any(a.get('tool') in {'search_career_evidence', 'get_evidence'} for a in job['activity'])
     events = [json.loads(line) for p in (settings.home / 'traces').glob('*.jsonl') for line in p.read_text().splitlines()]
     metadata = [e for e in events if e['type'] in {'career_matching_coverage', 'career_matching_citations'}]
     assert metadata and all(e['career_job_id'] == job['id'] for e in metadata)
@@ -439,7 +447,7 @@ def test_input_budget_checks_utf8_bytes_and_exact_boundary(diagnostic_world, mon
     coverage.client(client, lambda metadata: None).messages.create(**request)
     assert len(calls) == 1
     monkeypatch.setattr(career_matching, 'MATCHING_INPUT_BUDGET_BYTES', size - 1)
-    with pytest.raises(ValueError, match='input budget exceeded'):
+    with pytest.raises(ValueError, match='input budget was exceeded'):
         coverage.client(client, lambda metadata: None).messages.create(**request)
     assert len(calls) == 1
 
@@ -448,7 +456,8 @@ def test_openai_adapter_preserves_full_context_and_successive_tool_results(diagn
     from waku.loop.models import OpenAICompatClient
 
     conn, settings = diagnostic_world
-    _, client = run_diagnostic(conn, settings, FIXTURE['routes'][0], judge_delivered=True)
+    enlarge_profile(conn)
+    _, client = run_diagnostic(conn, settings, FIXTURE['routes'][3])
     request = client.calls[-1]
     # Calling the conversion method requires no SDK client, keys or network.
     adapter = object.__new__(OpenAICompatClient)
@@ -459,7 +468,7 @@ def test_openai_adapter_preserves_full_context_and_successive_tool_results(diagn
     assert len(expected) == 3  # supplemental search, evidence inspection, validated submission
     assert [m['content'] for m in converted['messages'] if m['role'] == 'tool'] == expected
     initial = next(m['content'] for m in converted['messages'] if m['role'] == 'user')
-    assert 'career-master' in initial and "Master's degree" in initial
+    assert 'career-master' in initial and 'evidence_inventory' in initial
 
 
 def test_education_guard_does_not_misclassify_social_work_degree():
@@ -487,16 +496,17 @@ def test_same_response_inspection_cannot_approve_unseen_inventory_gap(diagnostic
             blocks = [SimpleNamespace(type='tool_use', id=eid, name='get_evidence', input={'evidence_id': eid})
                       for eid in ('career-bachelor', 'career-master', 'career-react')]
             blocks.append(SimpleNamespace(type='tool_use', id='submit', name='submit_stage_result', input={'result': {
-                'assessments': [{'requirement_id': data['requirements'][0]['id'], 'status': 'GAP',
-                                 'evidence_ids': [], 'reason': 'Unseen records cannot establish absence.'}],
+                'assessments': [scripted_assessment(data['requirements'][0], 'GAP', [],
+                                                      'Unseen records cannot establish absence.')],
                 'strengths': [], 'gaps': [], 'recommended_focus': []}}))
             return SimpleNamespace(content=blocks, stop_reason='tool_use', usage=SimpleNamespace(input_tokens=0, output_tokens=0))
 
     client = SameResponseClient(gap_route())
-    with pytest.raises(ValueError, match='did not finish with a valid result'):
+    with pytest.raises(ValueError, match='ended without a structured submission'):
         action(conn, {'action': 'analyze_job', 'jd': FIXTURE['jd']}, settings, client)
-    results = client.calls[-1]['messages'][-1]['content']
-    assert 'GAP requires complete Career evidence coverage' in results[-1]['content']
+    tool_results = [m['content'] for m in client.calls[-1]['messages']
+                    if m['role'] == 'user' and isinstance(m['content'], list)]
+    assert 'GAP requires complete Career evidence coverage' in tool_results[-1][-1]['content']
 
 
 def test_snapshot_change_during_final_confirmation_never_publishes(diagnostic_world):

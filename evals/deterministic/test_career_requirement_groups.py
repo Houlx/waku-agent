@@ -8,6 +8,7 @@ import pytest
 
 from evals.career_extraction import extraction_stability
 from evals.helpers import response, text_block, tool_block
+from evals.matching_helpers import scripted_assessment
 from waku.config import Settings
 from waku.db import connect_career
 from waku.runtime import career_jobs, career_requirements
@@ -161,8 +162,8 @@ class GroupClient:
             self.match_inputs.append(copy.deepcopy(data))
             if turn == 1:
                 return response([tool_block('submit_stage_result', {'result': {
-                    'assessments': [{'requirement_id': g['id'], 'status': 'GAP', 'evidence_ids': [],
-                                     'reason': 'No documented support.'} for g in data['requirements']],
+                    'assessments': [scripted_assessment(g, 'GAP', [], 'No documented support.')
+                                    for g in data['requirements']],
                     'strengths': [], 'gaps': [], 'recommended_focus': []}})], 'tool_use')
         return response([text_block('Complete.')])
 

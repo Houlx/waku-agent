@@ -99,7 +99,7 @@ class MatchingCoverage:
         def create(**kwargs):
             self.assert_current()
             if matching_input_bytes(kwargs['system'], kwargs['messages'], kwargs['tools']) > MATCHING_INPUT_BUDGET_BYTES:
-                raise ValueError('Career matching input budget exceeded during evidence inspection. '
+                raise ValueError('Career matching input budget was exceeded before analysis could complete. '
                                  'No evidence was truncated and no new match report was saved.')
             if kwargs['messages'][0]['content'] != self.initial_content:
                 raise ValueError('Career matching evidence context changed before delivery.')

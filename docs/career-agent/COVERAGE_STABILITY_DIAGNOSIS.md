@@ -2,8 +2,10 @@
 
 Implementation status, 2026-10-07: The approved first stabilization stage implements
 [canonical requirement groups and score eligibility](REQUIREMENT_GROUPS.md), immutable
-JD/policy extraction reuse and visible excluded clauses. The matching rubric and
-Coverage weights/arithmetic remain unchanged. The diagnosis below remains historical.
+JD/policy extraction reuse and visible excluded clauses. The subsequent
+[matching-v1 rubric](MATCHING_RUBRIC.md) adds constraint support, route validation and
+frozen-input evaluation. Coverage weights/arithmetic remain unchanged. The diagnosis
+below remains historical.
 
 Semantic status changes explain most of the reported 46.2%–64.3% spread;
 extraction changes explain the remainder. The same eight evidence records reached

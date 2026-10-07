@@ -8,6 +8,7 @@ import pytest
 
 from evals.career import DIMENSIONS, calibration, evaluate, fixtures, run_scenario
 from evals.helpers import ScriptedClient, response, text_block, tool_block
+from evals.matching_helpers import scripted_assessment
 from waku.config import Settings
 from waku.db import connect_career as connect
 from waku.runtime.career import action
@@ -65,14 +66,9 @@ class AcceptanceClient:
                 refs.append([] if status == 'GAP' else ['career-' + (
                     'rag' if 'retrieval' in text else 'python' if 'python' in text else 'frontend')])
             if turn == 1:
-                return response([tool_block('search_career_evidence', {'queries': [
-                    'RAG', 'retrieval augmented generation', 'React', 'Node.js', 'Python']})], 'tool_use')
-            if turn == 2:
-                return response([tool_block('get_evidence', {'evidence_id': eid}, call_id=eid)
-                                 for eid in sorted({eid for ids in refs for eid in ids})], 'tool_use')
-            if turn == 3:
-                assessments = [{'requirement_id': r['id'], 'status': status, 'evidence_ids': ids,
-                                'reason': 'Fixture support.' if ids else 'No supplied evidence.'}
+                assert {t['name'] for t in kwargs['tools']} == {'submit_stage_result'}
+                assessments = [scripted_assessment(r, status, ids,
+                                'Fixture support; remaining proficiency is limited.' if ids else 'No supplied evidence.')
                                for r, status, ids in zip(data['requirements'], self.job['statuses'], refs, strict=True)]
                 return response([tool_block('submit_stage_result', {'result': {
                     'assessments': assessments, 'strengths': [], 'gaps': EXPECTATIONS[self.job['title']]['gaps'],
@@ -103,8 +99,7 @@ def test_complete_fixture_journey(tmp_path, job, closed_spans):
     assert saved['resume']['content']['records'][0]['evidence_id'] in EXPECTATIONS[job['title']]['resume_focus']
     assert 'Private assistant scratchpad' not in json.dumps(saved)
     searches = [a for a in saved['activity'] if a.get('tool') == 'search_career_evidence']
-    assert 'Queries: RAG; retrieval augmented generation' in searches[0]['result']
-    assert 'returned 3 records' in searches[0]['result']
+    assert searches == []
     assert json.loads(conn.execute('SELECT raw_input_json FROM career_profile').fetchone()[0]) == RAW
     tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert not {'facts', 'episodes', 'chat_log'} & tables

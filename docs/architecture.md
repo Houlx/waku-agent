@@ -12,6 +12,8 @@ HTTP server without assembling the general Waku assistant. The
 | `waku/ops/provider_services.py` | Provider configuration, masked readiness, replacement and rollback |
 | `waku/runtime/career.py`, `career_jobs.py`, `career_resumes.py` | Profile, evidence, requirements, coverage, provenance and resumes |
 | `waku/runtime/career_requirements.py` | Canonical scoring groups, eligibility guards, provenance, stable identity and extraction reuse |
+| `waku/runtime/career_rubric.py` | Matching-only constraint support, route algebra, reviewed semantic rules and rubric version |
+| `waku/runtime/career_submission.py` | Matching-only forced submission and one bounded missing-submit recovery |
 | `waku/runtime/career_matching.py` | Checked matching context, confirmed evidence snapshots and server-owned delivery coverage |
 | `waku/tools/career.py` | Scoped stage submission and FTS5 evidence tools |
 | `waku/db.py` | Connection mechanics and Career-only initialization |
@@ -43,3 +45,16 @@ and confirmation clauses, while matching/scoring receive only SCORED groups.
 Career matching delivers
 all active evidence within its input budget and otherwise requires complete
 inspection of an active evidence inventory before accepting GAP.
+Full-evidence matching exposes only submission because every active record is already
+supplied. Inventory matching retains search, complete-record lookup and submission.
+
+Matching overlays local constraint IDs without changing cached canonical groups.
+Reports retain per-constraint support and the matching policy version. Python checks
+route completeness and citation consistency before applying the unchanged Coverage formula.
+
+Matching uses an optional no-tool continuation callback within the existing loop cap.
+One corrective request removes only the unsubmitted assistant completion, preserving
+initial inputs, earlier tools and delivery state. Full mode requests named submission
+until validation succeeds; final confirmation releases that requirement. The provider
+adapter retains raw termination metadata alongside normalized stop reasons. Ordinary
+loop callers retain their existing completion behavior.
