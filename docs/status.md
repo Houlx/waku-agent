@@ -23,7 +23,9 @@ receive a stable inventory and require complete inspection before GAP can valida
 Full-evidence matching exposes only submission and requests named tool choice; inventory matching retains retrieval.
 Matching permits one bounded correction for an unsubmitted completion within ten turns,
 retains raw termination reasons and distinguishes output truncation from missing submission.
-Budget or incomplete-coverage failures preserve any previous report. Canonical
+Fresh extraction also requests named submission, allows one bounded correction, and
+distinguishes output truncation from a normal missing submission. Unknown provider
+termination reasons fail explicitly. Budget or incomplete-coverage failures preserve any previous report. Canonical
 requirement groups and eligibility are cached by exact JD and extraction-policy version.
 Only SCORED groups affect Coverage; confirmation and excluded clauses stay visible.
 Old extraction-policy reports require reanalysis. Matching-v1 records material support

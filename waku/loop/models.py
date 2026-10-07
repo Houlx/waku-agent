@@ -337,7 +337,11 @@ def completion_stop_reason(raw_reason, has_tools):
     """Keep the Messages dialect while retaining the raw reason separately."""
     if has_tools:
         return 'tool_use'
-    return 'max_tokens' if raw_reason in {'length', 'max_tokens'} else 'end_turn'
+    if raw_reason in {'length', 'max_tokens'}:
+        return 'max_tokens'
+    if raw_reason in {'stop', 'end_turn', 'stop_sequence'}:
+        return 'end_turn'
+    return 'unknown'
 
 
 class OpenAICompatClient:

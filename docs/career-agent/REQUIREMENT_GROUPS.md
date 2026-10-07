@@ -207,3 +207,17 @@ and zero normalized-subject duplicates. Total groups varied between six and seve
 Exact identity agreement against the reference ranged from 16.7% to 18.2%; changed-identity
 rates ranged from 81.8% to 83.3%. Literal-subject choices and excluded-clause grouping still
 vary. These five trials establish executability on this case, not general extraction accuracy.
+
+### Extraction submission reliability
+
+Fresh extraction requests named `submit_stage_result` on OpenAI-compatible and native
+Anthropic clients until validation succeeds. Explicit unsupported tool-choice rejections
+disable forcing for that stage; injected clients keep their existing call signature.
+The coordinator permits one corrective no-submit request within the existing iteration
+cap. Recovery drops only the unsubmitted assistant completion and retains stable JD
+inputs and prior validator feedback. Partial prose never reaches canonical validation
+or cache publication. Repeated missing submissions return an explicit structured-submission
+error; a truncation during either attempt returns a distinct output-truncation error.
+Unknown provider termination reasons fail explicitly. Failed extraction preserves previous
+reports, requirement rows, Coverage and resumes. Semantic validation, groups-v1, exact-JD
+identity and deletion/cache-pruning behavior retain their existing contracts.

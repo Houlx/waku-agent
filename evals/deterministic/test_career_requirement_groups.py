@@ -243,7 +243,7 @@ def test_jd_and_policy_changes_get_new_keys_and_failed_updates_retain_report(wor
     client = GroupClient()
     before = analyze(world, client)
     bad = GroupClient(extraction={'invalid': True})
-    with pytest.raises(ValueError, match='valid result'):
+    with pytest.raises(ValueError, match='ended without a valid structured submission'):
         analyze(world, bad, GOLD['jd'] + '\nChanged JD.', before['id'])
     saved = career_jobs.saved_jobs(world[0])[0]
     assert saved['requirements'] == before['requirements'] and saved['report'] == before['report']

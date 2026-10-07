@@ -13,7 +13,7 @@ HTTP server without assembling the general Waku assistant. The
 | `waku/runtime/career.py`, `career_jobs.py`, `career_resumes.py` | Profile, evidence, requirements, coverage, provenance and resumes |
 | `waku/runtime/career_requirements.py` | Canonical scoring groups, eligibility guards, provenance, stable identity and extraction reuse |
 | `waku/runtime/career_rubric.py` | Matching-only constraint support, route algebra, reviewed semantic rules and rubric version |
-| `waku/runtime/career_submission.py` | Matching-only forced submission and one bounded missing-submit recovery |
+| `waku/runtime/career_submission.py` | Extraction and matching submission protocols with one bounded missing-submit recovery |
 | `waku/runtime/career_matching.py` | Checked matching context, confirmed evidence snapshots and server-owned delivery coverage |
 | `waku/tools/career.py` | Scoped stage submission and FTS5 evidence tools |
 | `waku/db.py` | Connection mechanics and Career-only initialization |
@@ -52,9 +52,9 @@ Matching overlays local constraint IDs without changing cached canonical groups.
 Reports retain per-constraint support and the matching policy version. Python checks
 route completeness and citation consistency before applying the unchanged Coverage formula.
 
-Matching uses an optional no-tool continuation callback within the existing loop cap.
+Fresh extraction and matching use an optional no-tool continuation callback within the existing loop cap.
 One corrective request removes only the unsubmitted assistant completion, preserving
-initial inputs, earlier tools and delivery state. Full mode requests named submission
+initial inputs, earlier tools and delivery state. Extraction and full matching request named submission
 until validation succeeds; final confirmation releases that requirement. The provider
 adapter retains raw termination metadata alongside normalized stop reasons. Ordinary
 loop callers retain their existing completion behavior.

@@ -28,7 +28,7 @@ from waku.runtime.career_rubric import (
 from waku.runtime.career_rubric import (
     POLICY_VERSION as MATCHING_POLICY_VERSION,
 )
-from waku.runtime.career_submission import MatchingSubmission
+from waku.runtime.career_submission import ExtractionSubmission, MatchingSubmission
 from waku.tools.career import (
     confirmed_profile,
     get_evidence,
@@ -199,11 +199,19 @@ def run_stage(settings, client, name, prompt, data, schema, validate, tools=(), 
                                                                           dict(event, career_job_id=data['job_id'])))
                 client = coverage.client(submission, lambda metadata: tracer.event(
                     'career_matching_coverage', dict(metadata, career_job_id=data['job_id'])))
+            elif name == 'job extraction':
+                submission = ExtractionSubmission(client, lambda: 'result' in captured,
+                                                  lambda event: tracer.event('career_extraction_submission',
+                                                                            dict(event, career_job_id=data.get('job_id'))))
+                client = submission
             result = run_loop(client, settings.model,
                               system,
                               messages, registry, max_iterations=min(settings.max_iterations, 10),
                               max_tokens=max(settings.max_tokens, 4096), observer=observe,
                               on_no_tools=submission.on_no_tools if submission is not None else None)
+            if ('result' not in captured and isinstance(submission, ExtractionSubmission)
+                    and submission.recovered):
+                raise submission.failure()
             if 'result' not in captured or messages[-1]['role'] != 'assistant':
                 raise ValueError(f'Career {name} did not finish with a valid result. Please retry.')
             if coverage is not None:

@@ -1870,3 +1870,57 @@ No trial executed and no user evidence was transmitted. Live structured-submissi
 provider turns, validator repairs, raw reasons, output tokens and semantic agreement
 remain unmeasured pending that confirmation. The prepared runner is
 `/tmp/career_submission_live.py`; its results and traces will stay under `/tmp`.
+
+## Extraction Submission Reliability, Phase A, on 2026-10-07
+
+Fresh extraction now uses a stage-scoped submission protocol before canonical cache
+publication. OpenAI-compatible adapters retain raw finish reasons for ordinary and
+streamed responses; normalization distinguishes tool use, normal stop, output length
+and unknown termination. Native Anthropic responses retain their SDK stop reasons.
+Unknown or absent adapter reasons no longer normalize to a normal stop.
+
+Extraction requests named `submit_stage_result` on supported OpenAI-compatible and
+native Anthropic clients until validation succeeds. The shared forced-choice wrapper
+retains matching's existing full/inventory policy. Explicit unsupported-choice HTTP
+400/422 responses disable forcing for that stage; unrelated errors propagate. Injected
+clients keep their existing signature. Ordinary loop callers retain their prose behavior.
+
+A normal or length-limited completion without accepted state receives at most one
+corrective request within the unchanged iteration and token limits. Recovery removes
+only that unsubmitted completion, preserves stable JD inputs and earlier validator
+feedback, and requests complete tool submission without prose. Repeated missing
+submission returns an explicit business error. Length termination on either attempt
+returns a distinct truncation error, including exhaustion after subsequent rejected
+submissions. Unknown termination fails explicitly. No partial prose or rejected
+canonical set enters the cache. Failure retains previous requirements, report,
+Coverage, profile and resume data; the saved job still records its failed update.
+
+The focused adapter, matching submission, extraction submission and earlier extraction
+regressions pass 78 checks. The new extraction suite covers the single-response,
+8192-output-token failure shape, bounded recovery, mixed normal/length failures,
+unknown reasons, unchanged limits, validator-feedback retention, forced-choice fallback,
+native Anthropic scope and preservation of a previously completed synthetic journey.
+The retained offline gate passes 687 checks with 13 skips, including both scripted
+Chromium journeys. The additional feedback-retention regression passes in the focused
+run after that gate. Twelve skips require unavailable Make; one disables live probing.
+Localhost tests require sandbox socket access. Chromium uses existing temporary browser
+libraries through `LD_LIBRARY_PATH`. Ruff, environment-template validation and
+`git diff --check` pass. In-memory mutations that disable recovery or restore old length
+normalization make the corresponding regressions fail without changing repository files.
+Wheel and source archives build and install offline into isolated temporary targets.
+Both installed products pass the same 78 focused regressions and match repository
+runtime bytes. The final rulebook/distribution checks pass 17 tests.
+
+Phase A changes the adapter normalization, Career submission wrapper and extraction
+coordinator, with deterministic regressions and current architecture/provider/requirement
+documentation. groups-v1, matching-v1, Coverage, downstream consumers, exact-JD cache
+identity, deletion/pruning semantics, provider defaults and dependencies retain their
+contracts. Historical diagnosis sections remain unchanged.
+
+This session stops at the requested Phase A checkpoint because its implementation and
+verification context is materially crowded. Phase B has not started. The next session
+must implement the immutable source catalog, compact semantic IR and deterministic
+compiler for fresh extraction, then extend fresh-trial metrics and run the requested
+synthetic benchmark. Canonical model-owned mechanics remain a known failure mode until
+that work lands. No live extraction benchmark ran during Phase A; deterministic
+submission recovery does not establish live semantic accuracy.

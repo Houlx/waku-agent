@@ -24,7 +24,7 @@ def termination(raw, tools=()):
 
 @pytest.mark.parametrize('raw,tools,expected', [
     ('stop', False, 'end_turn'), ('tool_calls', True, 'tool_use'),
-    ('length', False, 'max_tokens'), ('provider_custom', False, 'end_turn'),
+    ('length', False, 'max_tokens'), ('provider_custom', False, 'unknown'), (None, False, 'unknown'),
 ])
 def test_adapter_retains_raw_termination_and_text(raw, tools, expected):
     client = OpenAICompatClient.__new__(OpenAICompatClient)

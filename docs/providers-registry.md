@@ -24,15 +24,15 @@ existing behavior. A new wire format requires an architecture proposal.
 
 OpenAI-compatible responses expose `raw_stop_reason` from the original `finish_reason`,
 including streaming completion. The normalized `stop_reason` is `tool_use` for tool
-calls, `max_tokens` for length termination without calls, and `end_turn` otherwise.
-Unknown raw values remain available. Native Anthropic responses already expose their
+calls, `max_tokens` for length termination without calls, `end_turn` for known normal
+stops, and `unknown` otherwise. Unknown raw values remain available. Native Anthropic responses already expose their
 termination reason as `stop_reason`. Loop LLM events retain both fields; no assistant
 prose or hidden reasoning is added to tracing. Generic response text remains unchanged.
 
-Full-evidence Career matching requests the named `submit_stage_result` function through
+Fresh Career extraction and full-evidence matching request the named `submit_stage_result` function through
 OpenAI-compatible adapters and the native Anthropic tool-choice shape through Anthropic
-SDK clients, including compatible endpoints. Inventory, extraction, resume generation
-and ordinary loop calls do not force submission. Matching releases the choice after
+SDK clients, including compatible endpoints. Inventory matching, resume generation
+and ordinary loop calls do not force submission. Each wrapped stage releases the choice after
 validation so final confirmation can finish normally.
 
 A stage disables forcing after an explicit HTTP 400/422 rejection naming unsupported
