@@ -49,6 +49,8 @@ into four groups.
 - [career-agent/PHASE2_INSPECTION.md](career-agent/PHASE2_INSPECTION.md) records the historical cutover inspection.
 - [career-agent/PHASE3_RETIREMENT_AUDIT.md](career-agent/PHASE3_RETIREMENT_AUDIT.md)
   records verified consumers, retirement candidates and proposed deletion batches.
+- [career-agent/MATCHING_CORRECTNESS_DIAGNOSIS.md](career-agent/MATCHING_CORRECTNESS_DIAGNOSIS.md)
+  diagnoses false GAP submissions caused by incomplete evidence retrieval.
 
 ## Retired upstream material
 

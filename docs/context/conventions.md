@@ -6,8 +6,9 @@ lists those under "What CI blocks".
 
 ## 1. Language
 
-Everything written into the repo is English: code, comments, docs, commit
-messages, and issue and PR titles. Conversation can be in any language.
+Code identifiers, comments, docs, commit messages, and issue and PR titles use
+English. Career UI dictionaries also contain Simplified Chinese translations.
+Conversation can be in any language.
 
 ## 2. How much process a change needs
 
@@ -110,7 +111,8 @@ needs a discussion on an issue first.
 ## 8. Scope and framing
 
 Career Agent is the supported product. The completed V1 contract and approved
-retirement batches govern current work. Batch C1 retires general feature backends.
+post-v1 UI iteration govern Career behavior. UI polish is separate from the
+completed retirement project. Batch C1 retires general feature backends.
 Batch C2 removes general facades. Batch D completes static/configuration/packaging cleanup. Preserve
 Career behavior and the shared provider, loop, registry and tracing contracts.
 

@@ -9,11 +9,12 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
 from waku.ops.provider_services import redact_error
+from waku.runtime.career_jobs import JobDeletionError
 from waku.runtime.career_runtime import CareerRuntime
 
 STATIC = Path(__file__).resolve().parent / 'static'
 CAREER_ASSETS = frozenset({'career.html', *(f'career/{name}' for name in (
-    'style.css', 'ui.js', 'state.js', 'router.js', 'actions.js', 'render.js',
+    'style.css', 'ui.js', 'i18n.js', 'state.js', 'router.js', 'actions.js', 'render.js',
     'settings.js', 'bootstrap.js'))})
 STATIC_TYPES = {'.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml',
                 '.html': 'text/html; charset=utf-8', '.woff2': 'font/woff2'}
@@ -101,7 +102,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(result)
         except Exception as exc:
             secrets = [payload.get(k) for k in ('key', 'custom_key')] if isinstance(payload, dict) else []
-            self._json({'error': redact_error(exc, secrets)})
+            self._json({'error': redact_error(exc, secrets),
+                        'error_code': exc.code if isinstance(exc, JobDeletionError) else ''})
 
     def log_message(self, *args):
         pass

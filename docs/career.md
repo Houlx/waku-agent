@@ -72,8 +72,11 @@ navigation within the page, but they do not survive reload.
 ## Analyze a job
 
 Paste a job description and select **Analyze Job**. The agent extracts required
-and preferred requirements, formulates searches, and inspects evidence before
-assessing each requirement as MATCH, PARTIAL or GAP. The report shows explanations,
+and preferred requirements and assesses each requirement as MATCH, PARTIAL or GAP.
+Matching receives all active evidence when the profile fits its checked input budget.
+Larger profiles receive an evidence inventory and require complete inspection before
+GAP can validate. Optional searches help locate details; an empty search cannot hide
+records already supplied to matching. The report shows explanations,
 strengths, gaps and recommended resume focus. Expand **View Evidence** to inspect
 the original input, explicit corrections, normalized description and evidence ID.
 
@@ -122,6 +125,7 @@ flowchart TD
     Review --> KB[(Career SQLite tables and FTS5)]
     JD[Pasted JD] --> Extract[Waku loop: requirement extraction]
     Extract --> Match[Waku loop: semantic matching]
+    KB -->|Full evidence or stable inventory| Match
     Match -->|Agent-authored queries| Search[Scoped FTS5 search and evidence lookup]
     KB --> Search
     Search -->|Evidence IDs and source records| Match
@@ -140,6 +144,7 @@ an execution lock that also protects provider configuration and replacement.
 `provider_services.py` supplies provider-only configuration and masked readiness.
 `career.py` owns profiles and action dispatch, `career_jobs.py` owns extraction,
 matching and scoring, and `career_resumes.py` owns draft generation and exports.
+`career_matching.py` owns evidence snapshots, matching input checks and delivery coverage.
 `waku/tools/career.py` provides stage-scoped tools. `static/career/` contains independent plain JavaScript modules for saved state,
 drafts, requests, hash routing, actions, Settings and screen rendering.
 Phase 3 retirement removes the old dashboard and all its assets.
@@ -159,17 +164,33 @@ normalization and explicit edits separate. Coherent source records receive stabl
 `career-<source_id>` evidence IDs; removed records become inactive. Reports and
 resumes retain evidence snapshots, so their original sources remain inspectable.
 
-Validation rejects unknown/inactive citations, uninspected references, missing
-assessments and newly invented numeric values. The application supplies contact
+Validation rejects unknown/inactive citations, references absent from delivered full
+records or successful inspection, missing assessments and newly invented numeric values.
+GAP requires complete server-owned coverage of the confirmed evidence snapshot.
+A pure education MATCH/PARTIAL requires at least one education citation.
+The application supplies contact
 information and structured heading fields; the model cannot replace these fields.
 References establish traceability, but they cannot prove every paraphrase, skill or
 semantic match. Users must review names, technologies, responsibilities and outcomes.
 
-Career Activity shows tool names, agent-authored search queries, evidence IDs,
-stage status, usage and latency. JSONL traces and the permanent usage ledger reuse
+Career Activity shows matching mode, active and delivered record totals, tool names,
+supplemental search queries/results, final cited evidence IDs, stage status, usage
+and latency. JSONL traces and the permanent usage ledger reuse
 Waku's existing tracer. Failed Career stages receive terminal trace records.
 Career activity and traces exclude system prompts and assistant reasoning. Traces
 still contain factual tool arguments and results, including career information.
+Coverage trace events contain counts, a snapshot digest and citation IDs without
+copying the complete matching payload into logs.
+
+Matching limits serialized UTF-8 input to 64,000 bytes, including its system prompt,
+messages and tool schemas. Initial evidence or inventory uses at most 48,000 bytes,
+reserving 16,000 bytes for tool history. These application caps do not estimate
+provider tokens or guarantee that every configured model accepts the request.
+Every matching call checks accumulated input; budget failure preserves any previous
+report and never truncates evidence. Inventory mode conservatively requires all
+active evidence IDs for every requirement, including unknown and mixed categories.
+It can complete when inspected records fit the remaining budget and ten-iteration
+limit; otherwise the analysis fails rather than publishing an incomplete GAP.
 
 `GET /api/career` returns profiles and saved artifacts. `POST /api/career` accepts
 `save_onboarding`, `normalize`, `save_profile`, `confirm`, `analyze_job` and
@@ -276,3 +297,23 @@ literal token search has limited cross-language recall.
 Read the [product requirements](career-agent/PRODUCT_SPEC.md),
 [approved implementation plan](career-agent/IMPLEMENTATION_PLAN.md), and
 [current handoff](career-agent/HANDOFF.md) before maintenance. Phase 3 productization is complete; historical plans preserve earlier intent.
+
+## UI language and saved jobs
+
+The interface supports English and Simplified Chinese. The header's UI language selector
+saves a browser preference. UI language does not change job descriptions, saved reports,
+resume language or generated resume text, and switching it starts no backend or AI work.
+Career Activity and unknown error details retain their original diagnostic language.
+
+The desktop sidebar shows five recent jobs and links to the full history at `#jobs`.
+Below 900px, Navigation and Recent Jobs expand from a compact section. Navigation
+preserves unsaved drafts; reloading restores saved artifacts only.
+
+Delete Job requires confirmation and permanently removes that job's analysis and resume.
+It preserves the Career Profile, evidence, other jobs, traces and usage ledger. Deleting
+the viewed report or resume returns to Saved Jobs unless you navigate elsewhere during
+the request. Browser history can still open a deleted URL, which shows an unavailable state.
+
+Primary profile, analysis, generation and resume export controls stay visible while
+scrolling their context. Delete and evidence controls remain contextual. Resume printing
+hides navigation, application controls and evidence disclosures.

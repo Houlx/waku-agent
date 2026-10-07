@@ -10,6 +10,8 @@ Phase 3 Batch A is approved and implemented. Career Agent is the sole supported
 product. Phase 3 Batch B1 and Batch B2 consumer closure are implemented.
 Batch C1 feature backend deletion and Batch C2 facade retirement are implemented.
 Batch D final cleanup is implemented; final verification is recorded below.
+The separately approved post-v1 UI polish iteration is recorded at the end of this file.
+The approved matching correctness fix is recorded below the UI iteration.
 
 Day 1 is committed in `838226b`, Day 2 in `8e7bac3`, and Day 3 in `e70ff0d`.
 The [product specification](PRODUCT_SPEC.md) and
@@ -49,6 +51,7 @@ Profile, JD, report and evidence remain untrusted data.
 | `waku/ops/provider_services.py` | Provider-only configuration, rollback and masked readiness |
 | `waku/runtime/career.py` | Profile storage, normalization, confirmation and action dispatch |
 | `waku/runtime/career_jobs.py` | Extraction, matching, scoring, activity and saved jobs |
+| `waku/runtime/career_matching.py` | Evidence snapshots, matching input budgets and server-owned delivery coverage |
 | `waku/runtime/career_resumes.py` | Generation gates, claim validation, current drafts and Markdown |
 | `waku/tools/career.py` | Scoped submission, FTS5 search and evidence lookup |
 | `waku/ops/static/career/`, `career.html` | Independent Career UI, routes, drafts, requests, Settings and print rules |
@@ -97,7 +100,7 @@ this JD Requirement Coverage and explicitly excludes hiring/interview probabilit
 
 `GET /api/career` returns profile/evidence and saved job/resume artifacts.
 `POST /api/career` accepts `save_onboarding`, `normalize`, `save_profile`,
-`confirm`, `analyze_job` and `generate_resume`. Batch B1 removes the old hosted policy.
+`confirm`, `analyze_job`, `generate_resume` and `delete_job`. Batch B1 removes the old hosted policy.
 
 Normalization and extraction expose only `submit_stage_result`. Matching adds
 `search_career_evidence` and `get_evidence`; generation exposes only evidence lookup
@@ -1290,3 +1293,185 @@ SOUL files, chat/memory files, traces or usage. No paid/live evaluation runs.
 Windows behavior, live provider availability and OTel exporter shutdown remain
 outside this verification, as before. The Phase 3 Definition of Done is satisfied
 for the retained project and its requested offline/build/browser/install checks.
+
+## Post-v1 UI polish on 2026-10-06
+
+This separately approved iteration covers UI localization, responsive sidebar navigation,
+permanent saved-Job deletion and contextual sticky actions. It is not Phase 4 of retirement.
+CareerRuntime ownership, schema, AI stages, retrieval, matching, deterministic coverage,
+provenance, grounding and provider/model behavior remain unchanged. No dependency is added.
+
+`career/i18n.js` owns stable English/Simplified Chinese translation keys, interpolation,
+expected error labels and locale-aware counts/coverage. `career-locale` stores `en` or
+`zh-CN` in browser storage. Saved preference wins; compatible Simplified Chinese browser
+preferences otherwise select Chinese, with English as fallback. Storage failures retain
+an in-memory preference. The shell updates HTML language. Locale changes render cached
+state without requests or provider calls and preserve drafts, routes and resume-language
+selections. Generated artifact prose, document headings and user-entered dates remain
+in their original content language. Existing diagnostic activity and unknown redacted
+error details remain untranslated. Activity persistence is unchanged.
+
+The 260px desktop sidebar contains Overview, Career Profile, Settings, Analyze New Job,
+five Recent Jobs and View All Jobs. It uses the existing snapshot and stable ID routes;
+reports and resumes highlight the same job. Recent order retains the backend's creation
+timestamp and ID ordering. Below 900px, a native disclosure supplies compact navigation
+and closes after route selection. Long titles and translated labels wrap.
+
+`delete_job` uses the existing serialized non-AI action path. A localized native dialog
+explains that job analysis and resume will be permanently removed while Profile and
+Evidence remain. One SQLite transaction deletes matches, requirements, resume and job
+in that order; no cascade or schema change is required. Malformed/missing IDs expose
+stable `invalid_job_id`/`job_not_found` codes with safe error details. Failure rolls back
+all rows. Shared profile/evidence/FTS, other jobs, traces and usage remain intact.
+
+Deletion prevents duplicate submissions, retains unrelated JD drafts and clears only
+the deleted job's reanalysis target and language selection. Deleting the viewed report
+or resume replaces its current history entry with `#jobs`, unless navigation changed
+while pending. Earlier deleted URLs show the existing unavailable state. Lost responses
+are reconciled with a workspace read rather than a repeated delete.
+
+Sticky bars contain profile save/normalize or save/confirm, job analysis, resume language
+and generation/view controls, and resume Markdown/print controls. Existing gates remain.
+Delete, evidence, record removal and back/edit controls remain contextual. Main content
+continues to scroll as a document. Opaque theme-compatible bars wrap; print rules hide
+the sidebar, dialogs and application controls for both native and explicit printing.
+
+System CJK font availability and print pagination remain platform-dependent. The
+headless test host has no Chinese system font, so screenshots show missing glyphs;
+translation text and layout behavior are verified, but CJK glyph rendering on this
+host is not. No fonts are bundled or installed into the product. Browser
+verification covers Chromium; other browser engines and operating systems are not
+independently verified. UI localization does not improve cross-language FTS retrieval.
+
+### UI iteration files
+
+| Area | Changed files |
+|---|---|
+| Shell and assets | `waku/ops/static/career.html`; `i18n.js`, `ui.js`, `state.js`, `router.js`, `actions.js`, `render.js`, `settings.js`, `bootstrap.js`, `style.css` under `waku/ops/static/career/` |
+| Backend | `waku/ops/career_dashboard.py`; `waku/runtime/career.py`, `career_jobs.py` |
+| Deterministic evals | `evals/deterministic/test_career_assets.py`, `test_career_browser.py`, `test_career_delete.py`, `test_career_polish.py` |
+| Scripted fixtures | `evals/fixtures/career_browser.cjs`, `career_state.cjs`, `career_polish_browser.cjs`, `career_polish_state.cjs` |
+| Documentation | This handoff; `docs/career.md`, `status.md`, `context/conventions.md`, `context/design-system.md`, `context/gotchas.md`; `waku/ops/static/README.md` |
+
+### UI iteration verification
+
+The full retained deterministic suite passes **495 tests with 13 skips**, including
+the expanded scripted Chromium journey. Twelve skips require unavailable Make;
+the remaining skip is the explicitly disabled live-provider probe. No live provider
+is required or called. Verification uses synthetic profiles, scripted initial and
+replacement clients, fresh SQLite homes and temporary provider configuration.
+
+Browser coverage includes English/Chinese switching during idle and active requests,
+locale persistence/defaults/storage failure, no translation requests, preserved profile/
+JD/provider/language drafts, both locales on direct routes, selected sidebar jobs,
+five-entry Recent Jobs refresh, same-route Analyze New Job, narrow navigation and
+long Chinese titles, sticky visibility and focus clearance, native/explicit print
+isolation, localized delete cancellation, other/viewed/resume deletion, failure,
+duplicates, pending navigation, history and reload. Offline tests cover expected
+delete codes, every transaction step's rollback, Profile/Evidence/FTS/file preservation,
+foreign-key enforcement, existing/lazy clients and runtime serialization.
+
+Ruff, all Career/fixture JavaScript syntax checks, environment-template validation,
+offline lock consistency, local Markdown file links in all 26 documents, rulebook,
+license/distribution checks and `git diff --check` pass. Wheel and source archive
+builds and offline isolated installs pass. Both installed products pass default and
+explicit Career startup, all ten shell/assets against checkout bytes, deletion API,
+lazy AI client and owned shutdown. Both archives retain exact MIT/Waku-name notices.
+No default dependency, version or lock file changes.
+
+Two temporary mutations skip resume deletion or alter a language draft during locale
+switching. Each corresponding regression fails. Neither mutation edits repository
+implementation files. Screenshots for desktop/mobile Chinese UI and confirmation
+remain under `/tmp`; the missing system-glyph limitation above applies.
+
+The approved UI iteration ends here. No subsequent feature iteration starts.
+
+## Matching correctness fix
+
+The focused fix approved on 2026-10-07 closes the evidence-delivery failure in
+the [historical diagnosis](MATCHING_CORRECTNESS_DIAGNOSIS.md). Job matching now
+receives every active Career Evidence record before judgment when its initial
+request fits 48,000 serialized UTF-8 bytes. Each record supplies evidence ID,
+source type, raw content and normalized content. The payload omits database row
+IDs, active flags, duplicate search text and redundant source IDs outside the
+normalized content. FTS and get_evidence remain available as supplemental tools.
+Full records already supplied in context can support citations without another
+search or redundant inspection.
+
+`career_matching.py` owns a digest of the confirmed profile and sorted active
+evidence snapshot. Server-owned required IDs include every active record for
+every requirement. The server credits full context only after a successful
+provider response. In inventory mode, the server credits a complete get_evidence
+record only after its tool result has reached a subsequent provider request.
+Calling search, receiving an empty result, listing IDs, or executing inspection
+and submission in the same response does not establish complete coverage.
+Validation rejects GAP until the required set has been delivered. It still
+permits a genuine GAP after complete delivery; coverage does not force MATCH.
+
+Profiles that exceed the initial budget receive a sorted inventory of all active
+IDs, source types and titles. The common required ID set conservatively includes
+all active records, even for unknown or mixed categories. This avoids introducing
+category routing. Existing get_evidence can inspect candidates directly from
+the inventory, with FTS available for prioritization. Each subsequent matching
+request checks the complete accumulated system/messages/tool-schema input against
+64,000 UTF-8 bytes. These application limits reserve 16,000 bytes for tool history
+but do not estimate provider tokens or guarantee every model's context capacity.
+An oversized inventory, oversized inspection history, incomplete coverage, or
+iteration exhaustion stops analysis without evidence truncation or replacement
+of a previous report. This conservative fallback does not promise successful
+analysis of arbitrarily large profiles.
+
+The snapshot digest must remain current at validation, after the final response,
+and under SQLite's writer lock before publication. The narrow education guard
+requires an education citation for pure education/degree MATCH or PARTIAL.
+Project/work citations alone fail that guard. Mixed experience clauses retain
+semantic judgment. The guard recognizes education categories and narrow degree
+phrasing without treating “a high degree of autonomy” as an education requirement.
+
+Career Activity records matching mode, active record totals, deterministically
+delivered totals, available records and final citation IDs. Trace coverage events
+record those counts and the snapshot digest, including failures. Existing tool
+events record supplemental FTS queries/results. The fix does not add full profile
+copies, system prompts, or hidden reasoning to diagnostic metadata.
+
+The minimal bachelor's/master's/React fixture remains synthetic. Its former
+expected failure now passes. Repeated React-only, bachelor-only and restrictive
+searches preserve both degrees in matching context and can MATCH the master's
+requirement. Tests also verify genuine GAP, project/work-only positive rejection,
+unknown/mixed requirements, inventory inspection, same-response rejection,
+UTF-8 budget boundaries, oversized inventory/history, snapshot invalidation,
+prior-report retention, accumulated tool context, OpenAI adapter conversion and
+unchanged profile/evidence/FTS tables across analysis.
+
+### Correctness verification
+
+The diagnostic suite passes 31 tests. All Career deterministic tests pass within
+the retained suite. The complete retained gate with Chromium enabled passes
+526 tests with 13 skips and no expected failures. Twelve skips require unavailable
+Make, and one skips the explicitly disabled live-provider probe. Because Make is
+unavailable, verification invokes the Python commands from its targets directly.
+The requested scripted Chromium journey passes reports, evidence, resumes,
+settings, locales, navigation, deletion, printing and reload. Ruff and
+`git diff --check` pass.
+
+Wheel and source archives build and install offline into separate `/tmp` targets.
+Both installed products run all four minimal-fixture query routes through the
+real matching coordinator and retain MATCH with master's citations and unchanged
+profile/evidence/FTS. Distribution boundary checks pass in the retained suite.
+A temporary in-process mutation removes preloaded evidence while falsely claiming
+full coverage; the repeated-query regression fails with GAP versus MATCH. The
+mutation edits no production file. Gate reports, browser tooling, package targets
+and diagnostic artifacts remain outside runtime user data. No paid/live provider
+evaluation runs.
+
+The fix changes no extraction prompt, atomicity, importance rules, evidence
+persistence/IDs, SQLite/FTS schema, score formula, resume contract, shared loop,
+provider architecture, default dependency, model or UI controls. Existing unrelated
+UI edits remain intact. The diagnosis receives only a short implementation-status
+note and preserves its original findings.
+
+The remaining variability concerns semantic interpretation and requirement
+extraction. Delivery coverage proves that facts were available, not that a model
+understood or correctly judged every record. Major equivalence, compound clauses
+and extraction consistency remain separate follow-up work. No extraction work
+or general retrieval redesign begins in this fix.

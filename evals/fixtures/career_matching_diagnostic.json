@@ -1,0 +1,25 @@
+{
+  "raw": {
+    "basic": {"Name": "Diagnostic Candidate"},
+    "records": [
+      {"source_id": "bachelor", "type": "education", "text": "Bachelor's degree in Computer Science. 学士 — 示例学院。"},
+      {"source_id": "master", "type": "education", "text": "Master's degree in Information Systems. 硕士 — 示例大学。"},
+      {"source_id": "react", "type": "project", "text": "Led a React upgrade project."}
+    ]
+  },
+  "jd": "Master's degree required",
+  "requirement": {
+    "text": "Master's degree required", "category": "education", "importance": "required",
+    "keywords": ["Master's", "degree"], "source_excerpt": "Master's degree required"
+  },
+  "routes": [
+    {"queries": ["React"], "inspect": ["career-react"], "status": "GAP", "cite": [],
+     "reason": "The retrieved React project contains no education evidence."},
+    {"queries": ["Bachelor"], "inspect": ["career-bachelor"], "status": "GAP", "cite": ["career-bachelor"],
+     "reason": "Only a bachelor's degree was inspected; no master's degree was found."},
+    {"queries": ["Master's degree required"], "inspect": [], "status": "GAP", "cite": [],
+     "reason": "The search returned no supporting evidence."},
+    {"queries": ["Master's degree"], "inspect": ["career-master"], "status": "MATCH", "cite": ["career-master"],
+     "reason": "The education record explicitly confirms a master's degree."}
+  ]
+}

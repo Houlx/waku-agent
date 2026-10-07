@@ -1,6 +1,6 @@
 CA.load = async () => {
   try{CA.state.snapshot=await CA.json('/api/career');CA.ensureDrafts();CA.state.request.error='';}
-  catch(e){CA.state.request.error=e.message;}
+  catch(e){CA.state.request.error=e.message;CA.state.request.errorCode=e.code;}
   CA.render();
 };
 CA.edit = mode => {CA.ensureDrafts();CA.state.drafts.editor=mode;CA.navigate('#profile');CA.render();};
@@ -26,7 +26,7 @@ CA.run = async action => {
   if(['save_profile','confirm'].includes(action)) payload.profile=profile;
   if(action==='analyze_job'){payload.jd=jd;if(target) payload.job_id=target;}
   if(action==='generate_resume'){payload.job_id=target;payload.language=CA.language(CA.job(target));}
-  q.busy=true;q.error='';q.action=action;q.target=target;CA.render();
+  q.busy=true;q.error='';q.errorCode='';q.action=action;q.target=target;CA.render();
   try{
     if(action==='normalize' && editor==='onboarding'){
       s.snapshot=await CA.json('/api/career',{action:'save_onboarding',raw});
@@ -49,6 +49,7 @@ CA.run = async action => {
     if(route && s.navigation===navigation)CA.navigate(route);
   }catch(e){
     q.error=e.message;
+    q.errorCode=e.code;
     // A failed stage may have persisted a job; retain its inputs and older artifacts.
     try{
       s.snapshot=await CA.json('/api/career');
@@ -66,3 +67,38 @@ CA.download = () => {
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 CA.print = () => {document.body.classList.add('career-print');try{window.print();}finally{document.body.classList.remove('career-print');}};
+CA.renderDelete = () => {
+  const job=CA.job(CA.state.deleteId),dialog=document.getElementById('delete-dialog');
+  if(!job)return;
+  dialog.innerHTML=`<h2 id="delete-heading">${esc(CA.t('deleteHeading'))}</h2><p id="delete-description">${esc(CA.t('deleteHelp',{title:job.title || CA.t('savedFallback')}))}</p>`+
+    uiButton(CA.t('cancel'),{level:'secondary',onclick:'CA.cancelDelete()',attrs:'autofocus'})+
+    uiButton(CA.t('delete'),{level:'destructive',onclick:'CA.confirmDelete()'});
+};
+CA.askDelete = id => {
+  if(CA.state.request.busy || CA.state.provider.busy || !CA.job(id))return;
+  CA.state.deleteId=id;CA.renderDelete();document.getElementById('delete-dialog').showModal();
+};
+CA.cancelDelete = () => {CA.state.deleteId=null;document.getElementById('delete-dialog').close();};
+CA.confirmDelete = () => {
+  const id=CA.state.deleteId;CA.cancelDelete();if(id)CA.deleteJob(id);
+};
+CA.deleteJob = async id => {
+  const s=CA.state,q=s.request;
+  if(q.busy || s.provider.busy)return;
+  const navigation=s.navigation,viewed=['job','resume'].includes(s.route.screen) && s.route.id===id;
+  const finish=()=>{
+    delete s.drafts.languages[id];
+    if(s.drafts.jobId===id)s.drafts.jobId=null;
+    if(viewed && s.navigation===navigation){history.replaceState(null,'','#jobs');CA.routeChanged();}
+  };
+  q.busy=true;q.error='';q.errorCode='';q.action='delete_job';q.target=id;CA.render();
+  try{s.snapshot=await CA.json('/api/career',{action:'delete_job',job_id:id});finish();}
+  catch(e){
+    q.error=e.message;q.errorCode=e.code;
+    // A lost response may follow a committed delete. Reconcile without resubmitting.
+    try{
+      const snapshot=await CA.json('/api/career');s.snapshot=snapshot;
+      if(!snapshot.jobs.some(job=>job.id===id)){finish();q.error='';q.errorCode='';}
+    }catch(_){}
+  }finally{q.busy=false;CA.render();}
+};

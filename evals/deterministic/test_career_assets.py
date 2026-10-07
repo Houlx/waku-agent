@@ -13,7 +13,7 @@ def test_career_asset_graph_and_handlers():
     scripts = re.findall(r'<script src="/static/([^"]+)"', html)
     styles = re.findall(r'<link[^>]+href="/static/([^"]+)"', html)
     assert scripts == [f'career/{name}.js' for name in
-                       ('ui', 'state', 'router', 'actions', 'render', 'settings', 'bootstrap')]
+                       ('ui', 'i18n', 'state', 'router', 'actions', 'render', 'settings', 'bootstrap')]
     assert styles == ['career/style.css']
     assert set(scripts + styles + ['career.html']) == CAREER_ASSETS
     source = html + ''.join((STATIC / p).read_text() for p in scripts)

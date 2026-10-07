@@ -190,6 +190,8 @@ def action(conn, payload, settings=None, client=None):
         from waku.runtime.career_resumes import generate_resume
 
         generate_resume(conn, payload.get('job_id'), payload.get('language'), settings, client)
+    elif name == 'delete_job':
+        career_jobs.delete_job(conn, payload.get('job_id'))
     elif name == 'confirm':
         current = state(conn)['profile']
         if not current or not current['normalized']:

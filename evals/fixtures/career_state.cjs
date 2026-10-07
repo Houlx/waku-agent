@@ -1,7 +1,7 @@
 // Offline state/action behavior without a browser or external dependency.
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
-const context=vm.createContext({console,window:{addEventListener(){}},location:{hash:'#jobs'},history:{},setTimeout});
-for(const name of ['ui','state','router','actions'])vm.runInContext(fs.readFileSync(`waku/ops/static/career/${name}.js`,'utf8'),context);
+const context=vm.createContext({console,window:{addEventListener(){}},location:{hash:'#jobs'},history:{},navigator:{language:'en'},setTimeout,Intl});
+for(const name of ['ui','i18n','state','router','actions'])vm.runInContext(fs.readFileSync(`waku/ops/static/career/${name}.js`,'utf8'),context);
 vm.runInContext(`
 (async()=>{
  CA.render=()=>{};

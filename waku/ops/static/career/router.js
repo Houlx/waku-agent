@@ -6,11 +6,16 @@ CA.parseRoute = hash => {
   }
   return parts.length===1 && ['overview','profile','jobs','settings'].includes(parts[0])?{screen:parts[0]}:{screen:'missing'};
 };
-CA.navigate = route => {location.hash=route;};
+CA.navigate = route => {
+  if(location.hash===route)CA.routeChanged();
+  else location.hash=route;
+};
 CA.routeChanged = () => {
   if(!location.hash || location.hash==='#career') history.replaceState(null,'','#overview');
   CA.state.route=CA.parseRoute(location.hash);
   CA.state.navigation++;
+  const menu=document.getElementById('career-menu');
+  if(menu && window.matchMedia('(max-width:899px)').matches)menu.open=false;
   CA.render();
 };
 window.addEventListener('hashchange',CA.routeChanged);

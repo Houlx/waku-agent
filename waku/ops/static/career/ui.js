@@ -10,7 +10,10 @@ CA.link = (text,route) => `<a href="${esc(route)}">${esc(text)}</a>`;
 CA.json = async (url,payload,allowError=false) => {
   const r=await fetch(url,payload===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   const result=await r.json();
-  if(!r.ok || (result.error && !allowError) || result.ok===false) throw new Error(result.error || `Request failed (${r.status}).`);
+  if(!r.ok || (result.error && !allowError) || result.ok===false){
+    const error=new Error(result.error || `Request failed (${r.status}).`);
+    error.code=result.error_code || '';throw error;
+  }
   return result;
 };
 CA.theme = () => {try{return localStorage.getItem('career-theme')==='dark'?'dark':'light';}catch(_){return 'light';}};
@@ -18,4 +21,9 @@ CA.toggleTheme = () => {
   const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
   document.documentElement.dataset.theme=t;
   try{localStorage.setItem('career-theme',t);}catch(_){}
+};
+CA.updateActionSpacing = () => {
+  const bar=document.querySelector('.career-actions');
+  // Wrapped bars need more room when fields or evidence controls receive focus.
+  document.documentElement.style.setProperty('--career-action-offset',`${bar?bar.offsetHeight+16:16}px`);
 };

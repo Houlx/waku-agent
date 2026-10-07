@@ -11,6 +11,7 @@ HTTP server without assembling the general Waku assistant. The
 | `waku/ops/career_dashboard.py` | Career HTTP bootstrap and explicit static/API allowlist |
 | `waku/ops/provider_services.py` | Provider configuration, masked readiness, replacement and rollback |
 | `waku/runtime/career.py`, `career_jobs.py`, `career_resumes.py` | Profile, evidence, requirements, coverage, provenance and resumes |
+| `waku/runtime/career_matching.py` | Checked matching context, confirmed evidence snapshots and server-owned delivery coverage |
 | `waku/tools/career.py` | Scoped stage submission and FTS5 evidence tools |
 | `waku/db.py` | Connection mechanics and Career-only initialization |
 | `waku/loop/agent.py`, `loop/models.py`, `tools/registry.py` | Shared loop, provider adapters and tool contract |
@@ -35,4 +36,6 @@ the provider registry directly, and the release gate runs offline checks.
 
 Retirement performs no schema migration, runtime-data deletion or stored configuration
 rewrite. Career initialization preserves existing general rows. Provider/model
-behavior and the Career schema and pipeline remain unchanged.
+architecture and the Career schema remain unchanged. Career matching delivers
+all active evidence within its input budget and otherwise requires complete
+inspection of an active evidence inventory before accepting GAP.

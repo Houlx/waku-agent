@@ -10,11 +10,18 @@ the [handoff](career-agent/HANDOFF.md) records verification and historical stage
 V1, runtime separation and Phase 2 product cutover are implemented. `waku`,
 `waku career`, `make run` and `make dashboard` launch Career Agent. Its independent
 plain JavaScript frontend supports addressable routes, profile review, saved jobs,
-evidence inspection, explicit resume generation and provider Settings.
+evidence inspection, explicit resume generation and provider Settings. The approved
+post-v1 UI iteration adds English/Simplified Chinese UI preferences, responsive sidebar
+navigation with Recent Jobs, permanent saved-Job deletion and contextual sticky actions.
+This iteration is separate from the completed retirement project.
 
 Career retains its runtime lifecycle, schema, FTS5, provenance, fixed coordinators,
 MATCH/PARTIAL/GAP, deterministic coverage and resume grounding. Provider configuration,
 model adapters/catalogs, the loop, ToolRegistry and tracing remain shared infrastructure.
+Matching supplies all active evidence within a checked input budget. Larger profiles
+receive a stable inventory and require complete inspection before GAP can validate.
+Budget or incomplete-coverage failures preserve any previous report. Requirement
+extraction and semantic judgments can still vary across model calls.
 
 ## Completed retirement
 

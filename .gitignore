@@ -33,3 +33,4 @@ docs/proposals/*.html
 
 # Dormant evaluator telemetry remains private.
 .deepeval/
+interview.md

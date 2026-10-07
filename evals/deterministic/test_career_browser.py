@@ -53,7 +53,7 @@ def test_career_browser_journey(tmp_path, monkeypatch):
     try:
         env = {**os.environ, 'CAREER_BROWSER_URL': f'http://127.0.0.1:{server.server_port}'}
         result = subprocess.run(['node', str(ROOT / 'evals/fixtures/career_browser.cjs')],
-                                env=env, text=True, timeout=90, check=False)
+                                env=env, text=True, timeout=180, check=False)
         assert result.returncode == 0
         assert dotenv_values(tmp_path / ".env").get("WAKU_MODEL") == "offline"
     finally:

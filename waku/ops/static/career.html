@@ -6,10 +6,13 @@
 <link rel="stylesheet" href="/static/career/style.css">
 </head><body>
 <header><a class="identity" href="#overview">Career Agent</a>
-<nav aria-label="Career navigation"><a href="#overview">Overview</a><a href="#profile">Career Profile</a><a href="#jobs">Jobs</a><a href="#settings">Settings</a></nav>
+<label class="locale-control"><span id="locale-label">UI language</span><select id="locale-select" onchange="CA.setLocale(this.value)"><option value="en">English</option><option value="zh-CN">简体中文</option></select></label>
 <button id="theme-toggle" onclick="CA.toggleTheme()">Change theme</button></header>
-<main><p id="provider-status" role="status"></p><div id="view"></div></main>
+<div class="career-shell"><aside class="career-sidebar"><details id="career-menu" open><summary>Navigation and Recent Jobs</summary><nav id="career-navigation" aria-label="Career navigation"></nav></details></aside>
+<main><p id="provider-status" role="status"></p><div id="view"></div></main></div>
+<dialog id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description" oncancel="event.preventDefault();CA.cancelDelete()"></dialog>
 <script src="/static/career/ui.js"></script>
+<script src="/static/career/i18n.js"></script>
 <script src="/static/career/state.js"></script>
 <script src="/static/career/router.js"></script>
 <script src="/static/career/actions.js"></script>
