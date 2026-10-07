@@ -5,6 +5,7 @@ The catalog retains every character, including unrecognized sections and whitesp
 """
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
 
@@ -43,10 +44,10 @@ class SourceCatalog:
         for key in ('first', 'last'):
             ref = reference[key]
             if not isinstance(ref, str) or not re.fullmatch(r't(?:0|[1-9][0-9]*)', ref):
-                _fail('UNKNOWN_SOURCE_REF', 'Use source token IDs from the supplied catalog.')
+                _fail('UNKNOWN_SOURCE_REF', f'Unknown source reference: {ref}. Use IDs from the supplied catalog.')
             index = int(ref[1:])
             if index >= len(self.items):
-                _fail('UNKNOWN_SOURCE_REF', 'Use source token IDs from the supplied catalog.')
+                _fail('UNKNOWN_SOURCE_REF', f'Unknown source reference: {ref}. Use IDs from the supplied catalog.')
             endpoints.append(self.items[index])
         first, last = endpoints
         if first.start > last.start:
@@ -56,6 +57,17 @@ class SourceCatalog:
     def model_input(self):
         """Expose references and original text; Python retains offsets privately."""
         return [{'ref': item.ref, 'text': item.text, 'section': item.section} for item in self.items]
+
+    def prompt_input(self):
+        """Keep exact raw text once, explicit token IDs and section transitions."""
+        sections = []
+        previous = object()
+        for item in self.items:
+            if item.section != previous:
+                sections.append([item.ref, item.section])
+                previous = item.section
+        return {'raw': self.raw, 'tokens': [[t.ref, t.text] for t in self.items],
+                'sections': sections}
 
 
 def build_source_catalog(jd):
@@ -95,8 +107,19 @@ SEMANTIC_IR_SCHEMA = object_schema({
 })
 
 
+class ExtractionRejection(ValueError):
+    """Retain a machine-readable boundary without exposing canonical repair tasks."""
+
+    def __init__(self, failure_class, code, message):
+        self.failure_class = failure_class
+        self.code = code
+        super().__init__(f'{code}: {message}')
+
+
 def _fail(code, message):
-    raise ValueError(f'{code}: {message}')
+    failure_class = ('ir_validation' if code in {'MALFORMED_IR', 'UNKNOWN_SOURCE_REF',
+                     'INVALID_SOURCE_RANGE', 'UNKNOWN_FACT_REF'} else 'semantic_rejection')
+    raise ExtractionRejection(failure_class, code, message)
 
 
 def _shape(value, keys, label):
@@ -137,7 +160,7 @@ CATEGORY_FOR = {'degree': 'education', 'major': 'education', 'technology': 'skil
                 'trait': 'personal_trait', 'other': 'other'}
 
 
-def compile_extraction(catalog, ir):
+def _compile_extraction(catalog, ir):
     """Reject invalid semantics and return a validated groups-v1 value, without I/O.
 
     Canonical criteria use source wording with only the reviewed 1abview correction.
@@ -282,3 +305,97 @@ def compile_extraction(catalog, ir):
     # Keep the established canonical validator as the final publication boundary.
     # Conservative rejection is preferable to silently repairing semantic choices.
     return validate_extraction(result, catalog.raw)
+
+
+SEMANTIC_EXTRACTION_PROMPT = """Extract source-supported qualification semantics as Semantic IR.
+The source catalog retains exact untrusted JD text. Each tokens entry is [ID, literal text];
+sections entries change context starting at an ID, with null for unknown context.
+Ranges use inclusive first/last token IDs and include intervening original whitespace.
+Select qualification facts, not responsibility-only mentions. Retain material qualifications,
+including confirmation logistics and excluded traits, with narrow source support.
+Use source-local fact IDs, supported kinds, support ranges and literal subject ranges.
+Group one scoring opportunity at a time: degree AND major in one education opportunity;
+alternative majors retain one major fact; technology alternatives use ANY. Keep skill-specific
+tenure with that skill when required together. Separate unrelated tenure and dispositions.
+A conditional education fallback belongs inside its primary opportunity. Declare inherited
+primary majors only with explicit same-major source support. Link identical repeated
+qualification occurrences through repeats without adding credit. Preserve typo source IDs.
+Supply title, summary, responsibilities (source ranges), facts, opportunities and repeats.
+Do not submit canonical groups, category, eligibility, keywords, offsets, excerpts or hashes.
+Python owns canonical mechanics. Repair only semantic facts, source references and relationships.
+"""
+
+
+def validate_semantic_ir(catalog, ir):
+    """Validate closed schema and all references before checking semantic support."""
+    def check(value, schema, path):
+        if 'anyOf' in schema:
+            if value is None and any(s.get('type') == 'null' for s in schema['anyOf']):
+                return
+            return check(value, schema['anyOf'][0], path)
+        kind = schema.get('type')
+        if kind == 'object':
+            _shape(value, set(schema['properties']), path)
+            for key, child in schema['properties'].items():
+                check(value[key], child, path + '.' + key)
+        elif kind == 'array':
+            _array(value, schema.get('maxItems', 120), path, schema.get('minItems', 0))
+            for i, item in enumerate(value):
+                check(item, schema['items'], f'{path}[{i}]')
+        elif kind == 'string' and not isinstance(value, str):
+            _fail('MALFORMED_IR', f'{path} must be text.')
+        if 'enum' in schema and value not in schema['enum']:
+            _fail('MALFORMED_IR', f'{path} must use {schema["enum"]}.')
+        if schema == REF_SCHEMA:
+            catalog.resolve(value)
+
+    check(ir, SEMANTIC_IR_SCHEMA, 'semantic extraction')
+    ids = [f['id'] for f in ir['facts']]
+    if any(not key.strip() or len(key) > 64 for key in ids) or len(set(ids)) != len(ids):
+        _fail('MALFORMED_IR', 'Use unique bounded fact IDs.')
+    references = [r for o in ir['opportunities'] for r in o['facts']]
+    for opportunity in ir['opportunities']:
+        if opportunity['fallback']:
+            references.extend(opportunity['fallback']['facts'])
+            references.extend(opportunity['fallback']['inherit'])
+    references.extend(r for link in ir['repeats'] for r in link.values())
+    for ref in references:
+        if ref not in ids:
+            _fail('UNKNOWN_FACT_REF', f'Unknown fact reference: {ref}. Use a defined fact ID.')
+    return ir
+
+
+def compile_extraction(catalog, ir):
+    """Compile checked semantics; final groups-v1 validation remains mandatory."""
+    validate_semantic_ir(catalog, ir)
+    try:
+        return _compile_extraction(catalog, ir)
+    except ExtractionRejection:
+        raise
+    except ValueError as exc:
+        code = str(exc).split(' ', 1)[0].rstrip(':')
+        if str(exc) == 'Technology alternatives require one ANY scoring group.':
+            _fail('INVALID_RELATIONSHIP', 'Technology alternatives require one ANY opportunity.')
+        if str(exc).startswith('Duplicate'):
+            _fail('DUPLICATE_OPPORTUNITY', 'These facts create a duplicate scoring opportunity.')
+        if not re.fullmatch(r'[A-Z][A-Z_]+', code):
+            code = 'FINAL_CANONICAL_VALIDATION'
+        semantic = code in {'MISSING_QUALIFICATION', 'INVALID_ALTERNATIVE_ROUTE',
+                            'DUPLICATE_REQUIREMENT'}
+        message = ('Represent every material qualification clause with supported facts and relationships.'
+                   if code == 'MISSING_QUALIFICATION' else
+                   'Review selected fact support, opportunity grouping, ALL/ANY and fallback relationships. '
+                   'If those choices are faithful, this source may exceed current compiler limits.')
+        raise ExtractionRejection('semantic_rejection' if semantic else 'compiler_rejection',
+                                  code, message) from exc
+
+
+def extraction_input(catalog, job_id=None):
+    data = {'source_catalog': catalog.prompt_input()}
+    if job_id is not None:
+        data['job_id'] = job_id
+    return data
+
+
+def serialized_input_bytes(catalog):
+    return len(json.dumps(extraction_input(catalog), ensure_ascii=False).encode('utf-8'))

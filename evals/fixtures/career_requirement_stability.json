@@ -206,5 +206,202 @@
         "text": "Coordinated releases at Cedar Labs."
       }
     ]
+  },
+  "semantic_ir": {
+    "title": "测试/软件工程师",
+    "summary": "Synthetic Northstar Instruments testing role.",
+    "responsibilities": [
+      {
+        "first": "t15",
+        "last": "t32"
+      }
+    ],
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "degree",
+        "support": {
+          "first": "t38",
+          "last": "t44"
+        },
+        "subject": {
+          "first": "t38",
+          "last": "t39"
+        }
+      },
+      {
+        "id": "f1",
+        "kind": "major",
+        "support": {
+          "first": "t46",
+          "last": "t74"
+        },
+        "subject": {
+          "first": "t64",
+          "last": "t66"
+        }
+      },
+      {
+        "id": "f2",
+        "kind": "degree",
+        "support": {
+          "first": "t94",
+          "last": "t95"
+        },
+        "subject": {
+          "first": "t94",
+          "last": "t95"
+        }
+      },
+      {
+        "id": "f4",
+        "kind": "technology",
+        "support": {
+          "first": "t101",
+          "last": "t101"
+        },
+        "subject": {
+          "first": "t101",
+          "last": "t101"
+        }
+      },
+      {
+        "id": "f5",
+        "kind": "technology",
+        "support": {
+          "first": "t103",
+          "last": "t105"
+        },
+        "subject": {
+          "first": "t103",
+          "last": "t105"
+        }
+      },
+      {
+        "id": "f6",
+        "kind": "behavior",
+        "support": {
+          "first": "t116",
+          "last": "t128"
+        },
+        "subject": {
+          "first": "t121",
+          "last": "t126"
+        }
+      },
+      {
+        "id": "f7",
+        "kind": "behavior",
+        "support": {
+          "first": "t129",
+          "last": "t139"
+        },
+        "subject": {
+          "first": "t134",
+          "last": "t139"
+        }
+      },
+      {
+        "id": "f8",
+        "kind": "trait",
+        "support": {
+          "first": "t140",
+          "last": "t153"
+        },
+        "subject": {
+          "first": "t140",
+          "last": "t143"
+        }
+      },
+      {
+        "id": "f9",
+        "kind": "trait",
+        "support": {
+          "first": "t154",
+          "last": "t168"
+        },
+        "subject": {
+          "first": "t158",
+          "last": "t161"
+        }
+      },
+      {
+        "id": "f10",
+        "kind": "experience",
+        "support": {
+          "first": "t169",
+          "last": "t187"
+        },
+        "subject": {
+          "first": "t171",
+          "last": "t177"
+        }
+      }
+    ],
+    "opportunities": [
+      {
+        "operator": "ALL",
+        "facts": [
+          "f0",
+          "f1"
+        ],
+        "fallback": {
+          "operator": "ALL",
+          "facts": [
+            "f2"
+          ],
+          "condition": {
+            "first": "t76",
+            "last": "t87"
+          },
+          "inherit": [],
+          "inheritance_support": null
+        }
+      },
+      {
+        "operator": "ANY",
+        "facts": [
+          "f4",
+          "f5"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f6"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f7"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f8"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f9"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f10"
+        ],
+        "fallback": null
+      }
+    ],
+    "repeats": []
   }
 }

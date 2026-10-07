@@ -1,8 +1,9 @@
 # Canonical requirement groups
 
-Phase B's [source-addressed compiler](EXTRACTION_COMPILER.md) is available as a pure,
-tested core checkpoint. Fresh extraction still uses the Phase A submission contract;
-coordinator integration and before/after semantic benchmarking remain pending.
+Fresh extraction supplies an immutable source catalog and accepts only Semantic IR.
+The [source-addressed compiler](EXTRACTION_COMPILER.md) constructs groups-v1 in Python
+and runs the existing final validator before publication. Cached canonical groups
+bypass fresh extraction without migration.
 
 Career reuses one validated scoring structure for an exact JD and extraction-policy
 version. The `groups-v1` policy stabilizes scoring opportunities and eligibility;
@@ -72,7 +73,7 @@ constraint excerpt and its verbatim condition. Inherited major wording requires 
 support and route provenance that includes that wording. A sentence naming only a
 bachelor's degree cannot supply major provenance from a different sentence.
 
-The prompt and schema explain degree AND major, one ANY technology group, and a primary
+The Semantic IR prompt and schema explain degree AND major, one ANY technology group, and a primary
 route versus a conditional fallback. A list of acceptable majors remains one major
 constraint with the alternatives retained in its text. Python rejects recognized
 alternative majors expressed as jointly required ALL constraints, and primary/fallback
@@ -84,11 +85,13 @@ For original `1abview`, canonical text may say LabVIEW while the literal subject
 repairs source wording before validation. Bare writing remains NON_SCORABLE even when
 a broad excerpt also contains observable coordination wording.
 
-Extraction errors identify a field and provide concise repair guidance. Stable identifiers
+Canonical validation errors identify a field. Fresh extraction translates those errors
+into semantic repair guidance and retains their failure class in traces. Stable identifiers
 include `ALT_ROUTE_OUTSIDE_SOURCE`, `GROUP_PROVENANCE_CONTAINMENT`,
 `NON_VERBATIM_EXCERPT`, `LITERAL_SUBJECT_MISMATCH`, `INVALID_ELIGIBILITY`,
 `OVERLAPPING_SCORING_GROUP`, `INVALID_ALTERNATIVE_ROUTE` and `MISSING_QUALIFICATION`.
-The existing tool registry returns these errors to the next extraction attempt.
+The fresh submission tool requests repairs to facts, source references and relationships.
+Python owns canonical mechanics, so repair feedback never delegates those fields to the model.
 Python still owns offsets, identities, policy validation and accepted-set persistence.
 The iteration cap, groups-v1 cache identity and HTTP business-error behavior stay unchanged.
 
@@ -183,6 +186,10 @@ different MATCH/PARTIAL/GAP judgments. This stage guarantees stable scoring ques
 for a reused set, rather than promising identical Coverage after every matching call.
 
 ### Independent fresh extraction
+
+The historical Phase A trials below used canonical model submissions. Current trials use
+Semantic IR through the same production compiler boundary. The
+[compiler benchmark](EXTRACTION_COMPILER.md#integrated-evaluation) records Phase B results.
 
 `career_extraction_executability.json` retains synthetic degree/major, conditional
 bachelor's relaxation, typo-preserving technology alternatives, mixed nearby capabilities,

@@ -12,7 +12,8 @@ from evals.matching_helpers import scripted_assessment
 from waku.config import Settings
 from waku.db import connect_career as connect
 from waku.runtime.career import action
-from waku.runtime.career_jobs import EXTRACTION_SCHEMA, run_stage
+from waku.runtime.career_extraction_compiler import SEMANTIC_IR_SCHEMA
+from waku.runtime.career_jobs import run_stage
 
 RAW, JOBS, EXPECTATIONS = fixtures()
 
@@ -54,11 +55,9 @@ class AcceptanceClient:
                      'title': next(iter(r.get('fields', {}).values()), r['source_id']),
                      'description': r['text'], 'skills': []} for r in data['records']]}
                 return response([tool_block('submit_stage_result', {'profile': profile})], 'tool_use')
-        elif 'Extract canonical requirement groups' in system:
+        elif 'Extract source-supported qualification semantics' in system:
             if turn == 1:
-                return response([tool_block('submit_stage_result', {'result': {
-                    'title': self.job['title'], 'summary': 'Offline fixture.', 'responsibilities': [],
-                    'requirements': copy.deepcopy(self.job['requirements'])}})], 'tool_use')
+                return response([tool_block('submit_stage_result', {'result': copy.deepcopy(self.job['semantic_ir'])})], 'tool_use')
         elif 'Assess each supplied requirement' in system:
             refs = []
             for r, status in zip(data['requirements'], self.job['statuses'], strict=True):
@@ -126,7 +125,7 @@ def test_failed_stages_end_trace_without_private_text(tmp_path, stage, failure, 
             action(conn, {'action': 'normalize'}, settings, client)
         else:
             run_stage(settings, client, stage, 'Private system prompt sentinel', {'job_id': 'test-job'},
-                      EXTRACTION_SCHEMA, lambda value: (_ for _ in ()).throw(ValueError('Invalid proposal')))
+                      SEMANTIC_IR_SCHEMA, lambda value: (_ for _ in ()).throw(ValueError('Invalid proposal')))
     traces = [json.loads(line) for p in (tmp_path / 'traces').glob('*.jsonl') for line in p.read_text().splitlines()]
     assert traces[0]['type'] == 'turn_start'
     assert traces[-1]['type'] == 'turn_end'
@@ -193,9 +192,9 @@ def test_live_evaluation_uses_isolated_career_databases(tmp_path, monkeypatch, i
 
     class ScenarioClient(AcceptanceClient):
         def create(self, **kwargs):
-            if 'Extract canonical requirement groups' in kwargs['system']:
+            if 'Extract source-supported qualification semantics' in kwargs['system']:
                 data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
-                self.job = next(job for job in JOBS if data['jd'].startswith(job['jd']))
+                self.job = next(job for job in JOBS if data['source_catalog']['raw'].startswith(job['jd']))
             return super().create(**kwargs)
 
     monkeypatch.setattr(models, 'get_client', lambda settings: ScenarioClient(JOBS[0]))

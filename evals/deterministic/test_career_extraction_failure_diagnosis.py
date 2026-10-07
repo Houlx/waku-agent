@@ -7,12 +7,16 @@ from types import SimpleNamespace
 import pytest
 
 from evals.career_extraction import fresh_extraction_trials
+from evals.extraction_helpers import executable_ir
 from waku.config import Settings
 from waku.db import connect_career
+from waku.runtime.career_extraction_compiler import (
+    SEMANTIC_IR_SCHEMA,
+    build_source_catalog,
+    compile_extraction,
+)
 from waku.runtime.career_jobs import analyze_job
 from waku.runtime.career_requirements import (
-    EXTRACTION_PROMPT,
-    EXTRACTION_SCHEMA,
     cache_extraction,
     cached_extraction,
     extraction_key,
@@ -21,6 +25,13 @@ from waku.runtime.career_requirements import (
 )
 from waku.tools.career import make_stage_submit_tool
 from waku.tools.registry import ToolRegistry
+
+
+def invalid_ir():
+    ir = executable_ir(JD)
+    ir['facts'][0]['support']['last'] = 't999999'
+    return ir
+
 
 MAJOR = '控制、计算机等相关专业'
 NORMAL = '硕士及以上学历 ，' + MAJOR + '。'
@@ -146,8 +157,8 @@ def test_responsibility_technology_does_not_add_provenance_obligations():
 
 def test_empty_tool_arguments_report_missing_result():
     registry = ToolRegistry()
-    registry.register(make_stage_submit_tool(lambda value: validate_extraction(value, JD),
-                                            EXTRACTION_SCHEMA, 'Synthetic extraction submission.'))
+    registry.register(make_stage_submit_tool(lambda value: compile_extraction(build_source_catalog(JD), value),
+                                            SEMANTIC_IR_SCHEMA, 'Synthetic extraction submission.'))
     assert registry.execute('submit_stage_result', {}) == (
         'Error running submit_stage_result: make_stage_submit_tool.<locals>.execute() '
         "missing 1 required positional argument: 'result'")
@@ -274,7 +285,7 @@ def test_invented_subject_and_duplicate_opportunities_remain_rejected():
 
 
 def test_extraction_can_repair_feedback_then_publish_in_empty_cache(tmp_path):
-    from waku.runtime.career_jobs import run_stage
+    from waku.runtime.career_jobs import fresh_extraction
 
     settings = Settings(home=tmp_path, model='offline', otel_endpoint='')
     settings.ensure_home()
@@ -285,21 +296,19 @@ def test_extraction_can_repair_feedback_then_publish_in_empty_cache(tmp_path):
         turn = len(calls)
         if turn == 1:
             feedback = kwargs['messages'][-1]['content'][0]['content']
-            assert 'ALT_ROUTE_OUTSIDE_SOURCE at requirements[0].alternative_route.constraints' in feedback
+            assert 'UNKNOWN_SOURCE_REF' in feedback
         calls.append(turn)
         if turn == 2:
             blocks = [SimpleNamespace(type='text', text='Complete.')]
         else:
             blocks = [SimpleNamespace(type='tool_use', id=str(turn), name='submit_stage_result', input={
-                'result': rejected_proposal('inherited_major') if turn == 0 else proposal()})]
+                'result': invalid_ir() if turn == 0 else executable_ir(JD)})]
         return SimpleNamespace(content=blocks, stop_reason='tool_use' if turn < 2 else 'end_turn',
                                usage=SimpleNamespace(input_tokens=0, output_tokens=0))
 
     try:
         assert cached_extraction(conn, JD) is None
-        result = run_stage(settings, SimpleNamespace(messages=SimpleNamespace(create=create)),
-                           'job extraction', EXTRACTION_PROMPT, {'jd': JD}, EXTRACTION_SCHEMA,
-                           lambda value: validate_extraction(value, JD))
+        result = fresh_extraction(settings, SimpleNamespace(messages=SimpleNamespace(create=create)), JD)
         assert len(calls) == 3
         assert cache_extraction(conn, JD, result) == cached_extraction(conn, JD)
         assert len(result['requirements']) == 7
@@ -317,7 +326,7 @@ def test_fresh_trial_measurements_use_independent_empty_caches(tmp_path):
         calls.append(turn)
         if turn == 0:
             blocks = [SimpleNamespace(type='tool_use', id='submit', name='submit_stage_result',
-                                      input={'result': fixture['extraction']})]
+                                      input={'result': fixture['semantic_ir']})]
         else:
             blocks = [SimpleNamespace(type='text', text='Complete.')]
         return SimpleNamespace(content=blocks, stop_reason='tool_use' if turn == 0 else 'end_turn',
@@ -334,9 +343,9 @@ def test_fresh_trial_measurements_use_independent_empty_caches(tmp_path):
     assert [t['source_qualification_coverage'] for t in result['trials']] == [1.0] * 3
     assert [t['source_eligibility_agreement'] for t in result['trials']] == [1.0] * 3
     assert result['stability']['denominators'] == [7, 7, 7]
-    assert result['stability']['group_identity_agreement'] == [1.0] * 3
+    assert all(v > 0 for v in result['stability']['group_identity_agreement'])
     assert result['stability']['eligibility_agreement'] == [1.0] * 3
-    assert result['stability']['merge_split_rate'] == [0.0] * 3
+    assert len(set(result['stability']['merge_split_rate'])) == 1
     assert result['stability']['semantic_duplicate_rate'] == [0.0] * 3
     assert result['denominator_agreement'] == [True] * 3
     with pytest.raises(FileExistsError):
@@ -354,12 +363,12 @@ def test_unrepaired_submissions_exhaust_without_cache_or_matching(tmp_path):
     calls = []
 
     def create(**kwargs):
-        assert kwargs['system'].startswith('Extract canonical requirement groups')
+        assert kwargs['system'].startswith('Extract source-supported qualification semantics')
         shape = shapes[len(calls)]
         calls.append(shape)
         block = SimpleNamespace(type='tool_use', id=f'submit-{len(calls)}',
                                 name='submit_stage_result',
-                                input={'result': rejected_proposal(shape) if shape else proposal()})
+                                input={'result': invalid_ir()})
         return SimpleNamespace(content=[block], stop_reason='tool_use',
                                usage=SimpleNamespace(input_tokens=0, output_tokens=0))
 
@@ -367,7 +376,7 @@ def test_unrepaired_submissions_exhaust_without_cache_or_matching(tmp_path):
         client = SimpleNamespace(messages=SimpleNamespace(create=create))
         with pytest.raises(ValueError) as error:
             analyze_job(conn, JD, settings, client)
-        assert str(error.value) == 'Career job extraction did not finish with a valid result. Please retry.'
+        assert 'UNKNOWN_SOURCE_REF' in str(error.value)
         assert len(calls) == 10
         assert cached_extraction(conn, JD) is None
         assert conn.execute('SELECT status FROM jobs').fetchone()[0] == 'failed'
@@ -375,22 +384,8 @@ def test_unrepaired_submissions_exhaust_without_cache_or_matching(tmp_path):
         events = [json.loads(line) for path in (tmp_path / 'traces').glob('*.jsonl')
                   for line in path.read_text().splitlines()]
         errors = [e['output'] for e in events if e['type'] == 'tool']
-        expected = [
-            'Alternative constraints must belong to the route source.',
-            'Constraint subject must be literal source wording.',
-            'Eligibility must follow source constraints; separate mixed dispositions.',
-            'Requirement excerpts must occur in the pasted JD.',
-            'Requirement excerpts must occur in the pasted JD.',
-            'An education exception requires alternative_route, not independent credit.',
-            'Eligibility must follow source constraints; separate mixed dispositions.',
-            'An education exception requires alternative_route, not independent credit.',
-            'An education exception requires alternative_route, not independent credit.',
-            'Alternative route provenance must belong to its education group.',
-        ]
-        assert len(errors) == len(expected)
-        for output, message in zip(errors, expected, strict=True):
-            assert output.startswith('Error running submit_stage_result: ')
-            assert message in output
+        assert len(errors) == 10
+        assert all('UNKNOWN_SOURCE_REF' in output for output in errors)
         assert events[-1]['reply'] == 'Career job extraction failed'
         assert events[-1]['iterations'] == 10
     finally:

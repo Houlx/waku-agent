@@ -1,4 +1,4 @@
-"""Freeze scripted Phase A fresh trials without reading runtime data or credentials."""
+"""Replay the six frozen Phase A scenarios through the current Semantic IR pipeline."""
 from __future__ import annotations
 
 import copy
@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace as NS
 
-from evals.career_extraction import fresh_extraction_trials
+from evals.career_extraction import fresh_extraction_trials, reliability_summary
 from waku.config import Settings
 
 
@@ -27,9 +27,9 @@ def scripted_baseline(root):
             action = sequence[len(calls)]
             calls.append(action)
             if action in {'valid', 'invalid'}:
-                value = copy.deepcopy(fixture['extraction'])
+                value = copy.deepcopy(fixture['semantic_ir'])
                 if action == 'invalid':
-                    value['requirements'][1]['constraints']['operator'] = 'ALL'
+                    value['opportunities'][1]['operator'] = 'ALL'
                 blocks = [NS(type='tool_use', id=str(len(calls)), name='submit_stage_result', input={'result': value})]
                 reason = 'tool_use'
             else:
@@ -39,18 +39,21 @@ def scripted_baseline(root):
                       usage=NS(input_tokens=0, output_tokens=0))
 
         settings = Settings(home=Path(root) / name, model='offline', otel_endpoint='')
-        result = fresh_extraction_trials(settings, NS(messages=NS(create=create)), fixture, 1, Path(root) / name)
+        result = fresh_extraction_trials(settings, NS(messages=NS(create=create), scripted=True), fixture, 1, Path(root) / name)
         trial = result['trials'][0]
         trials.append({key: trial[key] for key in ('accepted', 'cache_rows_before', 'cache_rows_after',
                                                   'attempts', 'attempts_until_acceptance', 'validation_errors')} |
-                      {'case': name, 'terminations': calls, 'output_tokens': None})
+                      {'case': name, 'terminations': calls, 'output_tokens': None,
+                       'failure_events': trial['failure_events'], 'provider_turns': trial['provider_turns'],
+                       'input_tokens': None, 'latency_seconds': trial['latency_seconds']})
     count = len(trials)
-    return {'baseline_commit': '3d6d4fe', 'mode': 'scripted synthetic; no live reliability claim',
+    return {'baseline_commit': 'Phase B integration', 'mode': 'scripted synthetic; no live reliability claim',
             'trials': trials, 'fresh_completion_rate': sum(t['accepted'] for t in trials) / count,
             'no_submit_rate': sum(t['attempts'] == 0 for t in trials) / count,
             'truncation_rate': sum('length' in t['terminations'] for t in trials) / count,
-            'canonical_validator_rejection_rate': sum(bool(t['validation_errors']) for t in trials) / count,
-            'output_tokens': None}
+            'canonical_validator_rejection_rate': reliability_summary(trials)['compiler_final_rejection_rate'],
+            'output_tokens': None,
+            'reliability': reliability_summary(trials)}
 
 
 def main():

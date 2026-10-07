@@ -1967,3 +1967,77 @@ test fail. A final group-text deduplication passes all 55 compiler tests after t
 Wheel and source archives build and install offline into separate temporary targets.
 Both installed runtimes match repository bytes and run the focused compiler, canonical,
 extraction submission and extraction diagnosis regressions. No runtime data was cleared.
+
+## Phase B production integration on 2026-10-07
+
+Phase B now connects fresh production extraction to the approved compiler core.
+`analyze_job` still checks the exact-JD/groups-v1 cache first. A cache miss builds an
+immutable catalog and calls `fresh_extraction`, which supplies compact source data,
+semantic instructions and the closed Semantic IR tool schema. Python checks IR shapes
+and references, compiles canonical groups and runs the retained groups-v1 validator.
+The coordinator atomically publishes only an accepted canonical result after stage
+completion. Legacy canonical model submissions fail the fresh IR boundary. Old cache
+rows bypass fresh extraction without migration or backfill.
+
+The model still selects qualification scope, supported semantic kinds, source ranges,
+grouping, ALL/ANY, fallback conditions, explicit inheritance and repeated occurrences.
+Python owns category, eligibility/reasons, keywords, excerpts, offsets, envelopes and
+semantic hashes. Repair feedback targets only Semantic IR facts and relationships.
+Traces distinguish submission failure, IR validation failure, semantic rejection and
+compiler/final rejection. Raw termination metadata, scoped forcing, the single bounded
+no-submit correction, prose removal and existing token/iteration limits remain intact.
+Known termination errors take precedence over generic unfinished-result errors.
+
+The independent evaluator uses the production fresh function and a new isolated database
+for every trial. It reports completion, missing submission, truncation, malformed
+arguments/IR, semantic and compiler rejection, attempts, provider requests, recovery,
+termination reasons, usage and latency. It reports semantic quality across all fresh
+trials and among accepted outputs separately; failed trials earn zero adjusted quality.
+The [compiler contract](EXTRACTION_COMPILER.md) describes gold metrics and limitations.
+
+The six frozen Phase A scenarios still complete four trials. Two encounter normal
+missing submission, two encounter truncation, and accepted trials require 1, 2, 1 and 1
+submissions. The old canonical-repair case now receives a semantic rejection; the six
+Phase B cases have zero malformed-IR and compiler/final rejections. These selected
+scripted proportions do not estimate provider probabilities. All 25 reviewed synthetic
+gold cases complete with full measured semantic agreement and zero unsupported additions
+or duplicate scoring. Scripted usage remains null, and completion establishes no model
+semantic improvement. Mutation tests verify that restored canonical acceptance and
+incorrect semantic fields fail the new regressions.
+
+The Chinese executable fixture uses 3,429 JSON bytes for catalog stage data, compared
+with 8,916 for the verbose catalog. Reviewed IR occupies 1,877 bytes versus 4,238 for
+canonical submission. These measurements are byte counts, not provider token estimates.
+Chinese references still add input. Conservative lexical support cannot prove entailment;
+unusual headings, contiguous provenance envelopes and multi-sentence fallback remain
+known limits. No policy was broadened to accept the synthetic fixtures. Reviewed IR now
+represents fallback experience as its condition, and the support fixture explicitly
+states experience instead of relying on shorthand rejected by the compiler.
+
+The integration preserves groups-v1, matching-v1, evidence delivery, Coverage, prior
+reports/resumes on failure, exact-JD keys, cache deletion, provider/model defaults,
+database schema and UI. No runtime data was cleared. Matching semantic tuning, route
+status derivation, inventory compaction and cache lifecycle redesign remain outside Phase B.
+
+Two live synthetic trials ran against configured OpenRouter model
+`nvidia/nemotron-3-super-120b-a12b:free`. Both used isolated empty databases and returned
+raw `length`/normalized `max_tokens` on the initial and corrective turn, without a tool
+submission. Each used 5,995 input and 16,384 output tokens across two turns; latencies
+were 137.6 and 152.5 seconds. Neither reached IR validation or compilation, and neither
+published a cache row. Live completion is 0/2, all-trial non-completion is 100%, and
+accepted semantic quality remains unavailable. This observed model submission failure
+remains explicit; Phase B does not claim a live reliability or semantic improvement.
+The preliminary sandboxed connection failures received no model responses and are
+excluded from the two network-enabled measurements.
+
+The final offline gate passes 789 checks with 13 skips, including both Chromium journeys.
+Twelve skips require unavailable Make; one disables live-provider probing. The gate
+includes compiler/schema, coordinator, Phase A submission, evaluator/gold metrics,
+existing extraction, groups-v1, matching correctness, matching-v1 and Career suites.
+Ruff, environment validation and `git diff --check` pass. Wheel and source archives
+build and install offline into separate temporary targets. Both installed runtimes
+match repository runtime bytes, reopen accepted canonical caches and pass the same
+290 focused regressions. In-memory restoration of canonical model acceptance fails the
+new IR boundary regression; no repository runtime file changed during that mutation.
+Benchmark artifacts and verification logs remain under `/tmp/career-phase-b-*`.
+Phase B ends here; the deferred downstream projects have not started.

@@ -11,7 +11,8 @@ from evals.matching_helpers import scripted_assessment
 from waku.config import Settings
 from waku.db import connect_career as connect
 from waku.runtime.career import action, save_profile, state
-from waku.runtime.career_jobs import calculate_match_score, validate_extraction, validate_match
+from waku.runtime.career_jobs import calculate_match_score, validate_match
+from waku.runtime.career_requirements import validate_extraction
 from waku.tools.career import get_evidence, search_career_evidence
 
 FIXTURES = json.loads((Path(__file__).parents[1] / 'fixtures/career_jobs.json').read_text())
@@ -49,14 +50,15 @@ class JobClient:
 
     def create(self, **kwargs):
         self.calls.append(copy.deepcopy(kwargs))
-        stage = 'extract' if 'Extract canonical requirement groups' in kwargs['system'] else 'match'
-        turn = sum(('Extract canonical requirement groups' in c['system']) == (stage == 'extract') for c in self.calls)
+        stage = 'extract' if 'Extract source-supported qualification semantics' in kwargs['system'] else 'match'
+        turn = sum(('Extract source-supported qualification semantics' in c['system']) == (stage == 'extract') for c in self.calls)
         if self.failure == (stage, turn):
             raise RuntimeError('offline provider unavailable')
         if stage == 'extract':
             if turn == 1:
-                proposal = {'title': self.fixture['title'], 'summary': 'Scripted job summary.',
-                            'responsibilities': [], 'requirements': copy.deepcopy(self.fixture['requirements'])}
+                proposal = copy.deepcopy(self.fixture.get('semantic_ir', {
+                    'title': self.fixture['title'], 'summary': '', 'responsibilities': [],
+                    'facts': [], 'opportunities': [], 'repeats': []}))
                 return response([tool_block('submit_stage_result', {'result': proposal})], 'tool_use')
             return response([text_block('Extracted.')])
         data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
@@ -280,7 +282,7 @@ def test_uninspected_citations_and_skipped_search_are_rejected(world):
 def test_matching_limit_is_capped_at_ten(world):
     class SearchingClient(JobClient):
         def create(self, **kwargs):
-            if 'Extract canonical' in kwargs['system']:
+            if 'Extract source-supported' in kwargs['system']:
                 return super().create(**kwargs)
             self.calls.append(copy.deepcopy(kwargs))
             return response([tool_block('search_career_evidence', {'queries': ['React']})], 'tool_use')

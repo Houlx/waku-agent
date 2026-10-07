@@ -179,5 +179,197 @@
         "alternative_route": null
       }
     ]
+  },
+  "semantic_ir": {
+    "title": "Synthetic testing role",
+    "summary": "",
+    "responsibilities": [],
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "degree",
+        "support": {
+          "first": "t39",
+          "last": "t40"
+        },
+        "subject": {
+          "first": "t39",
+          "last": "t40"
+        }
+      },
+      {
+        "id": "f1",
+        "kind": "major",
+        "support": {
+          "first": "t47",
+          "last": "t57"
+        },
+        "subject": {
+          "first": "t50",
+          "last": "t52"
+        }
+      },
+      {
+        "id": "f2",
+        "kind": "degree",
+        "support": {
+          "first": "t74",
+          "last": "t75"
+        },
+        "subject": {
+          "first": "t74",
+          "last": "t75"
+        }
+      },
+      {
+        "id": "f3",
+        "kind": "technology",
+        "support": {
+          "first": "t77",
+          "last": "t95"
+        },
+        "subject": {
+          "first": "t81",
+          "last": "t81"
+        }
+      },
+      {
+        "id": "f4",
+        "kind": "technology",
+        "support": {
+          "first": "t77",
+          "last": "t95"
+        },
+        "subject": {
+          "first": "t83",
+          "last": "t85"
+        }
+      },
+      {
+        "id": "f5",
+        "kind": "behavior",
+        "support": {
+          "first": "t96",
+          "last": "t108"
+        },
+        "subject": {
+          "first": "t101",
+          "last": "t108"
+        }
+      },
+      {
+        "id": "f6",
+        "kind": "behavior",
+        "support": {
+          "first": "t110",
+          "last": "t120"
+        },
+        "subject": {
+          "first": "t115",
+          "last": "t120"
+        }
+      },
+      {
+        "id": "f7",
+        "kind": "trait",
+        "support": {
+          "first": "t122",
+          "last": "t135"
+        },
+        "subject": {
+          "first": "t122",
+          "last": "t125"
+        }
+      },
+      {
+        "id": "f8",
+        "kind": "trait",
+        "support": {
+          "first": "t137",
+          "last": "t151"
+        },
+        "subject": {
+          "first": "t141",
+          "last": "t144"
+        }
+      },
+      {
+        "id": "f9",
+        "kind": "experience",
+        "support": {
+          "first": "t153",
+          "last": "t172"
+        },
+        "subject": {
+          "first": "t155",
+          "last": "t161"
+        }
+      }
+    ],
+    "opportunities": [
+      {
+        "operator": "ALL",
+        "facts": [
+          "f0",
+          "f1"
+        ],
+        "fallback": {
+          "operator": "ALL",
+          "facts": [
+            "f2"
+          ],
+          "condition": {
+            "first": "t59",
+            "last": "t67"
+          },
+          "inherit": [],
+          "inheritance_support": null
+        }
+      },
+      {
+        "operator": "ANY",
+        "facts": [
+          "f3",
+          "f4"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f5"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f6"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f7"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f8"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f9"
+        ],
+        "fallback": null
+      }
+    ],
+    "repeats": []
   }
 }

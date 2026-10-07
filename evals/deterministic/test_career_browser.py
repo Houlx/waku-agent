@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class BrowserClient(AcceptanceClient):
     def create(self, **kwargs):
-        if ('Extract canonical requirement groups' in kwargs['system']
+        if ('Extract source-supported qualification semantics' in kwargs['system']
                 and 'Synthetic failure' in kwargs['messages'][0]['content']):
             raise ValueError('Synthetic extraction failure.')
         return super().create(**kwargs)
@@ -82,7 +82,9 @@ def test_canonical_report_browser(tmp_path):
     first = runtime.action({'action': 'analyze_job', 'jd': GOLD['jd']})['job_id']
     excluded = copy.deepcopy(GOLD['extraction'])
     excluded['requirements'] = excluded['requirements'][4:8]
-    runtime.client = GroupClient(excluded)
+    # This new JD has different source token IDs; use reviewed excluded-only IR.
+    from evals.extraction_helpers import excluded_ir_for
+    runtime.client = GroupClient(excluded_ir_for(excluded))
     second = runtime.action({'action': 'analyze_job', 'jd': '\n'.join(
         g['source_excerpt'] for g in excluded['requirements'])})['job_id']
     server = CareerServer(('127.0.0.1', 0), runtime=runtime)

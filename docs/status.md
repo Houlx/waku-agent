@@ -23,7 +23,8 @@ receive a stable inventory and require complete inspection before GAP can valida
 Full-evidence matching exposes only submission and requests named tool choice; inventory matching retains retrieval.
 Matching permits one bounded correction for an unsubmitted completion within ten turns,
 retains raw termination reasons and distinguishes output truncation from missing submission.
-Fresh extraction also requests named submission, allows one bounded correction, and
+Fresh extraction supplies a source catalog, accepts Semantic IR and compiles groups-v1 in Python.
+It requests named submission, allows one bounded correction, and
 distinguishes output truncation from a normal missing submission. Unknown provider
 termination reasons fail explicitly. Budget or incomplete-coverage failures preserve any previous report. Canonical
 requirement groups and eligibility are cached by exact JD and extraction-policy version.

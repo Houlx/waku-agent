@@ -1,0 +1,1785 @@
+[
+  {
+    "name": "degree_related_alternative_majors_higher",
+    "jd": "Requirements:\nMaster's degree or higher in electrical engineering or related computer science major.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "degree",
+          "support": {
+            "first": "t2",
+            "last": "t7"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t4"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "major",
+          "support": {
+            "first": "t8",
+            "last": "t15"
+          },
+          "subject": {
+            "first": "t9",
+            "last": "t10"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0",
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Master's degree or higher in electrical engineering or related computer science major",
+          "source_excerpt": "Master's degree or higher in electrical engineering or related computer science major",
+          "category": "education",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Master's",
+                "text": "Master's degree or higher",
+                "source_excerpt": "Master's degree or higher"
+              },
+              {
+                "kind": "major",
+                "subject": "electrical engineering",
+                "text": "in electrical engineering or related computer science major",
+                "source_excerpt": "in electrical engineering or related computer science major"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "technology_alternatives_typo",
+    "jd": "Qualifications:\nProficiency in 1abview OR C++ required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t4",
+            "last": "t4"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t6",
+            "last": "t8"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ANY",
+          "facts": [
+            "f0",
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Proficiency in LabVIEW OR C++ required",
+          "source_excerpt": "Proficiency in 1abview OR C++ required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ANY",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "1abview",
+                "text": "Proficiency in LabVIEW OR C++ required",
+                "source_excerpt": "Proficiency in 1abview OR C++ required"
+              },
+              {
+                "kind": "technology",
+                "subject": "C++",
+                "text": "Proficiency in LabVIEW OR C++ required",
+                "source_excerpt": "Proficiency in 1abview OR C++ required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "technology_only_qualification",
+    "jd": "Qualifications:\nPython proficiency required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t4"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency required",
+          "source_excerpt": "Python proficiency required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency required",
+                "source_excerpt": "Python proficiency required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "duration",
+    "jd": "Qualifications:\nAt least 5 years of industry experience required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "experience",
+          "support": {
+            "first": "t2",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t7",
+            "last": "t7"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "At least 5 years of industry experience required",
+          "source_excerpt": "At least 5 years of industry experience required",
+          "category": "experience",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "experience",
+                "subject": "industry",
+                "text": "At least 5 years of industry experience required",
+                "source_excerpt": "At least 5 years of industry experience required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "skill_duration",
+    "jd": "Qualifications:\nPython experience of at least 3 years required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "experience",
+          "support": {
+            "first": "t2",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t7",
+            "last": "t8"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0",
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python experience of at least 3 years required",
+          "source_excerpt": "Python experience of at least 3 years required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python experience of at least 3 years required",
+                "source_excerpt": "Python experience of at least 3 years required"
+              },
+              {
+                "kind": "experience",
+                "subject": "3 years",
+                "text": "Python experience of at least 3 years required",
+                "source_excerpt": "Python experience of at least 3 years required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "ambiguous_experience",
+    "jd": "Qualifications:\nSome relevant industry experience.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "experience",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t4",
+            "last": "t4"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Some relevant industry experience",
+          "source_excerpt": "Some relevant industry experience",
+          "category": "experience",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "experience",
+                "subject": "industry",
+                "text": "Some relevant industry experience",
+                "source_excerpt": "Some relevant industry experience"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "logistics",
+    "jd": "Qualifications:\nWilling to travel required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "logistics",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t4",
+            "last": "t4"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Willing to travel required",
+          "source_excerpt": "Willing to travel required",
+          "category": "logistics",
+          "eligibility": "NEEDS_CONFIRMATION",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "logistics",
+                "subject": "travel",
+                "text": "Willing to travel required",
+                "source_excerpt": "Willing to travel required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "drivers_license",
+    "jd": "Qualifications:\nDriver's license required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "logistics",
+          "support": {
+            "first": "t2",
+            "last": "t6"
+          },
+          "subject": {
+            "first": "t5",
+            "last": "t5"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Driver's license required",
+          "source_excerpt": "Driver's license required",
+          "category": "logistics",
+          "eligibility": "NEEDS_CONFIRMATION",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "logistics",
+                "subject": "license",
+                "text": "Driver's license required",
+                "source_excerpt": "Driver's license required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "health",
+    "jd": "Qualifications:\nGood health required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "trait",
+          "support": {
+            "first": "t2",
+            "last": "t4"
+          },
+          "subject": {
+            "first": "t3",
+            "last": "t3"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Good health required",
+          "source_excerpt": "Good health required",
+          "category": "personal_trait",
+          "eligibility": "NON_SCORABLE",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "trait",
+                "subject": "health",
+                "text": "Good health required",
+                "source_excerpt": "Good health required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "diligence_dedication",
+    "jd": "Qualifications:\nDiligence and dedication required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "trait",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Diligence and dedication required",
+          "source_excerpt": "Diligence and dedication required",
+          "category": "personal_trait",
+          "eligibility": "NON_SCORABLE",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "trait",
+                "subject": "Diligence",
+                "text": "Diligence and dedication required",
+                "source_excerpt": "Diligence and dedication required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "teamwork_initiative",
+    "jd": "Qualifications:\nTeamwork spirit and initiative required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "trait",
+          "support": {
+            "first": "t2",
+            "last": "t6"
+          },
+          "subject": {
+            "first": "t5",
+            "last": "t5"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Teamwork spirit and initiative required",
+          "source_excerpt": "Teamwork spirit and initiative required",
+          "category": "personal_trait",
+          "eligibility": "NON_SCORABLE",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "trait",
+                "subject": "initiative",
+                "text": "Teamwork spirit and initiative required",
+                "source_excerpt": "Teamwork spirit and initiative required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "observable_coordination",
+    "jd": "Qualifications:\nCoordinate technical reviews with partner teams.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "behavior",
+          "support": {
+            "first": "t2",
+            "last": "t7"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Coordinate technical reviews with partner teams",
+          "source_excerpt": "Coordinate technical reviews with partner teams",
+          "category": "demonstrated_capability",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "behavior",
+                "subject": "Coordinate",
+                "text": "Coordinate technical reviews with partner teams",
+                "source_excerpt": "Coordinate technical reviews with partner teams"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "writing_output",
+    "jd": "Qualifications:\nWrite technical test reports.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "behavior",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t5",
+            "last": "t5"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Write technical test reports",
+          "source_excerpt": "Write technical test reports",
+          "category": "demonstrated_capability",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "behavior",
+                "subject": "reports",
+                "text": "Write technical test reports",
+                "source_excerpt": "Write technical test reports"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "bare_writing",
+    "jd": "Qualifications:\nGood writing skills required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "behavior",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t3",
+            "last": "t3"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Good writing skills required",
+          "source_excerpt": "Good writing skills required",
+          "category": "demonstrated_capability",
+          "eligibility": "NON_SCORABLE",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "behavior",
+                "subject": "writing",
+                "text": "Good writing skills required",
+                "source_excerpt": "Good writing skills required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "preferred_scope",
+    "jd": "Qualifications:\nPython proficiency preferred.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t4"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency preferred",
+          "source_excerpt": "Python proficiency preferred",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "preferred",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency preferred",
+                "source_excerpt": "Python proficiency preferred"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "education_no_inheritance",
+    "jd": "Qualifications:\nMaster's degree in electrical engineering major. Relevant experience allows relaxation to bachelor's degree.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "degree",
+          "kind": "degree",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "major",
+          "kind": "major",
+          "support": {
+            "first": "t6",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t7",
+            "last": "t8"
+          }
+        },
+        {
+          "id": "fallback",
+          "kind": "degree",
+          "support": {
+            "first": "t16",
+            "last": "t19"
+          },
+          "subject": {
+            "first": "t16",
+            "last": "t16"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "degree",
+            "major"
+          ],
+          "fallback": {
+            "operator": "ALL",
+            "facts": [
+              "fallback"
+            ],
+            "condition": {
+              "first": "t11",
+              "last": "t12"
+            },
+            "inherit": [],
+            "inheritance_support": null
+          }
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Master's degree in electrical engineering major. Relevant experience allows relaxation to bachelor's degree",
+          "source_excerpt": "Master's degree in electrical engineering major. Relevant experience allows relaxation to bachelor's degree",
+          "category": "education",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Master",
+                "text": "Master's degree",
+                "source_excerpt": "Master's degree"
+              },
+              {
+                "kind": "major",
+                "subject": "electrical engineering",
+                "text": "in electrical engineering major",
+                "source_excerpt": "in electrical engineering major"
+              }
+            ]
+          },
+          "alternative_route": {
+            "constraints": {
+              "operator": "ALL",
+              "items": [
+                {
+                  "kind": "degree",
+                  "subject": "bachelor",
+                  "text": "bachelor's degree",
+                  "source_excerpt": "bachelor's degree"
+                }
+              ]
+            },
+            "condition": "Relevant experience",
+            "source_excerpt": "Relevant experience allows relaxation to bachelor's degree"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "education_inheritance",
+    "jd": "Qualifications:\nMaster's degree in electrical engineering major. Relevant experience allows relaxation to bachelor's degree in the same major.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "degree",
+          "kind": "degree",
+          "support": {
+            "first": "t2",
+            "last": "t5"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "major",
+          "kind": "major",
+          "support": {
+            "first": "t6",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t7",
+            "last": "t8"
+          }
+        },
+        {
+          "id": "fallback",
+          "kind": "degree",
+          "support": {
+            "first": "t16",
+            "last": "t19"
+          },
+          "subject": {
+            "first": "t16",
+            "last": "t16"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "degree",
+            "major"
+          ],
+          "fallback": {
+            "operator": "ALL",
+            "facts": [
+              "fallback"
+            ],
+            "condition": {
+              "first": "t11",
+              "last": "t12"
+            },
+            "inherit": [
+              "major"
+            ],
+            "inheritance_support": {
+              "first": "t22",
+              "last": "t23"
+            }
+          }
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Master's degree in electrical engineering major. Relevant experience allows relaxation to bachelor's degree in the same major",
+          "source_excerpt": "Master's degree in electrical engineering major. Relevant experience allows relaxation to bachelor's degree in the same major",
+          "category": "education",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Master",
+                "text": "Master's degree",
+                "source_excerpt": "Master's degree"
+              },
+              {
+                "kind": "major",
+                "subject": "electrical engineering",
+                "text": "in electrical engineering major",
+                "source_excerpt": "in electrical engineering major"
+              }
+            ]
+          },
+          "alternative_route": {
+            "constraints": {
+              "operator": "ALL",
+              "items": [
+                {
+                  "kind": "degree",
+                  "subject": "bachelor",
+                  "text": "bachelor's degree",
+                  "source_excerpt": "bachelor's degree"
+                },
+                {
+                  "kind": "major",
+                  "subject": "electrical engineering",
+                  "text": "in electrical engineering major",
+                  "source_excerpt": "in electrical engineering major"
+                }
+              ]
+            },
+            "condition": "Relevant experience",
+            "source_excerpt": "in electrical engineering major. Relevant experience allows relaxation to bachelor's degree in the same major"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "duty_only",
+    "jd": "Responsibilities:\nMaintain Python services.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [
+        {
+          "first": "t2",
+          "last": "t4"
+        }
+      ],
+      "facts": [],
+      "opportunities": [],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": []
+    }
+  },
+  {
+    "name": "duty_and_qualification",
+    "jd": "Responsibilities:\nMaintain Python services.\nQualifications:\nPython proficiency required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t8",
+            "last": "t10"
+          },
+          "subject": {
+            "first": "t8",
+            "last": "t8"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency required",
+          "source_excerpt": "Python proficiency required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency required",
+                "source_excerpt": "Python proficiency required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "unknown_heading",
+    "jd": "Special candidate signals:\nPython proficiency required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t4",
+            "last": "t6"
+          },
+          "subject": {
+            "first": "t4",
+            "last": "t4"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency required",
+          "source_excerpt": "Python proficiency required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency required",
+                "source_excerpt": "Python proficiency required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "mixed_clause",
+    "jd": "Qualifications:\nPython proficiency and good health required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t3"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "trait",
+          "support": {
+            "first": "t5",
+            "last": "t7"
+          },
+          "subject": {
+            "first": "t6",
+            "last": "t6"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency",
+          "source_excerpt": "Python proficiency",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency",
+                "source_excerpt": "Python proficiency"
+              }
+            ]
+          },
+          "alternative_route": null
+        },
+        {
+          "text": "good health required",
+          "source_excerpt": "good health required",
+          "category": "personal_trait",
+          "eligibility": "NON_SCORABLE",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "trait",
+                "subject": "health",
+                "text": "good health required",
+                "source_excerpt": "good health required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "unrelated_tenure",
+    "jd": "Qualifications:\nPython proficiency required.\nAt least 5 years of industry experience required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t4"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "experience",
+          "support": {
+            "first": "t6",
+            "last": "t13"
+          },
+          "subject": {
+            "first": "t11",
+            "last": "t11"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency required",
+          "source_excerpt": "Python proficiency required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency required",
+                "source_excerpt": "Python proficiency required"
+              }
+            ]
+          },
+          "alternative_route": null
+        },
+        {
+          "text": "At least 5 years of industry experience required",
+          "source_excerpt": "At least 5 years of industry experience required",
+          "category": "experience",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "experience",
+                "subject": "industry",
+                "text": "At least 5 years of industry experience required",
+                "source_excerpt": "At least 5 years of industry experience required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "required_preferred_ambiguity",
+    "jd": "Required / preferred qualifications:\nPython proficiency.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t5",
+            "last": "t6"
+          },
+          "subject": {
+            "first": "t5",
+            "last": "t5"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency",
+          "source_excerpt": "Python proficiency",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency",
+                "source_excerpt": "Python proficiency"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "unrelated_intervening",
+    "jd": "Qualifications:\nMaster's degree required.\nOffice provides equipment.\nElectrical engineering major required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "degree",
+          "support": {
+            "first": "t2",
+            "last": "t6"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "major",
+          "support": {
+            "first": "t12",
+            "last": "t15"
+          },
+          "subject": {
+            "first": "t12",
+            "last": "t13"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0",
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Master's degree required.\nOffice provides equipment.\nElectrical engineering major required",
+          "source_excerpt": "Master's degree required.\nOffice provides equipment.\nElectrical engineering major required",
+          "category": "education",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "degree",
+                "subject": "Master",
+                "text": "Master's degree required",
+                "source_excerpt": "Master's degree required"
+              },
+              {
+                "kind": "major",
+                "subject": "Electrical engineering",
+                "text": "Electrical engineering major required",
+                "source_excerpt": "Electrical engineering major required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "repeated_identical",
+    "jd": "Qualifications:\nPython proficiency required.\nPython proficiency required.",
+    "semantic_ir": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t2",
+            "last": "t4"
+          },
+          "subject": {
+            "first": "t2",
+            "last": "t2"
+          }
+        },
+        {
+          "id": "repeat",
+          "kind": "technology",
+          "support": {
+            "first": "t6",
+            "last": "t8"
+          },
+          "subject": {
+            "first": "t6",
+            "last": "t6"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": [
+        {
+          "fact": "repeat",
+          "of": "f0"
+        }
+      ]
+    },
+    "extraction": {
+      "title": "Synthetic role",
+      "summary": "",
+      "responsibilities": [],
+      "requirements": [
+        {
+          "text": "Python proficiency required.\nPython proficiency required",
+          "source_excerpt": "Python proficiency required.\nPython proficiency required",
+          "category": "skill",
+          "eligibility": "SCORED",
+          "importance": "required",
+          "eligibility_reason": "Reviewed synthetic source criterion.",
+          "keywords": [],
+          "constraints": {
+            "operator": "ALL",
+            "items": [
+              {
+                "kind": "technology",
+                "subject": "Python",
+                "text": "Python proficiency required",
+                "source_excerpt": "Python proficiency required"
+              }
+            ]
+          },
+          "alternative_route": null
+        }
+      ]
+    }
+  }
+]

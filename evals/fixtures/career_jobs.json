@@ -79,7 +79,74 @@
       "GAP",
       "PARTIAL"
     ],
-    "score": 50.0
+    "score": 50.0,
+    "semantic_ir": {
+      "title": "AI Engineer",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t5",
+            "last": "t9"
+          },
+          "subject": {
+            "first": "t5",
+            "last": "t9"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "technology",
+          "support": {
+            "first": "t13",
+            "last": "t15"
+          },
+          "subject": {
+            "first": "t13",
+            "last": "t15"
+          }
+        },
+        {
+          "id": "f2",
+          "kind": "technology",
+          "support": {
+            "first": "t19",
+            "last": "t19"
+          },
+          "subject": {
+            "first": "t19",
+            "last": "t19"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f1"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f2"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    }
   },
   {
     "title": "Frontend Engineer",
@@ -136,7 +203,55 @@
       "MATCH",
       "PARTIAL"
     ],
-    "score": 83.3
+    "score": 83.3,
+    "semantic_ir": {
+      "title": "Frontend Engineer",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t5",
+            "last": "t6"
+          },
+          "subject": {
+            "first": "t5",
+            "last": "t6"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "technology",
+          "support": {
+            "first": "t10",
+            "last": "t10"
+          },
+          "subject": {
+            "first": "t10",
+            "last": "t10"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    }
   },
   {
     "title": "Full Stack Engineer",
@@ -217,20 +332,87 @@
       "MATCH",
       "GAP"
     ],
-    "score": 80.0
+    "score": 80.0,
+    "semantic_ir": {
+      "title": "Full Stack Engineer",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "technology",
+          "support": {
+            "first": "t6",
+            "last": "t8"
+          },
+          "subject": {
+            "first": "t6",
+            "last": "t8"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "technology",
+          "support": {
+            "first": "t12",
+            "last": "t12"
+          },
+          "subject": {
+            "first": "t12",
+            "last": "t12"
+          }
+        },
+        {
+          "id": "f2",
+          "kind": "technology",
+          "support": {
+            "first": "t16",
+            "last": "t16"
+          },
+          "subject": {
+            "first": "t16",
+            "last": "t16"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f1"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f2"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    }
   },
   {
     "title": "Technical Support Engineer",
-    "jd": "Technical Support Engineer. Required: Customer support. Preferred: Python.",
+    "jd": "Technical Support Engineer. Required: Customer support experience. Preferred: Python.",
     "requirements": [
       {
-        "text": "Customer support",
+        "text": "Customer support experience",
         "category": "experience",
         "importance": "required",
         "keywords": [
           "customer support"
         ],
-        "source_excerpt": "Customer support",
+        "source_excerpt": "Customer support experience",
         "eligibility": "SCORED",
         "eligibility_reason": "The JD states an objective qualification.",
         "alternative_route": null,
@@ -239,9 +421,9 @@
           "items": [
             {
               "kind": "experience",
-              "subject": "Customer support",
-              "text": "Customer support",
-              "source_excerpt": "Customer support"
+              "subject": "Customer support experience",
+              "text": "Customer support experience",
+              "source_excerpt": "Customer support experience"
             }
           ]
         }
@@ -274,6 +456,54 @@
       "GAP",
       "PARTIAL"
     ],
-    "score": 16.7
+    "score": 16.7,
+    "semantic_ir": {
+      "title": "Technical Support Engineer",
+      "summary": "",
+      "responsibilities": [],
+      "facts": [
+        {
+          "id": "f0",
+          "kind": "experience",
+          "support": {
+            "first": "t6",
+            "last": "t8"
+          },
+          "subject": {
+            "first": "t6",
+            "last": "t8"
+          }
+        },
+        {
+          "id": "f1",
+          "kind": "technology",
+          "support": {
+            "first": "t12",
+            "last": "t12"
+          },
+          "subject": {
+            "first": "t12",
+            "last": "t12"
+          }
+        }
+      ],
+      "opportunities": [
+        {
+          "operator": "ALL",
+          "facts": [
+            "f0"
+          ],
+          "fallback": null
+        },
+        {
+          "operator": "ALL",
+          "facts": [
+            "f1"
+          ],
+          "fallback": null
+        }
+      ],
+      "repeats": []
+    }
   }
 ]

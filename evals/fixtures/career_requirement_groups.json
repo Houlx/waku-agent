@@ -279,5 +279,280 @@
         "text": "Coordinated releases at Cedar Labs."
       }
     ]
+  },
+  "semantic_ir": {
+    "title": "Test Software Engineer",
+    "summary": "Synthetic role at Northstar Instruments.",
+    "responsibilities": [],
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "degree",
+        "support": {
+          "first": "t9",
+          "last": "t12"
+        },
+        "subject": {
+          "first": "t9",
+          "last": "t12"
+        }
+      },
+      {
+        "id": "f1",
+        "kind": "major",
+        "support": {
+          "first": "t14",
+          "last": "t17"
+        },
+        "subject": {
+          "first": "t14",
+          "last": "t14"
+        }
+      },
+      {
+        "id": "f2",
+        "kind": "degree",
+        "support": {
+          "first": "t27",
+          "last": "t29"
+        },
+        "subject": {
+          "first": "t27",
+          "last": "t29"
+        }
+      },
+      {
+        "id": "f4",
+        "kind": "technology",
+        "support": {
+          "first": "t33",
+          "last": "t33"
+        },
+        "subject": {
+          "first": "t33",
+          "last": "t33"
+        }
+      },
+      {
+        "id": "f5",
+        "kind": "technology",
+        "support": {
+          "first": "t35",
+          "last": "t37"
+        },
+        "subject": {
+          "first": "t35",
+          "last": "t37"
+        }
+      },
+      {
+        "id": "f6",
+        "kind": "behavior",
+        "support": {
+          "first": "t38",
+          "last": "t44"
+        },
+        "subject": {
+          "first": "t38",
+          "last": "t39"
+        }
+      },
+      {
+        "id": "f7",
+        "kind": "behavior",
+        "support": {
+          "first": "t45",
+          "last": "t47"
+        },
+        "subject": {
+          "first": "t46",
+          "last": "t47"
+        }
+      },
+      {
+        "id": "f8",
+        "kind": "trait",
+        "support": {
+          "first": "t48",
+          "last": "t61"
+        },
+        "subject": {
+          "first": "t48",
+          "last": "t51"
+        }
+      },
+      {
+        "id": "f9",
+        "kind": "trait",
+        "support": {
+          "first": "t62",
+          "last": "t73"
+        },
+        "subject": {
+          "first": "t62",
+          "last": "t64"
+        }
+      },
+      {
+        "id": "f10",
+        "kind": "trait",
+        "support": {
+          "first": "t74",
+          "last": "t78"
+        },
+        "subject": {
+          "first": "t75",
+          "last": "t75"
+        }
+      },
+      {
+        "id": "f11",
+        "kind": "logistics",
+        "support": {
+          "first": "t79",
+          "last": "t86"
+        },
+        "subject": {
+          "first": "t81",
+          "last": "t81"
+        }
+      },
+      {
+        "id": "f12",
+        "kind": "logistics",
+        "support": {
+          "first": "t79",
+          "last": "t86"
+        },
+        "subject": {
+          "first": "t84",
+          "last": "t84"
+        }
+      },
+      {
+        "id": "f13",
+        "kind": "logistics",
+        "support": {
+          "first": "t79",
+          "last": "t86"
+        },
+        "subject": {
+          "first": "t86",
+          "last": "t86"
+        }
+      },
+      {
+        "id": "f14",
+        "kind": "technology",
+        "support": {
+          "first": "t87",
+          "last": "t87"
+        },
+        "subject": {
+          "first": "t87",
+          "last": "t87"
+        }
+      },
+      {
+        "id": "f15",
+        "kind": "experience",
+        "support": {
+          "first": "t89",
+          "last": "t92"
+        },
+        "subject": {
+          "first": "t89",
+          "last": "t92"
+        }
+      }
+    ],
+    "opportunities": [
+      {
+        "operator": "ALL",
+        "facts": [
+          "f0",
+          "f1"
+        ],
+        "fallback": {
+          "operator": "ALL",
+          "facts": [
+            "f2"
+          ],
+          "condition": {
+            "first": "t19",
+            "last": "t21"
+          },
+          "inherit": [],
+          "inheritance_support": null
+        }
+      },
+      {
+        "operator": "ANY",
+        "facts": [
+          "f4",
+          "f5"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f6"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f7"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f8"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f9"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f10"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f11",
+          "f12",
+          "f13"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f14"
+        ],
+        "fallback": null
+      },
+      {
+        "operator": "ALL",
+        "facts": [
+          "f15"
+        ],
+        "fallback": null
+      }
+    ],
+    "repeats": []
   }
 }

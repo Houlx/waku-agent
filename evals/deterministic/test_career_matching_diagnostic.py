@@ -51,15 +51,13 @@ class DiagnosticClient:
 
     def create(self, **kwargs):
         self.calls.append(copy.deepcopy(kwargs))
-        stage = 'extract' if 'Extract canonical requirement groups' in kwargs['system'] else 'match'
+        stage = 'extract' if 'Extract source-supported qualification semantics' in kwargs['system'] else 'match'
         self.turns[stage] += 1
         turn = self.turns[stage]
         data = json.loads(kwargs['messages'][0]['content'].split('\n', 1)[1])
         name, args = None, None
         if stage == 'extract' and turn == 1:
-            name, args = 'submit_stage_result', {'result': {
-                'title': 'Education diagnostic', 'summary': '', 'responsibilities': [],
-                'requirements': [copy.deepcopy(FIXTURE['requirement'])]}}
+            name, args = 'submit_stage_result', {'result': copy.deepcopy(FIXTURE['semantic_ir'])}
         elif stage == 'match':
             if data['matching_coverage']['mode'] == 'full':
                 turn += 1 + len(self.route['inspect'])
@@ -485,7 +483,7 @@ def test_same_response_inspection_cannot_approve_unseen_inventory_gap(diagnostic
 
     class SameResponseClient(DiagnosticClient):
         def create(self, **kwargs):
-            if 'Extract canonical requirement groups' in kwargs['system']:
+            if 'Extract source-supported qualification semantics' in kwargs['system']:
                 return super().create(**kwargs)
             self.calls.append(copy.deepcopy(kwargs))
             self.turns['match'] += 1

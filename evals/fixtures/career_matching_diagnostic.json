@@ -93,5 +93,34 @@
       ],
       "reason": "The education record explicitly confirms a master's degree."
     }
-  ]
+  ],
+  "semantic_ir": {
+    "title": "Education diagnostic",
+    "summary": "",
+    "responsibilities": [],
+    "facts": [
+      {
+        "id": "f0",
+        "kind": "degree",
+        "support": {
+          "first": "t0",
+          "last": "t4"
+        },
+        "subject": {
+          "first": "t0",
+          "last": "t2"
+        }
+      }
+    ],
+    "opportunities": [
+      {
+        "operator": "ALL",
+        "facts": [
+          "f0"
+        ],
+        "fallback": null
+      }
+    ],
+    "repeats": []
+  }
 }

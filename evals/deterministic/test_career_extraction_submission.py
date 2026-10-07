@@ -7,18 +7,17 @@ import pytest
 
 from evals.career import run_scenario
 from evals.deterministic.test_career_acceptance import JOBS, RAW, AcceptanceClient
-from evals.deterministic.test_career_extraction_failure_diagnosis import JD, proposal
+from evals.deterministic.test_career_extraction_failure_diagnosis import JD
 from evals.deterministic.test_career_submission import termination
+from evals.extraction_helpers import executable_ir
 from evals.helpers import response, text_block, tool_block
 from waku.config import Settings
 from waku.db import connect_career
 from waku.loop.models import OpenAICompatClient
-from waku.runtime.career_jobs import analyze_job, run_stage, saved_jobs
+from waku.runtime.career_extraction_compiler import build_source_catalog, compile_extraction
+from waku.runtime.career_jobs import analyze_job, fresh_extraction, saved_jobs
 from waku.runtime.career_requirements import (
-    EXTRACTION_PROMPT,
-    EXTRACTION_SCHEMA,
     cached_extraction,
-    validate_extraction,
 )
 
 
@@ -40,22 +39,21 @@ class ExtractionClient:
             return result
         if n == len(self.reasons) + 1 or self.invalid_recovery:
             return response([tool_block('submit_stage_result', {
-                'result': {} if self.invalid_recovery else proposal()})], 'tool_use')
+                'result': {} if self.invalid_recovery else executable_ir(JD)})], 'tool_use')
         return response([text_block('Complete.')])
 
 
 def stage(tmp_path, client, limit=10):
     settings = Settings(home=tmp_path, model='offline', max_iterations=limit, max_tokens=8192, otel_endpoint='')
     settings.ensure_home()
-    return run_stage(settings, client, 'job extraction', EXTRACTION_PROMPT, {'jd': JD},
-                     EXTRACTION_SCHEMA, lambda value: validate_extraction(value, JD))
+    return fresh_extraction(settings, client, JD)
 
 
 @pytest.mark.parametrize('reason', ['stop', 'end_turn', 'stop_sequence', 'length', 'max_tokens'])
 def test_missing_submit_recovers_once_from_stable_inputs(tmp_path, reason):
     client = ExtractionClient((reason,))
     actual = stage(tmp_path, client)
-    assert actual == validate_extraction(proposal(), JD)
+    assert actual == compile_extraction(build_source_catalog(JD), executable_ir(JD))
     assert len(client.calls) == 3
     initial, recovery, final = client.calls
     assert recovery['messages'] == [initial['messages'][0], {'role': 'user', 'content':
@@ -66,8 +64,9 @@ def test_missing_submit_recovers_once_from_stable_inputs(tmp_path, reason):
     events = [json.loads(line) for path in (tmp_path / 'traces').glob('*.jsonl')
               for line in path.read_text().splitlines()]
     assert len([e for e in events if e.get('event') == 'submit_only_recovery']) == 1
-    assert events[1]['raw_stop_reason'] == reason
-    assert events[1]['usage']['out'] == 8192
+    first_llm = next(e for e in events if e['type'] == 'llm')
+    assert first_llm['raw_stop_reason'] == reason
+    assert first_llm['usage']['out'] == 8192
     assert 'UNSUBMITTED' not in json.dumps(events)
 
 
@@ -131,7 +130,7 @@ class ForcedExtraction(OpenAICompatClient):
         if kwargs['messages'][-1]['role'] == 'tool':
             return termination('stop')
         result = termination('tool_calls', True)
-        result.choices[0].message.tool_calls[0].function.arguments = json.dumps({'result': proposal()})
+        result.choices[0].message.tool_calls[0].function.arguments = json.dumps({'result': executable_ir(JD)})
         return result
 
 

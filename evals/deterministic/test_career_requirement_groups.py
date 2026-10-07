@@ -13,6 +13,7 @@ from waku.config import Settings
 from waku.db import connect_career
 from waku.runtime import career_jobs, career_requirements
 from waku.runtime.career import action, save_profile
+from waku.runtime.career_extraction_compiler import build_source_catalog, compile_extraction
 from waku.runtime.career_jobs import calculate_match_score, delete_job, validate_match
 from waku.runtime.career_requirements import (
     cache_extraction,
@@ -143,7 +144,7 @@ def test_filtering_changes_membership_without_changing_weights_or_values():
 
 class GroupClient:
     def __init__(self, extraction=None, fail_matching=False):
-        self.extraction = extraction or proposal()
+        self.extraction = extraction if extraction is not None else copy.deepcopy(GOLD['semantic_ir'])
         self.fail_matching = fail_matching
         self.extraction_calls = 0
         self.match_inputs = []
@@ -151,7 +152,7 @@ class GroupClient:
 
     def create(self, **kwargs):
         turn = sum(m['role'] == 'assistant' for m in kwargs['messages']) + 1
-        if 'Extract canonical' in kwargs['system']:
+        if 'Extract source-supported' in kwargs['system']:
             self.extraction_calls += 1
             if turn == 1:
                 return response([tool_block('submit_stage_result', {'result': self.extraction})], 'tool_use')
@@ -208,7 +209,7 @@ def test_unchanged_jd_reuses_set_across_jobs_reanalysis_and_profile_changes(worl
             profile['records'][0]['description'] += ' Updated explicit fact.'
             action(conn, {'action': 'confirm', 'profile': profile})
     assert client.extraction_calls == 2  # Submit plus completion, exactly one extraction stage.
-    metrics = extraction_stability(runs, reference=canonical())
+    metrics = extraction_stability(runs, reference=compile_extraction(build_source_catalog(GOLD['jd']), GOLD['semantic_ir']))
     assert metrics['group_counts'] == [10] * 6
     assert metrics['denominators'] == [10] * 6
     for key in ('group_identity_agreement', 'source_clause_coverage', 'importance_agreement',
@@ -261,7 +262,9 @@ def test_jd_and_policy_changes_get_new_keys_and_failed_updates_retain_report(wor
 def test_zero_scored_groups_remain_visible_skip_matching_and_block_resume(world):
     value = proposal()
     value['requirements'] = value['requirements'][4:8]
-    client = GroupClient(value)
+    from evals.extraction_helpers import excluded_ir_for
+
+    client = GroupClient(excluded_ir_for(value))
     saved = analyze(world, client, '\n'.join(g['source_excerpt'] for g in value['requirements']))
     assert saved['coverage'] is None and len(saved['requirements']) == 4
     assert saved['report']['assessments'] == [] and client.match_inputs == []
@@ -285,7 +288,7 @@ def test_cache_deletion_preserves_shared_sets_and_removes_last_job_data(world):
 def test_diagnosed_jd_equivalent_reuses_seven_groups_and_denominator_seven(world, tmp_path):
     fixture = json.loads((Path(__file__).parents[1] / 'fixtures/career_requirement_stability.json').read_text())
     runs = []
-    client = GroupClient(fixture['extraction'])
+    client = GroupClient(fixture['semantic_ir'])
     job_id = None
     for run in range(6):
         saved = analyze(world, client, fixture['jd'], job_id=job_id)

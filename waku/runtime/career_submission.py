@@ -95,6 +95,10 @@ class ExtractionSubmission(ForcedSubmission):
         self.recovered = False
         self.truncated = False
 
+    def create(self, **kwargs):
+        self.observe({'event': 'provider_request'})
+        return super().create(**kwargs)
+
     def failure(self):
         if self.truncated:
             return ValueError('Career job extraction output was truncated before structured submission completed. '
@@ -108,6 +112,10 @@ class ExtractionSubmission(ForcedSubmission):
             return False
         raw = getattr(response, 'raw_stop_reason', None) or response.stop_reason
         self.truncated = self.truncated or raw in {'length', 'max_tokens'}
+        self.observe({'event': 'submission_failure', 'failure_class': 'submission_failure',
+                      'code': 'TRUNCATION' if raw in {'length', 'max_tokens'} else
+                              'MISSING_SUBMIT' if raw in {'stop', 'end_turn', 'stop_sequence'} else
+                              'UNKNOWN_TERMINATION', 'raw_stop_reason': raw})
         if raw not in {'length', 'max_tokens', 'stop', 'end_turn', 'stop_sequence'}:
             raise ValueError('Career job extraction provider stopped before structured submission '
                              f'(termination: {raw}). Please retry Analyze Job or choose another model.')

@@ -12,7 +12,7 @@ HTTP server without assembling the general Waku assistant. The
 | `waku/ops/provider_services.py` | Provider configuration, masked readiness, replacement and rollback |
 | `waku/runtime/career.py`, `career_jobs.py`, `career_resumes.py` | Profile, evidence, requirements, coverage, provenance and resumes |
 | `waku/runtime/career_requirements.py` | Canonical scoring groups, eligibility guards, provenance, stable identity and extraction reuse |
-| `waku/runtime/career_extraction_compiler.py` | Pure source catalog and semantic IR compiler checkpoint; fresh coordinator integration remains pending |
+| `waku/runtime/career_extraction_compiler.py` | Immutable source catalog, Semantic IR validation and pure groups-v1 compiler for fresh extraction |
 | `waku/runtime/career_rubric.py` | Matching-only constraint support, route algebra, reviewed semantic rules and rubric version |
 | `waku/runtime/career_submission.py` | Extraction and matching submission protocols with one bounded missing-submit recovery |
 | `waku/runtime/career_matching.py` | Checked matching context, confirmed evidence snapshots and server-owned delivery coverage |
@@ -52,6 +52,10 @@ supplied. Inventory matching retains search, complete-record lookup and submissi
 Matching overlays local constraint IDs without changing cached canonical groups.
 Reports retain per-constraint support and the matching policy version. Python checks
 route completeness and citation consistency before applying the unchanged Coverage formula.
+
+Fresh extraction sends a compact source catalog and Semantic IR submission schema. Python compiles
+accepted semantics and runs final groups-v1 validation before atomic cache publication.
+Existing canonical cache rows bypass that model stage without migration.
 
 Fresh extraction and matching use an optional no-tool continuation callback within the existing loop cap.
 One corrective request removes only the unsubmitted assistant completion, preserving
